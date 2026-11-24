@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "FORM 10.0",
+    "slug": "athlete-os",
+    "scheme": "athleteos",
+    "version": "10.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FAF9F4",
+    "ios": {
+      "bundleIdentifier": "app.athleteos.personal",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Optional: ein Foto für eine eigene Übung auswählen.",
+        "UIFileSharingEnabled": true,
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "NSFaceIDUsageDescription": "Optionaler Schutz deiner privaten Trainings- und Gesundheitsdaten."
+      },
+      "icon": "./assets/icon.png"
+    },
+    "android": {
+      "package": "app.athleteos.personal"
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      "expo-document-picker",
+      "expo-image-picker",
+      "expo-notifications",
+      "expo-local-authentication"
+    ],
+    "extra": {
+      "privacy": "All personal data remains on device until user explicitly exports or shares it."
+    },
+    "icon": "./assets/icon.png"
+  }
+}

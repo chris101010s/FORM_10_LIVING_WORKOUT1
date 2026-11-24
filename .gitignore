@@ -1,0 +1,32 @@
+node_modules/
+.expo/
+.expo-shared/
+/ios/
+/android/
+build/
+dist/
+*.ipa
+*.mobileprovision
+*.p12
+*.key
+*.pem
+*.json.backup
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# Niemals persönliche Trainings- und Scanexporte veröffentlichen
+ATHLETE_OS_Backup_*.json
+*.csv
+*.pdf
+*.heic
+private/
+
+# Reproduzierbare 8.2 Testberichte, keine personenbezogenen Daten
+!docs/qa/82-*.log
+
+!docs/qa/83-*.log
+
+!docs/qa/10-*.log

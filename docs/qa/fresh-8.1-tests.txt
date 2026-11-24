@@ -1,0 +1,80 @@
+
+> athlete-os-form@8.1.0 test:all
+> npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh
+
+
+> athlete-os-form@8.1.0 test:preflight
+> node scripts/preflight.cjs
+
+PASS: Kernquellen, OCR-Swiftdatei, Podspec und Git-Tracking vorhanden.
+
+> athlete-os-form@8.1.0 test:syntax
+> node scripts/check-project.mjs
+
+32 TypeScript-/TSX-Quelldateien und 180 Importpfade geprüft: 0 Fehler
+
+> athlete-os-form@8.1.0 test:logic
+> node scripts/check-logic.cjs
+
+PASS: 17 Prüfschritte – Zahlen, Datum, Trends, Scan-Parser, Vorwerte, Cardio
+
+> athlete-os-form@8.1.0 test:catalog
+> node tests/test-catalog.cjs
+
+OK – Katalogtests: echte Suchlogik, DE-Synonyme, Filter, Daten-Validator und Startbestand.
+
+> athlete-os-form@8.1.0 test:csv
+> node tests/test-csv.cjs
+
+OK – CSV: Quotes, Newlines, BOM, German decimals, dates and invalid headers.
+
+> athlete-os-form@8.1.0 test:validation
+> node tests/test-validation.cjs
+
+PASS: 22 Backup-, Schema-, Datenmigration- und Sicherheitsprüfungen.
+
+> athlete-os-form@8.1.0 test:workout
+> node tests/test-workout.cjs
+
+PASS: 12 Workout-Vorwert-, Progressions- und Wochenstatistikprüfungen.
+
+> athlete-os-form@8.1.0 test:compat
+> node tests/test-compat.cjs
+
+PASS: 14 native Build-/Storage-Contract-Prüfungen. Kein Ersatz für Xcode.
+
+> athlete-os-form@8.1.0 test:storage
+> node tests/test-storage.cjs
+
+PASS: 10 Speicher-/Recovery-Fälle mit simuliertem Schreibfehler.
+
+> athlete-os-form@8.1.0 test:advanced
+> node tests/test-advanced.cjs
+
+PASS 32 checks: recovery, measurements, goals, weekly plans, PR, editing/legacy structure, validation
+
+> athlete-os-form@8.1.0 test:form
+> node tests/test-form.cjs
+
+PASS: 17 FORM migration, journal, settings, plate and timer checks.
+
+> athlete-os-form@8.1.0 test:deep
+> node tests/test-form-deep.cjs
+
+Large backup roundtrip: 73 ms (Node, not iPhone UI)
+PASS: 62 deep engine, backup, habit, coach, sharing and load tests.
+
+> athlete-os-form@8.1.0 test:sqlite
+> node tests/test-relational.cjs
+
+(node:7702) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+SQLite large migration 451 ms (desktop Node SQLite, not Expo/iOS)
+PASS: 22 real SQLite migration, restart, transaction rollback, incremental update and volume tests.
+
+> athlete-os-form@8.1.0 test:fresh
+> node tests/test-fresh.cjs
+
+(node:7763) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS: 41 fresh-start, optional setup, validation, backup, namespace and real SQLite restart checks.

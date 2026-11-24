@@ -1,0 +1,25 @@
+
+> athlete-os-form@10.0.0 typecheck
+> tsc --noEmit
+
+error TS2468: Cannot find global value 'Promise'.
+App.tsx(2,46): error TS2307: Cannot find module '@react-navigation/bottom-tabs/unstable' or its corresponding type declarations.
+App.tsx(3,57): error TS2307: Cannot find module '@react-navigation/native' or its corresponding type declarations.
+App.tsx(4,26): error TS6142: Module './src/components/WidgetSync' was resolved to '/mnt/data/form10/src/components/WidgetSync.tsx', but '--jsx' is not set.
+App.tsx(5,72): error TS2307: Cannot find module '@react-navigation/native' or its corresponding type declarations.
+App.tsx(6,101): error TS2307: Cannot find module '@react-navigation/native-stack' or its corresponding type declarations.
+App.tsx(7,50): error TS6142: Module './src/components/NativeFeatures' was resolved to '/mnt/data/form10/src/components/NativeFeatures.tsx', but '--jsx' is not set.
+App.tsx(8,47): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+App.tsx(9,136): error TS2307: Cannot find module 'react-native' or its corresponding type declarations.
+App.tsx(10,45): error TS2307: Cannot find module 'react-native-safe-area-context' or its corresponding type declarations.
+App.tsx(11,42): error TS6142: Module './src/data/context' was resolved to '/mnt/data/form10/src/data/context.tsx', but '--jsx' is not set.
+App.tsx(12,26): error TS6142: Module './src/screens/Home' was resolved to '/mnt/data/form10/src/screens/Home.tsx', but '--jsx' is not set.
+App.tsx(13,27): error TS6142: Module './src/screens/Plans' was resolved to '/mnt/data/form10/src/screens/Plans.tsx', but '--jsx' is not set.
+App.tsx(14,43): error TS6142: Module './src/screens/Health' was resolved to '/mnt/data/form10/src/screens/Health.tsx', but '--jsx' is not set.
+App.tsx(15,30): error TS6142: Module './src/screens/PerformanceHub' was resolved to '/mnt/data/form10/src/screens/PerformanceHub.tsx', but '--jsx' is not set.
+App.tsx(16,28): error TS6142: Module './src/screens/Weight' was resolved to '/mnt/data/form10/src/screens/Weight.tsx', but '--jsx' is not set.
+App.tsx(17,25): error TS6142: Module './src/screens/Gym' was resolved to '/mnt/data/form10/src/screens/Gym.tsx', but '--jsx' is not set.
+App.tsx(18,30): error TS6142: Module './src/screens/Insights' was resolved to '/mnt/data/form10/src/screens/Insights.tsx', but '--jsx' is not set.
+App.tsx(19,29): error TS6142: Module './src/screens/Journal' was resolved to '/mnt/data/form10/src/screens/Journal.tsx', but '--jsx' is not set.
+App.tsx(20,26): error TS6142: Module './src/screens/More' was resolved to '/mnt/data/form10/src/screens/More.tsx', but '--jsx' is not set.
+App.tsx(21,109): error TS6142: Module './src/components/Design' was resolved to '/mnt/data/form10/src/components/Design.tsx', but '--jsx' is not set.

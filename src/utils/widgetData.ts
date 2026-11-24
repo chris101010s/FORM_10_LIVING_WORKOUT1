@@ -1,0 +1,7 @@
+import type {AthleteData} from '../data/schema';
+import {dateKey} from './metrics';
+import {plannedDay} from './plans';
+export type WidgetProps={enabled:boolean;headline:string;detail:string;weekCount:number};
+export const hiddenWidget:WidgetProps={enabled:false,headline:'FORM',detail:'Öffne die App für deine Übersicht.',weekCount:0};
+export function widgetData(data:AthleteData,now:Date,enabled:boolean):WidgetProps{if(!enabled)return hiddenWidget;const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7));const start=dateKey(monday),today=dateKey(now);const completed=new Set(data.workouts.filter(w=>w.sets.length>0).map(w=>dateKey(new Date(w.finishedAt))).filter(key=>key>=start&&key<=today));for(let i=0;i<=56;i++){const date=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i,12);const p=plannedDay(data,date);if(p.routine&&p.kind==='training'&&!completed.has(dateKey(date)))return {enabled:true,headline:i===0?'Heute':date.toLocaleDateString('de-AT',{weekday:'short',day:'numeric',month:'short'}),detail:'Geplanter Trainingstag',weekCount:completed.size};}return {enabled:true,headline:'Dein Rhythmus',detail:'Kein Pflichttraining geplant',weekCount:completed.size};}
+export function widgetTimeline(data:AthleteData,now:Date,enabled:boolean){if(!enabled)return [{date:now,props:hiddenWidget}];return [0,1,2,3,4,5,6,7].map(i=>{const date=i===0?now:new Date(now.getFullYear(),now.getMonth(),now.getDate()+i);return {date,props:widgetData(data,date,true)};});}

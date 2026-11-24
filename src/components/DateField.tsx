@@ -1,0 +1,7 @@
+import React,{useState} from 'react';
+import {View,Text,Pressable,Platform} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {Button,Label,Muted,usePalette} from './Design';
+import {pickerDate} from '../utils/nativePreferences';
+import {dateKey} from '../utils/metrics';
+export function DateField({label,value,onChangeText,optional=false,maximumDate}:{label:string;value:string;onChangeText:(s:string)=>void;optional?:boolean;maximumDate?:Date}){const color=usePalette();const [open,setOpen]=useState(false);return <View style={{marginBottom:14}}><Label>{label}</Label><Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value||'nicht gesetzt'}`} onPress={()=>setOpen(v=>!v)} style={{minHeight:48,padding:12,borderWidth:1,borderColor:color.line,borderRadius:12,backgroundColor:color.white}}><Text style={{color:color.ink,fontSize:16}}>{value||'Datum auswählen'}　▾</Text></Pressable>{open&&<><DateTimePicker value={pickerDate(value)} mode="date" display={Platform.OS==='ios'?'inline':'default'} maximumDate={maximumDate} onChange={(event,d)=>{if(event.type==='set'&&d)onChangeText(dateKey(d));if(Platform.OS!=='ios')setOpen(false)}}/>{Platform.OS==='ios'&&<Button small secondary title="Fertig" onPress={()=>setOpen(false)}/>}</>}{optional&&value!==''&&<Button small secondary title="Datum entfernen" onPress={()=>{onChangeText('');setOpen(false)}}/>}</View>}

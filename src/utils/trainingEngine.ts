@@ -1,0 +1,38 @@
+import {activeSegment,selectLiveExercise} from './segments';
+import type {GymSet,SetKind,SetDraft,TrainingBlock,LiveWorkout,Workout,Routine} from '../data/schema';
+export const setKinds: {id:SetKind;label:string}[]=[{id:'work',label:'Arbeit'},{id:'warmup',label:'Warm-up'},{id:'drop',label:'Drop'},{id:'failure',label:'Failure'},{id:'assisted',label:'Assistiert'},{id:'bodyweight',label:'Körpergewicht'},{id:'timed',label:'Zeit'},{id:'distance',label:'Distanz'}];
+export const blockKinds: {id:TrainingBlock;label:string}[]=[{id:'straight',label:'Normal'},{id:'superset',label:'Superset'},{id:'giant',label:'Giant Set'},{id:'circuit',label:'Zirkel'},{id:'emom',label:'EMOM'},{id:'amrap',label:'AMRAP'},{id:'interval',label:'Intervalle'}];
+export const blankDraft=():SetDraft=>({weight:'',reps:'',rir:'',kind:'work',duration:'',distance:'',rpe:'',side:'both',tempo:'',note:''});
+const numeric=(value:string|undefined)=>{const s=(value||'').trim().replace(',','.');return /^\d+(\.\d+)?$/.test(s)?Number(s):NaN};
+export function setFromDraft(d: SetDraft, exerciseId:string,id:string,at:string):GymSet {
+ const kind=d.kind||'work'; const time=kind==='timed', distance=kind==='distance', body=kind==='bodyweight';
+ const weight=body||time||distance?0:numeric(d.weight), reps=time||distance?0:numeric(d.reps);
+ const duration=numeric(d.duration), meters=numeric(d.distance), rir=numeric(d.rir), rpe=numeric(d.rpe);
+ if(!exerciseId||!id||!Number.isFinite(Date.parse(at)))throw Error('Übung oder Zeitpunkt fehlt.');
+ if(!Number.isFinite(weight)||weight<0||weight>1000||(!time&&!distance&&(!Number.isInteger(reps)||reps<1||reps>150)))throw Error('Gewicht 0–1000 kg und 1–150 ganze Wiederholungen eingeben.');
+ if(time&&(!Number.isFinite(duration)||duration<=0||duration>86400))throw Error('Gültige Dauer in Sekunden eingeben (max. 86400).');
+ if(distance&&(!Number.isFinite(meters)||meters<=0||meters>300000))throw Error('Gültige Distanz in Metern eingeben.');
+ if(distance&&d.duration?.trim()&&(!Number.isFinite(duration)||duration<=0||duration>86400))throw Error('Dauer in Sekunden prüfen.');
+ if(!time&&!distance&&d.rir?.trim()&&(!Number.isInteger(rir)||rir<0||rir>5))throw Error('RIR: 0–5 ganze Wiederholungen.');
+ if(d.rpe?.trim()&&(!Number.isFinite(rpe)||rpe<1||rpe>10))throw Error('RPE: 1–10.');
+ return {id,exerciseId,at,kind,weightKg:weight,reps,...(time||distance&&Number.isFinite(duration)?{durationSeconds:duration}:{}),...(distance?{distanceMeters:meters}:{}),...(!time&&!distance&&Number.isFinite(rir)?{rir}:{}),...(Number.isFinite(rpe)?{rpe}:{}),side:d.side||'both',tempo:(d.tempo||'').slice(0,60),note:(d.note||'').slice(0,280)};
+}
+export function draftFromSet(s:GymSet):SetDraft {return {...blankDraft(),kind:s.kind||'work',weight:String(s.weightKg),reps:s.reps?String(s.reps):'',rir:s.rir==null?'':String(s.rir),rpe:s.rpe==null?'':String(s.rpe),duration:s.durationSeconds==null?'':String(s.durationSeconds),distance:s.distanceMeters==null?'':String(s.distanceMeters),side:s.side||'both',tempo:s.tempo||'',note:s.note||''};}
+export function describeSet(s:GymSet):string {const label=setKinds.find(x=>x.id===s.kind)?.label||'Arbeit';const value=s.kind==='timed'?`${s.durationSeconds} s`:s.kind==='distance'?`${s.distanceMeters} m${s.durationSeconds?` · ${s.durationSeconds} s`:''}`:s.kind==='bodyweight'?`${s.reps} Wdh. · BW`:`${s.weightKg} kg × ${s.reps}`;return `${value} · ${label}${s.rir===undefined?'':` · RIR ${s.rir}`}${s.rpe===undefined?'':` · RPE ${s.rpe}`}${s.side==='left'?' · L':s.side==='right'?' · R':''}`;}
+export const weightedSet=(s:GymSet)=>!['timed','distance','bodyweight','assisted'].includes(s.kind||'work')&&s.weightKg>0&&s.reps>0;
+export const strengthSet=(s:GymSet)=>weightedSet(s)&&s.kind!=='warmup'&&s.reps<=12&&(!s.side||s.side==='both');
+export function logTrainingSet(live:LiveWorkout,set:GymSet,now:number):LiveWorkout {
+ if(live.pausedAt||!live.exerciseIds.includes(set.exerciseId)||live.sets.some(s=>s.id===set.id))return live;
+ const segment=activeSegment(live,set.exerciseId),ids=segment?.exerciseIds||live.exerciseIds;const block=segment?.kind||(live.segments?'straight':live.block||'straight'),index=ids.indexOf(set.exerciseId),group=['superset','giant','circuit'].includes(block),last=index===ids.length-1;
+ const next=group?ids[(index+1)%ids.length]:set.exerciseId;
+ const rest=group&&!last?null:now+(live.prescriptions?.[set.exerciseId]?.restSeconds??live.restSeconds)*1000;
+ return {...selectLiveExercise(live,next,now),sets:[...live.sets,set],setSequence:(live.setSequence??live.sets.length)+1,restUntil:rest};
+}
+export function pauseTraining(live:LiveWorkout,now:number):LiveWorkout {return live.pausedAt?live:{...live,pausedAt:now,status:'paused',restUntil:null};}
+export function resumeTraining(live:LiveWorkout,now:number):LiveWorkout {if(!live.pausedAt)return live;const elapsed=Math.max(0,now-live.pausedAt);return {...live,pausedAt:undefined,status:'active',pausedMs:(live.pausedMs||0)+elapsed,segmentStartedAt:live.segmentStartedAt===undefined?undefined:live.segmentStartedAt+elapsed,blockEndsAt:live.blockEndsAt?live.blockEndsAt+elapsed:undefined};}
+export function blockClock(live:LiveWorkout,now:number){const t=live.pausedAt||now;const elapsed=Math.max(0,t-Date.parse(live.startedAt)-(live.pausedMs||0));const period=(live.blockSeconds||60)*1000;return {elapsed,round:Math.floor(elapsed/period)+1,left:live.block==='amrap'?Math.max(0,Math.ceil(((live.blockEndsAt||t)-t)/1000)):Math.ceil((period-elapsed%period)/1000)};}
+export function warmupPlan(kg:number,bar:number){if(!Number.isFinite(kg)||!Number.isFinite(bar)||bar<=0||kg<bar||kg>1000)return [];return [...new Set([bar,...[.4,.6,.8].map(f=>Math.max(bar,Math.floor(kg*f/2.5)*2.5))])].filter(x=>x<kg).map((weight,i)=>({weight,reps:[8,5,3,1][i]||1}));}
+export function sessionReview(w:Workout){const weighted=w.sets.filter(s=>weightedSet(s)&&s.kind!=='warmup');return {sets:w.sets.length,volume:weighted.reduce((n,s)=>n+s.weightKg*s.reps,0),minutes:Math.max(0,Math.round((Date.parse(w.finishedAt)-Date.parse(w.startedAt)-(w.pausedMs||0))/60000)),exercises:new Set(w.sets.map(s=>s.exerciseId)).size};}
+
+export function makeLive(routine:Routine|undefined,rest:number,id:string,now=Date.now()):LiveWorkout{const interval=routine?.blockSeconds||60;return {id,createdAt:new Date(now).toISOString(),status:'active',setSequence:0,name:routine?.name||'Freies Training',routineId:routine?.id,startedAt:new Date(now).toISOString(),exerciseIds:[...(routine?.exerciseIds||[])],sets:[],restUntil:null,restSeconds:routine?.restSeconds||rest,activeExerciseId:routine?.exerciseIds[0],block:routine?.block||'straight',blockSeconds:interval,...(routine?.segments?{segments:JSON.parse(JSON.stringify(routine.segments)),segmentStartedAt:now}:{}),prescriptions:routine?.prescriptions?JSON.parse(JSON.stringify(routine.prescriptions)):undefined,...(routine?.block==='amrap'?{blockEndsAt:now+interval*1000}:{})};}
+export function realRecords(workouts:Workout[]){const max=new Map<string,number>(),tickets:{sessionId:string;setId:string;exerciseId:string;kg:number;previousKg:number;date:string}[]=[];for(const w of [...workouts].sort((a,b)=>a.finishedAt.localeCompare(b.finishedAt))){const top=new Map<string,GymSet>();for(const s of w.sets){if(!strengthSet(s))continue;const old=top.get(s.exerciseId);if(!old||s.weightKg>old.weightKg)top.set(s.exerciseId,s);}for(const [id,s] of top){const previous=max.get(id);if(previous!==undefined&&s.weightKg>previous)tickets.push({sessionId:w.id,setId:s.id,exerciseId:id,kg:s.weightKg,previousKg:previous,date:w.finishedAt});max.set(id,Math.max(previous??0,s.weightKg));}}return tickets.reverse();}

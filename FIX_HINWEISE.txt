@@ -1,0 +1,27 @@
+ATHLETE OS 7 – TypeScript 6 / React Native 0.88 Reparatur
+
+Aktueller GitHub Build #5: 3 Fehler in 2 Dateien.
+
+GEÄNDERTE DATEIEN (alles andere bleibt unverändert):
+App.tsx
+- Entfernter StatusBar-Hintergrund-Prop: backgroundColor; React Native 0.88 akzeptiert ihn nicht.
+
+src/screens/More.tsx
+- import type { ViewInstance } from 'react-native';
+- useRef<View>(null) geändert zu useRef<ViewInstance>(null).
+- Dadurch bleibt der View-Ref im strengen Typensystem von RN 0.88 korrekt typisiert.
+
+INSTALLATION:
+1. ZIP herunterladen und entpacken.
+2. Inhalt (App.tsx und Ordner src) in den Hauptordner deines GitHub-Desktop-Repositories ATHLETE_OS_7_PRO kopieren und ersetzen.
+3. GitHub Desktop: unter Changes sollten GENAU die zwei Dateien App.tsx und src/screens/More.tsx erscheinen.
+4. Commit-Nachricht: Fix RN 0.88 typecheck errors
+5. Commit to main > Push origin.
+6. GitHub Actions: nur NEUESTEN Workflow-Lauf prüfen.
+
+TESTSTATUS:
+Erfolgreich: alle lokal ausführbaren 10 Testgruppen; syntaktische/importbasierte Projektprüfung.
+NICHT GEPRÜFT: vollständiger npm-/Expo-Typecheck mit allen Abhängigkeiten und echter Xcode-iPhone-Build (npm Registry ist hier nicht erreichbar).
+Die gepatchten Stellen entsprechen der offiziellen React-Native-Dokumentation für RN 0.87+ (ViewInstance statt View-Typ).
+
+Bitte eine neue Fehlermeldung des jüngsten Build-Laufs teilen, falls weiterhin rot.

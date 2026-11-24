@@ -1,0 +1,1131 @@
+FORM 10.0 – ULTIMATE REBUILD FROM ATHLETE OS 8.4
+
+WICHTIG: Meine aktuellste vorhandene App ist ATHLETE OS 8.4!
+
+Benutze ATHLETE OS 8.4 als Ausgangsbasis. Gehe nicht davon aus, dass bereits ein FORM-10.0-Projekt existiert.
+
+Das neue Produkt soll nach außen FORM 10.0 heißen.
+
+Die interne technische Versionsnummer darf 8.5, 9.0 oder 10.0 sein. Entscheide anhand der Änderungen, welche Versionierung sinnvoll ist. Der sichtbare App-Name soll jedoch FORM 10.0 lauten.
+# FORM 10.0 — THE LIVING WORKOUT UPDATE
+## ULTIMATE ACTIVE WORKOUT REDESIGN · PAINT × HEYCLICKY × NATIVE iOS
+
+### DEINE MISSION
+
+Du bist ein Senior iOS Product Designer, Motion Designer, React-Native-Engineer, Datenbankarchitekt und QA-Spezialist.
+
+Deine Aufgabe ist es, die **bereits existierende FORM-10.0-App** grundlegend zu verbessern.
+
+Ich möchte keine neue Projektanlage, keine zweite App und keine neue Codebasis. Arbeite im vorhandenen FORM-10.0-Repository.
+
+Die wichtigste Aufgabe ist die vollständige Neugestaltung und technische Überarbeitung des **aktiven Workout-Modus**.
+
+Die aktuelle Version hat folgende Probleme:
+
+- Der Workout-Timer fehlt oder ist nicht zuverlässig sichtbar.
+- Es ist nicht klar, seit wann das Training läuft.
+- Beim Verlassen oder Schließen der App ist der Trainingszustand nicht ausreichend abgesichert.
+- Die Bedienung während des Trainings ist kompliziert.
+- Gewicht, Wiederholungen, vorige Leistungen und Satzabschluss sind visuell nicht eindeutig.
+- Die GUI wirkt generisch und zu trocken.
+- Es fehlen hochwertige Animationen und kreative Mikrointeraktionen.
+- Das HeyClicky-/Paint-Design wurde bisher nicht konsequent genug umgesetzt.
+- Zu viele Elemente sehen gleich aus.
+- Manche Funktionen sind schwer zu finden oder erfordern unnötig viele Klicks.
+
+**Erstelle deshalb ein vollständig neues Workout-Erlebnis innerhalb der existierenden App.**
+
+Alle Änderungen müssen tatsächlich implementiert werden, nicht nur als Konzept beschrieben werden.
+
+---
+
+# 1. ABSOLUTE PRIORITÄTEN
+
+Die Entwicklungsreihenfolge lautet:
+
+1. Dauerhafter Workout-Timer
+2. Zuverlässiges automatisches Speichern
+3. Wiederherstellung laufender Workouts
+4. Vollständig neues Active-Workout-UI
+5. Vereinfachte Satzeingabe
+6. Übersichtliche Vorwerte-Tabelle
+7. Zuverlässiger Pausentimer
+8. Lebendige Animationen
+9. Konsequentes Paint-/HeyClicky-Design
+10. Weitere sinnvolle Gym-Funktionen
+11. Performanceoptimierungen
+12. Vollständige Regressionstests und iOS-Build
+
+Füge nicht wahllos weitere Funktionen hinzu, bevor die Grundlagen funktionieren.
+
+Die App muss sich während eines echten Gym-Trainings zuverlässig bedienen lassen.
+
+---
+
+# 2. WORKOUT-TIMER — HÖCHSTE PRIORITÄT
+
+## 2.1 Training starten
+
+Sobald der Benutzer auf **Start Workout** tippt:
+
+- Wird eine eindeutige Workout-Session erstellt.
+- Wird die tatsächliche Startzeit gespeichert.
+- Beginnt die Trainingsdaueranzeige bei 00:00:00.
+- Wird die Session unmittelbar dauerhaft gespeichert.
+- Öffnet sich die neue Active-Workout-Oberfläche.
+
+Zeige die Trainingsdauer ganz oben und jederzeit gut sichtbar.
+
+Beispiel:
+
+**upper body**
+
+Workout in progress
+
+**00:42:16**
+
+Started at 17:32
+
+Der Timer muss groß genug sein, um ihn im Gym auf einen Blick lesen zu können.
+
+Zeige die Startuhrzeit zusätzlich zur verstrichenen Trainingsdauer.
+
+Erstellungszeitpunkt und tatsächlicher Startzeitpunkt sollen getrennte Datenfelder sein.
+
+## 2.2 Timer muss bei App-Wechsel weiter korrekt sein
+
+Folgende Situation:
+
+- Ich starte um 17:00 ein Workout.
+- Trainiere 10 Minuten.
+- Öffne WhatsApp.
+- Sperre mein iPhone.
+- Kehre um 17:45 zurück.
+
+FORM muss sofort **00:45:00** als verstrichene Trainingszeit anzeigen, wenn ich das Training nicht pausiert habe.
+
+Nicht 00:10:00.
+
+Nicht 00:00:00.
+
+Keine neu gestartete Session.
+
+Die Uhr darf nicht davon abhängig sein, dass die App währenddessen ständig Code ausführt.
+
+## 2.3 Technische Timer-Architektur
+
+Implementiere eine timestamp-basierte Berechnung.
+
+Verwende mindestens:
+
+- `sessionId`
+- `createdAt`
+- `startedAt`
+- `status`
+- `pausedAt`
+- `accumulatedPausedMs`
+- `finishedAt`
+- `lastSavedAt`
+
+Mögliche Statuswerte:
+
+- draft
+- active
+- paused
+- completed
+- discarded
+
+Für eine aktive Session gilt sinngemäß:
+
+`elapsed = now - startedAt - accumulatedPausedMs`
+
+Während einer Pause muss der letzte Pausenbeginn korrekt berücksichtigt werden.
+
+Benutze UTC-Zeitstempel für die dauerhafte Speicherung.
+
+Lokale Uhrzeiten werden ausschließlich zur Darstellung formatiert.
+
+Verhindere Probleme durch Zeitzonenwechsel oder Sommerzeit.
+
+Prüfe zusätzlich auffällige Änderungen der Systemuhr und behandle dadurch entstehende Inkonsistenzen nachvollziehbar.
+
+Der UI-Timer darf sich beispielsweise jede Sekunde aktualisieren, aber die gespeicherten Zeitstempel bleiben die eigentliche Datenquelle.
+
+## 2.4 App vollständig schließen
+
+Wenn iOS die App beendet oder der Benutzer sie aus der App-Übersicht entfernt, soll die zuvor gespeicherte Workout-Session erhalten bleiben.
+
+Beim nächsten Start:
+
+1. Datenbank öffnen.
+2. Aktive Session suchen.
+3. Gespeicherte Zeitstempel laden.
+4. Vergangene Zeit berechnen.
+5. Session inklusive Übungen und Sätzen wiederherstellen.
+6. Benutzer zum bisherigen Workout zurückführen.
+
+**Wichtig:** iOS garantiert keine Benachrichtigung unmittelbar vor einem erzwungenen Beenden. Verlasse dich deshalb niemals auf ein einziges „App wurde geschlossen“-Event.
+
+Speichere die Daten bereits während der Nutzung.
+
+## 2.5 Lange vergessene Sessions
+
+Wenn FORM eine ungewöhnlich lange aktive Session findet, beispielsweise nach mehreren Stunden oder am nächsten Tag, darf sie nicht einfach gelöscht oder automatisch als beendet gespeichert werden.
+
+Zeige stattdessen eine schön gestaltete Wiederherstellungsansicht:
+
+**still working out?**
+
+Your session started yesterday at 18:24.
+
+Aktionen:
+
+- Resume workout
+- Adjust finish time
+- Finish workout
+- Discard workout
+
+Beim Discard immer eine Bestätigung anzeigen.
+
+Gib dem Benutzer die Kontrolle darüber, ob Hintergrundzeit als Trainingsdauer zählen soll.
+
+---
+
+# 3. AUTOMATISCHES SPEICHERN VON ALLEM
+
+Das ist keine optionale Funktion.
+
+**Autosave ist ein Grundprinzip der gesamten FORM-App.**
+
+## 3.1 Was gespeichert werden muss
+
+Während eines Workouts:
+
+- Session-ID
+- Workout-Name
+- Startzeit
+- Pausenzustand
+- Aktuelle Dauergrundlage
+- Aktuell ausgewählte Übung
+- Übungsreihenfolge
+- Alle abgeschlossenen Sätze
+- Noch nicht abgeschlossene Satzeingaben
+- Gewichte
+- Wiederholungen
+- Satztypen
+- RIR und RPE
+- Trainingsnotizen
+- Hinzugefügte Übungen
+- Entfernte Übungen
+- Pausentimer-Endzeitpunkt
+- Benutzerdefinierte Pausen
+- Scrollposition, wo sinnvoll
+- Workout-Einstellungen
+
+Außerhalb des Gym-Modus:
+
+- Trainingspläne
+- Trainingstage
+- Übungseinstellungen
+- Gesundheitseinträge
+- Gewichtsverlauf
+- Favoriten
+- Eigene Übungen
+- Ziele
+- Designpräferenzen
+- Benachrichtigungseinstellungen
+
+## 3.2 Speichervorgänge
+
+Wichtige abgeschlossene Aktionen müssen unmittelbar in die lokale Datenbank geschrieben werden.
+
+Beispiele:
+
+- Satz abschließen
+- Übung hinzufügen
+- Übung löschen
+- Workout starten
+- Workout pausieren
+- Workout beenden
+
+Für laufende Texteingaben darf ein kurzes Debouncing verwendet werden, etwa 200–400 Millisekunden.
+
+Zusätzlich bei:
+
+- Eingabefeld verlassen
+- Tabwechsel
+- Navigation
+- App wird inaktiv
+- App geht in den Hintergrund
+
+offene Änderungen zuverlässig zum Speichern bringen.
+
+Ein angezeigtes „Saved“ darf erst erscheinen, wenn die relevante Datenbanktransaktion tatsächlich erfolgreich abgeschlossen wurde.
+
+Wenn die Speicherung fehlschlägt:
+
+- Zeige einen unaufdringlichen Fehler.
+- Erhalte die Eingabe im Arbeitsspeicher.
+- Biete einen erneuten Speicherversuch.
+- Überschreibe keine älteren Daten mit leeren Standardwerten.
+
+## 3.3 Datenbank
+
+Verwende eine robuste lokale SQLite-Architektur.
+
+Wichtige Regeln:
+
+- Stabile eindeutige IDs
+- Datenbanktransaktionen
+- Schema-Versionierung
+- Sichere Schreiboperationen
+- Keine doppelten Sätze durch Doppeltippen
+- Keine verlorenen Updates
+- Keine stillschweigenden Reset-Vorgänge
+- Keine unnötige Internetverbindung
+- Wiederanlauf nach App-Absturz
+
+Prüfe geeignete SQLite-Journal-Einstellungen wie WAL.
+
+Schreibe nicht den gesamten App-Zustand bei jedem Tastendruck als riesiges JSON neu.
+
+## 3.4 Sichtbarer Speicherstatus
+
+Zeige im aktiven Training einen sehr dezenten Status:
+
+- Saving…
+- Saved
+- Save failed
+
+Beispielsweise ein kleines Symbol oben rechts.
+
+Keine störenden Pop-ups nach jeder Speicherung.
+
+---
+
+# 4. ACTIVE WORKOUT GUI — VOLLSTÄNDIG NEU GESTALTEN
+
+Die aktuelle GUI ist zu kompliziert.
+
+Ich möchte einen visuell radikal anderen Workout-Screen.
+
+Die neue Oberfläche muss sofort verständlich sein, auch ohne Anleitung.
+
+## 4.1 Designgrundlage
+
+Stil:
+
+**Paint-inspired retro UI × HeyClicky personality × native premium iPhone interaction**
+
+Viel Warmweiß.
+
+Klare schwarze Typografie.
+
+Eine kräftige blaue Akzentfarbe.
+
+Kleine handgezeichnete Details.
+
+Subtile Pixel- und Sticker-Elemente.
+
+Leichte Desktop-Nostalgie.
+
+Aber eine absolut moderne und funktionale iPhone-Bedienung.
+
+## 4.2 Workout-Header
+
+Oben:
+
+Ein kleiner stilisierter FORM-Schriftzug.
+
+Daneben ein dezentes **LIVE**-Label.
+
+Darunter:
+
+**upper body.**
+
+Groß und markant.
+
+Direkt darunter:
+
+**00:42:16**
+
+Darunter eine kleine Zeile:
+
+Started 17:32
+
+Rechts optional ein einfaches Mehr-Menü mit:
+
+- Pause workout
+- Edit workout
+- Workout notes
+- Finish workout
+- Discard workout
+
+Das wichtige Beenden darf nicht so positioniert werden, dass es leicht versehentlich ausgelöst wird.
+
+## 4.3 Aktuelle Übung
+
+Zeige genau eine Übung als aktuellen Fokus.
+
+Beispiel:
+
+**01 / 06**
+
+**barbell bench press**
+
+Kleines korrektes Übungsbild.
+
+Muskelgruppe: Chest
+
+Darunter die Satzliste.
+
+Die übrigen Übungen sind in einer darunterliegenden kompakten Liste oder über eine schnell erreichbare Übungsauswahl zugänglich.
+
+Nicht alle sechs Übungen mit allen Tabellen gleichzeitig vollständig auf einer einzigen langen Seite anzeigen.
+
+## 4.4 Perfekte Satztabelle
+
+Die Satztabelle ist das Herzstück des UI.
+
+Beispiel:
+
+| SET | PREVIOUS | KG | REPS | ✓ |
+|---|---|---|---|---|
+| 1 | 40 × 8 | 40 | 8 | ✓ |
+| 2 | 40 × 8 | 40 | 8 | ○ |
+| 3 | 42 × 7 | — | — | ○ |
+
+Designanforderungen:
+
+- Satznummern klar.
+- Vorwerte grau.
+- Aktuelle Eingaben sehr gut lesbar.
+- Gewichts- und Wiederholungsfelder groß genug.
+- Abschlussbutton eindeutig.
+- Abgeschlossene Sätze deutlich, aber dezent markieren.
+- Kein seitliches Scrollen auf üblichen iPhone-Bildschirmbreiten.
+- Angepasste mobile Zahlen-Tastatur.
+- Komma und Punkt bei Gewichten korrekt behandeln.
+
+Beim Tippen auf eine Zahl öffnet sich ein gut bedienbares Eingabefeld.
+
+Optional zusätzliche Plus-/Minus-Buttons:
+
+- +2,5 kg
+- −2,5 kg
+- +1 Rep
+- −1 Rep
+
+Diese Schrittgrößen müssen individuell einstellbar sein.
+
+## 4.5 Interaktionen reduzieren
+
+Ein Satz soll mit möglichst wenigen Aktionen abgeschlossen werden können.
+
+Optimaler Ablauf:
+
+1. Gewicht steht bereits als bearbeitbarer Vorschlag bereit.
+2. Wiederholungen stehen als bearbeitbarer Vorschlag bereit.
+3. Benutzer passt die Werte an.
+4. Tippt einmal auf das Häkchen.
+5. Satz wird gespeichert.
+6. Pausentimer beginnt.
+
+Nicht erforderlich:
+
+- Drei zusätzliche Modals
+- Extra Bestätigung
+- Mehrere Navigationswechsel
+- Manuelles erneutes Öffnen der Übung
+
+## 4.6 Große Pausenanzeige
+
+Wenn der Pausentimer aktiv ist, erscheint eine dezente, klar sichtbare Pausenleiste.
+
+Beispiel:
+
+**rest time**
+
+01:34 remaining
+
+[−15 sec] [Skip] [+15 sec]
+
+Sie darf bei Bedarf zu einer größeren Ansicht erweitert werden.
+
+Während der Pause bleibt die Workout-Oberfläche bedienbar.
+
+## 4.7 Nächste Übung
+
+Nach dem letzten Satz:
+
+Eine klare Aktion:
+
+**next exercise →**
+
+Mit einer kleinen Animation.
+
+Nicht automatisch auf eine andere Übung springen, solange der Benutzer noch etwas bearbeiten möchte.
+
+Die nächste Übung darf als Vorschau angezeigt werden.
+
+---
+
+# 5. NEUE NAVIGATION WÄHREND EINES WORKOUTS
+
+Die normale Hauptnavigation darf das aktive Training nicht unnötig überladen.
+
+Während eines Workouts soll ein spezieller Fokusmodus gelten.
+
+Bevorzugt:
+
+- Workout-Header
+- Aktuelle Übung
+- Satztabelle
+- Pausentimer
+- Übungsnavigation
+- Finish-Aktion
+
+Wenn der Benutzer zurück zur normalen App-Navigation geht, bleibt das Workout aktiv.
+
+Zeige dann eine kleine kompakte Live-Workout-Leiste, mit:
+
+- Workout-Name
+- Laufender Dauer
+- Resume-Button
+
+Beispiel:
+
+**● upper body · 42:16**
+
+[Resume]
+
+Diese Leiste soll mit einem einzigen Tippen zurück in die aktive Session führen.
+
+Keine zweite Session starten, wenn bereits eine aktiv ist.
+
+---
+
+# 6. HEYCLICKY × PAINT: DESIGN JETZT WIRKLICH UMSETZEN
+
+Meine bisherige FORM-App sieht zu sehr nach einer generischen KI-Anwendung aus.
+
+Das muss sich vollständig ändern.
+
+## 6.1 Eigene Designidentität
+
+Verwende die kreativen Prinzipien von HeyClicky:
+
+- Verspielte kleine Desktop-Details
+- Unkonventionelle Typografie
+- Kleine Fenster-Illustrationen
+- Handgezeichnete Grafiken
+- Retro-Computer-Ästhetik
+- Freundlicher Charakter
+- Klare Weißräume
+- Originelle Mikrointeraktionen
+
+Entwickle allerdings eigene FORM-Grafiken und kopiere nicht die tatsächlichen Originalelemente der Referenz.
+
+## 6.2 Neue visuelle Elemente
+
+Entwickle:
+
+**Paint Stars**
+
+Kleine handgezeichnete Sterne, die gelegentlich bei einem persönlichen Rekord erscheinen.
+
+**Sticker Notes**
+
+Kleine Post-it-artige Notizen für Trainingshinweise.
+
+**Mini Desktop Windows**
+
+Sehr sparsam verwendete Retro-Fenster für besondere Informationen, etwa die Workout-Zusammenfassung.
+
+**Hand-Drawn Arrows**
+
+Kleine unperfekte Pfeile zur visuellen Orientierung.
+
+**Doodle Illustrations**
+
+Selbst entwickelte kleine Hanteln, Schuhe, Stoppuhren und Workout-Symbole.
+
+**Paper Highlights**
+
+Farbflächen, die wie echte Papiermarker wirken.
+
+**Pixel Details**
+
+Kleine nostalgische Pixel-Motive in Ladezuständen und Erfolgsansichten.
+
+Wichtig:
+
+Nicht alles auf einem Bildschirm gleichzeitig verwenden.
+
+Die kreative Identität soll durch wiederkehrende kleine Details entstehen.
+
+## 6.3 Typografie
+
+Nutze ein bewusst ausgewähltes Schriftenpaar.
+
+Beispielsweise:
+
+- Outfit für Headlines
+- DM Sans für Bedienoberflächen
+- JetBrains Mono für Gewichte und Timer
+- Patrick Hand sparsam für Doodles
+
+Achte auf die Schriftenlizenzen.
+
+Alle Zahlen während des Workouts müssen extrem gut lesbar bleiben.
+
+---
+
+# 7. ANIMATION SYSTEM — FORM SOLL LEBEN
+
+Die App braucht deutlich mehr Bewegung, aber keine übertriebenen Spielereien.
+
+Entwickle ein konsistentes Motion-System.
+
+## 7.1 Microinteractions
+
+Beim Öffnen einer Übung:
+
+- Dezente Slide/Fade-Kombination.
+- Keine harte Bildschirmänderung.
+
+Beim Satzabschluss:
+
+- Häkchen wird weich aktiviert.
+- Hintergrund verändert subtil die Farbe.
+- Eine leichte Haptik bestätigt die Aktion.
+
+Beim Pausentimer:
+
+- Kleine kontrollierte Übergangsanimation.
+- Fortschrittsdarstellung aktualisiert sich.
+- Timerzahlen bleiben stabil und springen nicht in der Breite.
+
+Beim Wechsel zur nächsten Übung:
+
+- Sanfte horizontale Bewegung.
+- Vorherige Übung rückt aus dem Fokus.
+- Neue Übung erscheint.
+
+Beim Speichern:
+
+- Kleines Speicherstatus-Symbol.
+- Kein unnötiger Fullscreen-Loader.
+
+## 7.2 Personal Record Animation
+
+Wenn ein echter neuer Rekord erreicht wird:
+
+Ein kleiner handgezeichneter Stern erscheint.
+
+Ein dezenter Schriftzug:
+
+**new personal best!**
+
+Eine kleine Haptik.
+
+Nach kurzer Zeit verschwindet die Animation.
+
+Kein zehnsekündiges Konfetti.
+
+Die Rekorderkennung muss auf tatsächlich gespeicherten Sätzen und korrekten Berechnungen basieren.
+
+## 7.3 Workout erfolgreich abgeschlossen
+
+Entwickle einen besonders hochwertigen Abschlussbildschirm.
+
+Beispiel:
+
+**nice work.**
+
+Ein kleines handgezeichnetes Hantel-Symbol.
+
+Darunter:
+
+Duration: 01:12:42
+
+18 sets completed
+
+6 exercises
+
+2 personal bests
+
+Dann:
+
+**Save & finish**
+
+Optional:
+
+**Share workout**
+
+Das Gesamtdesign soll wie ein kleines persönliches Erfolgsposter wirken.
+
+## 7.4 Performance
+
+Verwende geeignete Animationstechnologien wie React Native Reanimated, sofern sie zur Projektversion kompatibel sind.
+
+Ziele:
+
+- Flüssige Animationen
+- Möglichst 60 FPS bei unterstützten Geräten
+- Keine unnötigen Re-Renders
+- Keine ständige hohe CPU-Last
+- Kein spürbarer Akkuverbrauch durch dekorative Endlosanimationen
+
+Berücksichtige Reduce Motion.
+
+Animationen müssen deaktivierbar beziehungsweise reduziert werden können.
+
+---
+
+# 8. INTELLIGENTER PAUSENTIMER
+
+Der Pausentimer ist unabhängig von der allgemeinen Workout-Dauer.
+
+Es existieren zwei unterschiedliche Zeitfunktionen:
+
+**Workout Duration**
+
+Zählt die gesamte verstrichene Session-Zeit unter Berücksichtigung ausdrücklich pausierter Zeit.
+
+**Rest Timer**
+
+Zählt nach einem abgeschlossenen Satz herunter.
+
+Beide müssen separat gespeichert und wiederhergestellt werden.
+
+## Rest-Timer-Funktionen
+
+- Automatischer Start nach Satzabschluss
+- Individuelle Dauer je Übung
+- Manuell ändern
+- Pausieren
+- Fortsetzen
+- Überspringen
+- Zeit verlängern
+- Optionaler Sound
+- Optionales haptisches Signal
+- Lokale Benachrichtigung bei Zeitablauf
+- Korrekte Darstellung nach App-Wechsel
+
+Beim Hintergrundwechsel muss sich die verbleibende Zeit anhand des gespeicherten Endzeitpunkts berechnen lassen.
+
+Verwende keine unzulässige dauerhafte iOS-Hintergrundausführung.
+
+---
+
+# 9. SMART WORKOUT FEATURES
+
+Erweitere den Workout-Modus um sinnvolle Komfortfunktionen.
+
+## 9.1 Previous Session
+
+Zeige pro Übung:
+
+- Letztes Trainingsdatum
+- Letztes verwendetes Gewicht
+- Letzte Wiederholungen
+- Letzte abgeschlossene Sätze
+- Persönlicher Bestwert
+
+Vorwerte dürfen nie als neue absolvierte Sätze gespeichert werden, solange der Benutzer sie nicht bestätigt hat.
+
+## 9.2 Quick Repeat
+
+Button:
+
+**Repeat last set**
+
+Übernimmt den letzten abgeschlossenen Satz als Eingabevorschlag.
+
+Der neue Satz zählt erst nach Bestätigung.
+
+## 9.3 Exercise Swap
+
+Eine Übung kann während einer Session gegen eine andere ausgetauscht werden.
+
+Beispiel:
+
+Gerät ist besetzt.
+
+Der Benutzer öffnet:
+
+**Replace exercise**
+
+und wählt eine andere Übung aus.
+
+Die bisherige Workout-Historie darf dadurch nicht beschädigt werden.
+
+## 9.4 Supersets
+
+Unterstütze zusammengehörige Übungen.
+
+Mit klarer Kennzeichnung und korrekter Satznavigation.
+
+## 9.5 Workout Notes
+
+Jede Session kann eine Notiz erhalten.
+
+Beispielsweise:
+
+„Heute mehr Energie.“
+
+Oder:
+
+„Technik beim letzten Satz verbessern.“
+
+Automatisch speichern.
+
+## 9.6 Plate Calculator
+
+Optionaler Scheibenrechner für Langhantelgewichte.
+
+Mit konfigurierbarem Stangengewicht und verfügbaren Scheiben.
+
+Keine erfundenen Gerätegewichte vorausfüllen.
+
+## 9.7 Quick Exercise Search
+
+Übungssuche direkt während eines aktiven Workouts.
+
+Mit:
+
+- Suchfeld
+- Favoriten
+- Zuletzt benutzt
+- Muskelgruppen
+- Gerätefilter
+
+Die Suche muss auch offline schnell sein.
+
+---
+
+# 10. KEINE DATENVERLUSTE DURCH NAVIGATION
+
+Prüfe insbesondere diese Szenarien:
+
+**Szenario A**
+
+Benutzer schreibt 42,5 kg in ein Satzfeld.
+
+Er wechselt zum Progress-Tab.
+
+Er kehrt zum Workout zurück.
+
+Das Feld enthält weiterhin 42,5 kg.
+
+**Szenario B**
+
+Benutzer speichert zwei Sätze.
+
+Er schließt die App.
+
+Er öffnet sie erneut.
+
+Beide Sätze sind vorhanden.
+
+**Szenario C**
+
+Benutzer startet Workout um 17:00.
+
+Er schließt die App um 17:10.
+
+Er öffnet sie um 17:45.
+
+Die Session wird mit korrekter verstrichener Zeit wiederhergestellt.
+
+**Szenario D**
+
+Benutzer tippt fünfmal schnell auf Satz abschließen.
+
+Es wird nur ein Satzabschluss gespeichert.
+
+**Szenario E**
+
+Benutzer bearbeitet einen älteren Satz.
+
+Die Änderung wird gespeichert.
+
+Das Workout zeigt beim erneuten Öffnen denselben korrigierten Wert.
+
+**Szenario F**
+
+Die Datenbank meldet einen Schreibfehler.
+
+Die App zeigt eine verständliche Meldung und löscht keine vorhandenen Daten.
+
+**Szenario G**
+
+Der Benutzer startet einen Pausentimer, sperrt das iPhone und kehrt nach Ablauf zurück.
+
+Die Anzeige zeigt korrekt, dass die Pause beendet ist.
+
+**Szenario H**
+
+Nach einem ungewöhnlich langen App-Abbruch wird ein altes Workout entdeckt.
+
+FORM fragt, ob es fortgesetzt oder abgeschlossen werden soll.
+
+Die App trifft keine unwiderrufliche Entscheidung ohne Benutzerbestätigung.
+
+---
+
+# 11. NEUE WORKOUT-DETAILS & EASTER EGGS
+
+Füge kleine besondere Elemente hinzu.
+
+## Ideen
+
+1. Mini-Doodle beim ersten Satz eines Tages.
+2. Kleiner Paint-Stern bei einem echten Rekord.
+3. Subtile animierte Stoppuhr beim Workoutstart.
+4. Minimalistische Retro-Uhr im Timer-Menü.
+5. Kleines Desktop-Dialogfenster für eine besondere Trainingsserie.
+6. Versteckte Sticker im persönlichen Statistikarchiv.
+7. Ein anderer Abschluss-Spruch nach einem frühen Morgentraining.
+8. Kleine handgezeichnete Illustration nach einem besonders langen Workout.
+9. Easter Egg beim mehrfachen Tippen auf das FORM-Logo.
+10. Eine seltene alternative Retro-Farbpalette.
+
+Alle Easter Eggs müssen zurückhaltend und optional sein.
+
+Keine Unterbrechung während eines aktiven Satzes.
+
+Keine belästigenden Animationen.
+
+---
+
+# 12. DIE GESAMTE APP SOLL VISUELL ZUSAMMENPASSEN
+
+Die neue Workout-GUI darf nicht wie eine andere App aussehen als der Rest.
+
+Überarbeite deshalb ebenfalls die visuellen Grundlagen von:
+
+- Today
+- Plans
+- Exercise Library
+- Workout History
+- Progress
+- Health
+- Settings
+
+Aber baue nicht alle Funktionen gleichzeitig neu.
+
+Verwende dieselbe:
+
+- Typografie
+- Farbpalette
+- Navigationslogik
+- Buttonsprache
+- Grafikidentität
+- Animationstechnologie
+- Iconfamilie
+- Touchziel-Größe
+
+Der Active-Workout-Modus bleibt dabei die höchste Priorität.
+
+---
+
+# 13. TECHNISCHE IMPLEMENTIERUNG
+
+Verwende die bestehende React-Native-/Expo-Projektbasis.
+
+Prüfe vorhandene Libraries vor Ergänzungen.
+
+Nutze eine nachvollziehbare Architektur.
+
+Empfohlene Modulaufteilung:
+
+```text
+src/
+  features/
+    workout/
+      components/
+        WorkoutHeader.tsx
+        WorkoutTimer.tsx
+        ExerciseFocus.tsx
+        SetTable.tsx
+        SetRow.tsx
+        RestTimer.tsx
+        ExerciseSwitcher.tsx
+        WorkoutMiniPlayer.tsx
+        WorkoutSummary.tsx
+      hooks/
+        useWorkoutSession.ts
+        useWorkoutTimer.ts
+        useRestTimer.ts
+        useWorkoutAutosave.ts
+      services/
+        workoutRepository.ts
+        sessionRecovery.ts
+        workoutCalculations.ts
+      screens/
+        ActiveWorkoutScreen.tsx
+    design/
+      components/
+      animations/
+      doodles/
+      tokens/
+```
+
+Das ist eine Zielstruktur, keine Aufforderung, funktionierende Dateien grundlos zu verschieben.
+
+Vermeide riesige Komponenten, die Timer, Datenbank, Navigation und sämtliche UI-Logik in einer Datei enthalten.
+
+Baue klare Schnittstellen und testbare Funktionen.
+
+---
+
+# 14. TESTPLAN: NICHT NUR SYNTAX PRÜFEN
+
+Führe echte Prüfungen durch.
+
+Mindestens:
+
+### Unit Tests
+
+- Dauerberechnung
+- Pausendauer
+- UTC-/Zeitzonenfälle
+- Wiederherstellung
+- Satzberechnungen
+- Duplikatschutz
+- RIR-/RPE-Validierung
+
+### Datenbanktests
+
+- Neue Session erstellen
+- Satz speichern
+- Satz ändern
+- Entwurf speichern
+- Session wiederherstellen
+- Session abschließen
+- Schreibfehler simulieren
+- Beschädigte Daten behandeln
+
+### Integrationstests
+
+- Workout starten
+- Satz eintragen
+- Tab wechseln
+- Workout fortsetzen
+- App neu öffnen
+- Pausentimer wiederherstellen
+- Workout beenden
+
+### UI-Tests
+
+- Kleine iPhone-Auflösung
+- Größere iPhone-Auflösung
+- Schriftvergrößerung
+- Dark Mode
+- Keyboard geöffnet
+- Landscape, falls unterstützt
+- VoiceOver
+- Reduce Motion
+
+### Build-Tests
+
+- Dependencies installieren
+- TypeScript Strict Mode
+- Lint
+- Automatisierte Tests
+- Expo Prebuild
+- CocoaPods
+- Xcode-Kompilierung
+- IPA-Erstellung
+
+Verwende die tatsächlichen Expo-kompatiblen Versionen.
+
+Ein Syntaxcheck allein reicht nicht.
+
+Ein erfolgreicher Typecheck allein reicht nicht.
+
+Ein erfolgreicher iOS-Build ist noch kein vollständiger iPhone-Laufzeittest.
+
+---
+
+# 15. KONKRETE ABNAHMEKRITERIEN
+
+Die Überarbeitung ist erst fertig, wenn:
+
+- [ ] Der Workout-Timer beim Start automatisch beginnt.
+- [ ] Die Startuhrzeit sichtbar ist.
+- [ ] Die Dauer nach dem App-Wechsel korrekt bleibt.
+- [ ] Die Dauer nach erneutem Öffnen korrekt rekonstruiert wird.
+- [ ] Lange vergessene Workouts wiederhergestellt werden können.
+- [ ] Workout-Sätze automatisch gespeichert werden.
+- [ ] Unvollständige Eingaben erhalten bleiben.
+- [ ] Es keine doppelten Sätze durch Mehrfachklicks gibt.
+- [ ] Die Workout-GUI vollständig neu gestaltet ist.
+- [ ] Gewicht und Wiederholungen sofort erkennbar sind.
+- [ ] Vorwerte klar sichtbar sind.
+- [ ] Der Abschluss eines Satzes nur einen eindeutigen Klick erfordert.
+- [ ] Der Pausentimer zuverlässig funktioniert.
+- [ ] Die aktuelle Übung jederzeit erkennbar ist.
+- [ ] Andere Übungen schnell erreichbar sind.
+- [ ] Das Design deutlich stärker nach Paint-/HeyClicky-inspirierter Produktsprache wirkt.
+- [ ] Es hochwertige Animationen gibt.
+- [ ] Animationen das Training nicht behindern.
+- [ ] Die gesamte App visuell konsistent wirkt.
+- [ ] Keine alten Daten versehentlich gelöscht werden.
+- [ ] Die automatischen Tests erfolgreich sind.
+- [ ] Der aktuelle echte iOS-Buildstatus dokumentiert wird.
+
+---
+
+# 16. ABSCHLIESSENDER ENTWICKLUNGSAUFTRAG
+
+**Ich will nicht mehr Funktionen, die irgendwo versteckt sind. Ich will eine Workout-Oberfläche, die ich sofort verstehe.**
+
+Wenn ich ein Training starte, soll ich unmittelbar sehen:
+
+- Was trainiere ich?
+- Seit wann trainiere ich?
+- Wie lange trainiere ich bereits?
+- Welche Übung mache ich gerade?
+- Was habe ich beim letzten Mal geschafft?
+- Wie viel Gewicht verwende ich?
+- Wie viele Wiederholungen mache ich?
+- Habe ich meinen Satz abgeschlossen?
+- Wie lange muss ich pausieren?
+- Was ist meine nächste Übung?
+
+All das muss klar, schnell und schön dargestellt werden.
+
+Kein generisches KI-Dashboard.
+
+Keine komplizierten Untermenüs.
+
+Keine nutzlosen Buttons.
+
+Keine verlorenen Trainingseinträge.
+
+Keine falschen Timer.
+
+Stattdessen ein originelles, hochwertiges und extrem benutzerfreundliches Trainingserlebnis.
+
+## FINAL VISION
+
+**FORM 10.0 — THE LIVING WORKOUT**
+
+*A workout that remembers everything.*
+
+*A design that actually feels alive.*
+
+*A gym experience that just makes sense.*
+
+**Implementiere diese Änderungen tatsächlich im vorhandenen FORM-Projekt. Zeige mir danach echte Screenshots des laufenden Workout-Modus, die geänderten Quelldateien, bestandene Tests und den tatsächlichen iOS-Buildstatus.**
+
+Keine theoretische Umsetzung.
+
+Keine Designbilder als Beweis einer laufenden App.
+
+Keine erfundenen Testergebnisse.
+
+**MAKE FORM FEEL HUMAN. MAKE FORM FEEL PREMIUM. MAKE FORM WORK.**

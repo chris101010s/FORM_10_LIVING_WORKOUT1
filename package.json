@@ -23,7 +23,7 @@
     "test:preflight": "node scripts/preflight.cjs",
     "test:form": "node tests/test-form.cjs",
     "test:deep": "node tests/test-form-deep.cjs",
-    "test:all": "npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh && npm run test:redesign && npm run test:native && npm run test:form84 && npm run test:living",
+    "test:all": "npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh && npm run test:redesign && npm run test:native && npm run test:form84 && npm run test:living && npm run test:switch-contract",
     "test:sqlite": "node tests/test-relational.cjs",
     "test:fresh": "node tests/test-fresh.cjs",
     "catalog:photos": "node scripts/fetch-photos.mjs",
@@ -31,7 +31,8 @@
     "test:redesign": "node tests/test-redesign.cjs",
     "test:native": "node tests/test-native-features.cjs",
     "test:form84": "node tests/test-form84.cjs",
-    "test:living": "node tests/test-living-workout.cjs"
+    "test:living": "node tests/test-living-workout.cjs",
+    "test:switch-contract": "node tests/test-switch-contract.cjs"
   },
   "dependencies": {
     "expo": "~58.0.26",

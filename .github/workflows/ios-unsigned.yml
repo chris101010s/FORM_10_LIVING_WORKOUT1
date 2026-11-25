@@ -1,3 +1,4 @@
+
 name: FORM 15.0.0 · Standard iOS IPA
 on:
   workflow_dispatch:
@@ -27,11 +28,14 @@ on:
       - 'modules/**'
       - 'plugins/**'
       - '.github/workflows/ios-unsigned.yml'
+
 permissions:
   contents: read
+
 concurrency:
   group: form15-standard-${{ github.ref }}
   cancel-in-progress: false
+
 jobs:
   iphone:
     name: Standard · ohne HealthKit und Widgets
@@ -43,38 +47,61 @@ jobs:
       FORM_HEALTHKIT: '0'
       FORM_WIDGETS: '0'
       EXPO_PUBLIC_FORM_CUSTOM_TABS: ${{ inputs.custom_tabs && '1' || '0' }}
+
     steps:
       - uses: actions/checkout@v6
+
       - name: Quelldateien und Git-Tracking früh prüfen
         run: node scripts/preflight.cjs
+
       - uses: actions/setup-node@v5
         with:
           node-version: '24.22.3'
           cache: npm
+
+      - name: Python einrichten
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Pillow installieren und prüfen
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install Pillow
+          python3 -c "from PIL import Image; print('Pillow OK')"
+
       - name: Xcode-Version protokollieren
         run: xcodebuild -version
+
       - name: Reproduzierbare Abhängigkeiten installieren
         run: npm ci --no-audit --no-fund
+
       - name: Tests, TypeScript, Lint, Expo-Konfiguration und Doctor
         run: npm run qa:release
+
       - name: Apple Backup-Kryptografie kompilieren und testen
         run: |
           set -o pipefail
           bash scripts/test-apple-crypto.sh 2>&1 | tee artifacts/crypto.log
+
       - name: Native iOS-Dateien erzeugen
         run: |
           set -o pipefail
           npx --no-install expo prebuild --platform ios --clean --no-install 2>&1 | tee artifacts/prebuild.log
+
       - name: CocoaPods installieren
         working-directory: ios
         run: |
           set -o pipefail
           pod install 2>&1 | tee ../artifacts/pods.log
+
       - name: Echte iPhone-IPA kompilieren und prüfen
         run: npm run build:ios:unsigned
+
       - name: Optionaler Simulator-Starttest
         if: github.event_name == 'workflow_dispatch' && inputs.simulator_smoke
         run: bash scripts/simulator-smoke.sh
+
       - name: Tatsächliche Build- und Prüfprotokolle
         if: always()
         uses: actions/upload-artifact@v6
@@ -88,6 +115,7 @@ jobs:
             artifacts/*.xcresult
           if-no-files-found: warn
           retention-days: 14
+
       - name: Standard-IPA und SHA-256
         if: success()
         uses: actions/upload-artifact@v6

@@ -97,7 +97,9 @@ jobs:
 
       - name: Drei Release-Starts und FORM10-Daten im Simulator prüfen
         timeout-minutes: 20
-        run: bash scripts/simulator-smoke.sh --skip-build
+        run: |
+          set -o pipefail
+          bash scripts/simulator-smoke.sh --skip-build 2>&1 | tee artifacts/simulator-smoke.log
 
       - name: Startnachweise vor dem iPhone-Build sichern
         if: always()
@@ -109,6 +111,7 @@ jobs:
             artifacts/simulator-architecture.log
             artifacts/simulator-boot*.log
             artifacts/simulator-cleanup.log
+            artifacts/simulator-smoke.log
             artifacts/simulator-smoke/**
           if-no-files-found: warn
           retention-days: 14

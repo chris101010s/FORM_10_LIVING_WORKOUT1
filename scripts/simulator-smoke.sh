@@ -52,7 +52,7 @@ finally:
                 'elapsedSeconds':round(time.monotonic()-started,3),'timeoutSeconds':seconds,
                 'exitCode':exit_code,'timedOut':timed_out}
         Path(status_file).write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
-        print('TIMING: '+json.dumps(report,ensure_ascii=False),flush=True)
+        print('TIMING: '+json.dumps(report,ensure_ascii=False),file=sys.stderr,flush=True)
 raise SystemExit(exit_code)
 PY_TIMEOUT
 }
@@ -216,8 +216,28 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
       echo "ERROR: $FORM_DIAGNOSIS" >&2
       exit "$FORM_INSTALL_EXIT"
     fi
-    FORM_INSTALLED_APP="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" app)"
-    FORM_DATA="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" data)"
+    FORM_CONTAINER_SECONDS=30
+    [[ "$FORM_SCENARIO" != 'fresh' ]] || FORM_CONTAINER_SECONDS=180
+    for FORM_CONTAINER_KIND in app data; do
+      FORM_STAGE="$FORM_CONTAINER_KIND-container"
+      echo "CONTAINER: $FORM_SCENARIO/$FORM_CONTAINER_KIND, bis zu ${FORM_CONTAINER_SECONDS}s."
+      set +e
+      FORM_CONTAINER_PATH="$(FORM_TIMED_STATUS_FILE="$FORM_CASE_ARTIFACTS/simulator-$FORM_CONTAINER_KIND-container-status.json" \
+        FORM_TIMED_OPERATION="$FORM_SCENARIO-$FORM_CONTAINER_KIND-container" \
+        form_timed "$FORM_CONTAINER_SECONDS" xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" "$FORM_CONTAINER_KIND" \
+        2> "$FORM_CASE_ARTIFACTS/simulator-$FORM_CONTAINER_KIND-container.stderr.log")"
+      FORM_CONTAINER_EXIT=$?
+      set -e
+      cat "$FORM_CASE_ARTIFACTS/simulator-$FORM_CONTAINER_KIND-container.stderr.log" >&2
+      printf '%s\n' "$FORM_CONTAINER_PATH" > "$FORM_CASE_ARTIFACTS/simulator-$FORM_CONTAINER_KIND-container.stdout.log"
+      if [[ "$FORM_CONTAINER_EXIT" -ne 0 ]]; then
+        FORM_DIAGNOSIS="Container-Abfrage ($FORM_CONTAINER_KIND) für $FORM_SCENARIO fehlgeschlagen (Exit $FORM_CONTAINER_EXIT, Zeitbudget ${FORM_CONTAINER_SECONDS}s); kein App-Start."
+        echo "ERROR: $FORM_DIAGNOSIS" >&2
+        exit "$FORM_CONTAINER_EXIT"
+      fi
+      [[ "$FORM_CONTAINER_PATH" == /* && "$FORM_CONTAINER_PATH" != *$'\n'* && -d "$FORM_CONTAINER_PATH" ]] || form_fail "Ungültiger Pfad aus $FORM_CONTAINER_KIND-container; kein App-Start."
+      if [[ "$FORM_CONTAINER_KIND" == 'app' ]]; then FORM_INSTALLED_APP="$FORM_CONTAINER_PATH"; else FORM_DATA="$FORM_CONTAINER_PATH"; fi
+    done
     FORM_EXECUTABLE="$FORM_INSTALLED_APP/$FORM_EXECUTABLE_NAME"
     [[ -x "$FORM_EXECUTABLE" ]] || form_fail 'Installierte App hat keine ausführbare Startdatei.'
     FORM_DATABASE="$FORM_DATA/Documents/SQLite/form-v84-clean.db"

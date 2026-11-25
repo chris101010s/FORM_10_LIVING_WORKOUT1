@@ -128,9 +128,22 @@ PY
 read -r FORM_DEVICE_TYPE FORM_RUNTIME <<< "$FORM_DEVICE_TYPE_AND_RUNTIME"
 FORM_DEVICE="$(form_timed 60 xcrun simctl create "FORM Startup Smoke ${GITHUB_RUN_ID:-local}-$$" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME")"
 [[ "$FORM_DEVICE" =~ ^[A-Fa-f0-9-]{36}$ ]] || form_fail 'Neuer Testsimulator lieferte keine eindeutige UDID.'
+python3 - "$FORM_ARTIFACTS/simulator-environment-status.json" "$FORM_DEVICE" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME" "$FORM_ARTIFACTS/simulator-device-types.json" "$FORM_ARTIFACTS/simulator-build-status.json" <<'PY_ENVIRONMENT'
+from datetime import datetime,timezone
+import json,sys
+from pathlib import Path
+types=json.loads(Path(sys.argv[5]).read_text())['devicetypes']
+device_type=next((item for item in types if item['identifier']==sys.argv[3]),{})
+build=json.loads(Path(sys.argv[6]).read_text())
+report={'status':'simulator-created','at':datetime.now(timezone.utc).isoformat(),
+        'udid':sys.argv[2],'deviceTypeIdentifier':sys.argv[3],'deviceTypeName':device_type.get('name'),
+        'runtimeIdentifier':sys.argv[4],'hostArchitecture':build.get('hostArchitecture'),
+        'configuration':build.get('configuration'),'sdk':build.get('sdk'),
+        'scope':'Selected environment recorded before boot; no boot, installation, or app-start result.'}
+Path(sys.argv[1]).write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+PY_ENVIRONMENT
 form_timed 120 xcrun simctl boot "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-boot-request.log" 2>&1
 form_timed 300 xcrun simctl bootstatus "$FORM_DEVICE" -b 2>&1 | tee "$FORM_ARTIFACTS/simulator-boot.log"
-form_timed 30 xcrun simctl help launch > "$FORM_ARTIFACTS/simulator-launch-help.log" 2>&1
 FORM_PREDICATE="$(python3 - "$FORM_EXECUTABLE_NAME" "$FORM_BUNDLE" <<'PY'
 import json,sys
 print('process == '+json.dumps(sys.argv[1])+' OR eventMessage CONTAINS '+json.dumps(sys.argv[2])+' OR process == "ReportCrash"')

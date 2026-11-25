@@ -2,6 +2,13 @@
 set -euo pipefail
 FORM_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$FORM_ROOT"
+FORM_SKIP_BUILD='false'
+[[ "$#" -le 1 ]] || { echo 'Usage: bash scripts/simulator-smoke.sh [--skip-build]' >&2; exit 64; }
+case "${1:-}" in
+  ''|run) ;;
+  --skip-build) FORM_SKIP_BUILD='true' ;;
+  *) echo 'Usage: bash scripts/simulator-smoke.sh [--skip-build]' >&2; exit 64 ;;
+esac
 FORM_ARTIFACTS="$FORM_ROOT/artifacts"
 FORM_SMOKE_ROOT="$FORM_ARTIFACTS/simulator-smoke"
 FORM_FIXTURES="$FORM_SMOKE_ROOT/fixtures"
@@ -14,6 +21,22 @@ FORM_VERIFIED='false'
 mkdir -p "$FORM_SMOKE_ROOT"
 
 form_fail() { FORM_DIAGNOSIS="$1"; echo "ERROR: $FORM_DIAGNOSIS" >&2; exit 1; }
+# Python supplies real command timeouts; simctl has no invented timeout flags.
+form_timed() {
+  python3 - "$@" <<'PY_TIMEOUT'
+import subprocess,sys
+seconds=int(sys.argv[1])
+try:
+    result=subprocess.run(sys.argv[2:],timeout=seconds,check=False)
+    raise SystemExit(result.returncode if result.returncode>=0 else 128-result.returncode)
+except subprocess.TimeoutExpired:
+    print('ERROR: Timeout nach '+str(seconds)+'s: '+' '.join(sys.argv[2:]),file=sys.stderr)
+    raise SystemExit(124)
+except OSError as error:
+    print('ERROR: '+str(error),file=sys.stderr)
+    raise SystemExit(127)
+PY_TIMEOUT
+}
 form_finish() {
   FORM_EXIT_CODE=$?
   trap - EXIT
@@ -24,8 +47,8 @@ form_finish() {
   fi
   # Only the simulator created by this invocation is ever shut down/deleted.
   if [[ -n "$FORM_DEVICE" ]]; then
-    xcrun simctl shutdown "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
-    xcrun simctl delete "$FORM_DEVICE" >> "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
+    form_timed 60 xcrun simctl shutdown "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
+    form_timed 60 xcrun simctl delete "$FORM_DEVICE" >> "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
   fi
   python3 - "$FORM_SMOKE_ROOT" "$FORM_ARTIFACTS/simulator-status.json" "$FORM_EXIT_CODE" "$FORM_STAGE" "$FORM_DIAGNOSIS" <<'PY'
 from datetime import datetime,timezone
@@ -50,17 +73,24 @@ PY
 }
 trap form_finish EXIT
 [[ "$FORM_WAIT_SECONDS" =~ ^[0-9]+$ ]] && (( FORM_WAIT_SECONDS >= 10 && FORM_WAIT_SECONDS <= 120 )) || form_fail 'FORM_SMOKE_WAIT_SECONDS muss zwischen 10 und 120 Sekunden liegen.'
-FORM_WORKSPACE="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
-[[ -n "$FORM_WORKSPACE" ]] || form_fail 'Workspace fehlt.'
-FORM_SCHEME="$(basename "$FORM_WORKSPACE" .xcworkspace)"
-FORM_STAGE='release-build'
-rm -rf "$FORM_ARTIFACTS/simulator-build.xcresult"
-xcodebuild -workspace "$FORM_WORKSPACE" -scheme "$FORM_SCHEME" -configuration Release -sdk iphonesimulator \
-  -destination 'generic/platform=iOS Simulator' -derivedDataPath "$FORM_ARTIFACTS/SimulatorDerivedData" \
-  -resultBundlePath "$FORM_ARTIFACTS/simulator-build.xcresult" CODE_SIGNING_ALLOWED=NO build \
-  2>&1 | tee "$FORM_ARTIFACTS/simulator-build.log"
-FORM_APP="$(find artifacts/SimulatorDerivedData/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -print -quit)"
-[[ -n "$FORM_APP" ]] || form_fail 'Simulator-App fehlt.'
+if [[ "$FORM_SKIP_BUILD" != 'true' ]]; then
+  FORM_STAGE='release-build'
+  bash "$FORM_ROOT/scripts/build-ios-simulator.sh"
+fi
+FORM_STAGE='built-app-readback'
+FORM_APP="$(python3 - "$FORM_ARTIFACTS/simulator-build-status.json" "$(uname -m)" <<'PY_BUILD'
+import json,sys
+from pathlib import Path
+file=Path(sys.argv[1])
+if not file.is_file():
+    raise SystemExit('Simulator-Buildstatus fehlt. Zuerst bash scripts/build-ios-simulator.sh ausführen.')
+status=json.loads(file.read_text())
+app=Path(status.get('app') or '')
+if status.get('status')!='built' or status.get('hostArchitecture')!=sys.argv[2] or not (app/'Info.plist').is_file():
+    raise SystemExit('Kein bestätigter Release-Simulator-Build für diesen Host vorhanden.')
+print(app)
+PY_BUILD
+)"
 FORM_EXECUTABLE_NAME="$(python3 - "$FORM_APP/Info.plist" "$FORM_BUNDLE" <<'PY'
 import plistlib,sys
 with open(sys.argv[1],'rb') as source:
@@ -76,8 +106,9 @@ PY
 FORM_STAGE='synthetic-fixtures'
 node scripts/create-startup-v10-fixture.cjs "$FORM_FIXTURES" > "$FORM_ARTIFACTS/simulator-fixtures.log"
 FORM_STAGE='dedicated-simulator'
-xcrun simctl list devices available --json > "$FORM_ARTIFACTS/simulator-devices.json"
-xcrun simctl list devicetypes --json > "$FORM_ARTIFACTS/simulator-device-types.json"
+echo 'PHASE: Eigenen Testsimulator erstellen und booten (Bootstatus maximal 300s).'
+form_timed 60 xcrun simctl list devices available --json > "$FORM_ARTIFACTS/simulator-devices.json"
+form_timed 60 xcrun simctl list devicetypes --json > "$FORM_ARTIFACTS/simulator-device-types.json"
 FORM_DEVICE_TYPE_AND_RUNTIME="$(python3 - "$FORM_ARTIFACTS/simulator-devices.json" "$FORM_ARTIFACTS/simulator-device-types.json" <<'PY'
 import json,re,sys
 from pathlib import Path
@@ -95,11 +126,11 @@ print(type_id,runtime)
 PY
 )"
 read -r FORM_DEVICE_TYPE FORM_RUNTIME <<< "$FORM_DEVICE_TYPE_AND_RUNTIME"
-FORM_DEVICE="$(xcrun simctl create "FORM Startup Smoke ${GITHUB_RUN_ID:-local}-$$" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME")"
+FORM_DEVICE="$(form_timed 60 xcrun simctl create "FORM Startup Smoke ${GITHUB_RUN_ID:-local}-$$" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME")"
 [[ "$FORM_DEVICE" =~ ^[A-Fa-f0-9-]{36}$ ]] || form_fail 'Neuer Testsimulator lieferte keine eindeutige UDID.'
-xcrun simctl boot "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-boot-request.log" 2>&1
-xcrun simctl bootstatus "$FORM_DEVICE" -b 2>&1 | tee "$FORM_ARTIFACTS/simulator-boot.log"
-xcrun simctl help launch > "$FORM_ARTIFACTS/simulator-launch-help.log" 2>&1
+form_timed 120 xcrun simctl boot "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-boot-request.log" 2>&1
+form_timed 300 xcrun simctl bootstatus "$FORM_DEVICE" -b 2>&1 | tee "$FORM_ARTIFACTS/simulator-boot.log"
+form_timed 30 xcrun simctl help launch > "$FORM_ARTIFACTS/simulator-launch-help.log" 2>&1
 FORM_PREDICATE="$(python3 - "$FORM_EXECUTABLE_NAME" "$FORM_BUNDLE" <<'PY'
 import json,sys
 print('process == '+json.dumps(sys.argv[1])+' OR eventMessage CONTAINS '+json.dumps(sys.argv[2])+' OR process == "ReportCrash"')
@@ -108,6 +139,7 @@ PY
 FORM_ANY_FAILURE=0
 for FORM_SCENARIO in fresh v10-home v10-live; do
   FORM_STAGE="$FORM_SCENARIO"
+  echo "PHASE: $FORM_SCENARIO — neue Installation, Launch, Prozess- und Datenprüfung."
   # Each scenario has its own trap; a failed launch does not hide the other cases.
   set +e
   (
@@ -122,7 +154,19 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
       set +e
       if [[ -n "$FORM_LOG_PID" ]]; then
         kill "$FORM_LOG_PID" 2>/dev/null
-        wait "$FORM_LOG_PID" 2>/dev/null
+        for FORM_LOG_GRACE in 1 2 3; do
+          kill -0 "$FORM_LOG_PID" 2>/dev/null || break
+          sleep 1
+        done
+        if kill -0 "$FORM_LOG_PID" 2>/dev/null; then
+          kill -KILL "$FORM_LOG_PID" 2>/dev/null
+        fi
+        # Never block the collector on a stream still awaiting termination.
+        if ! kill -0 "$FORM_LOG_PID" 2>/dev/null; then
+          wait "$FORM_LOG_PID" 2>/dev/null
+        else
+          echo 'WARNING: Logstream nach SIGKILL noch aktiv; kein blockierendes wait, Diagnose folgt.' >&2
+        fi
       fi
       python3 "$FORM_ROOT/scripts/simulator-smoke-diagnostics.py" collect \
         --artifacts "$FORM_CASE_ARTIFACTS" --device "$FORM_DEVICE" --bundle "$FORM_BUNDLE" \
@@ -134,13 +178,13 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
     }
     trap form_scenario_finish EXIT
     if [[ "$FORM_SCENARIO" != 'fresh' ]]; then
-      xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-terminate.log" 2>&1 || true
-      xcrun simctl uninstall "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-uninstall.log" 2>&1
+      form_timed 30 xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-terminate.log" 2>&1 || true
+      form_timed 120 xcrun simctl uninstall "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-uninstall.log" 2>&1
     fi
     FORM_STAGE='install'
-    xcrun simctl install "$FORM_DEVICE" "$FORM_APP" 2>&1 | tee "$FORM_CASE_ARTIFACTS/simulator-install.log"
-    FORM_INSTALLED_APP="$(xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" app)"
-    FORM_DATA="$(xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" data)"
+    form_timed 120 xcrun simctl install "$FORM_DEVICE" "$FORM_APP" 2>&1 | tee "$FORM_CASE_ARTIFACTS/simulator-install.log"
+    FORM_INSTALLED_APP="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" app)"
+    FORM_DATA="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" data)"
     FORM_EXECUTABLE="$FORM_INSTALLED_APP/$FORM_EXECUTABLE_NAME"
     [[ -x "$FORM_EXECUTABLE" ]] || form_fail 'Installierte App hat keine ausführbare Startdatei.'
     FORM_DATABASE="$FORM_DATA/Documents/SQLite/form-v84-clean.db"
@@ -158,7 +202,7 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
     FORM_STAGE='launch'
     # No debugger or console attachment: observe an ordinary Release start.
     set +e
-    xcrun simctl launch --terminate-running-process \
+    form_timed 120 xcrun simctl launch --terminate-running-process \
       --stdout="$FORM_CASE_ARTIFACTS/simulator-app.stdout.log" --stderr="$FORM_CASE_ARTIFACTS/simulator-app.stderr.log" \
       "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-launch.stdout.log" 2> "$FORM_CASE_ARTIFACTS/simulator-launch.stderr.log"
     FORM_LAUNCH_EXIT=$?
@@ -178,7 +222,7 @@ PY
     python3 scripts/simulator-smoke-diagnostics.py monitor --artifacts "$FORM_CASE_ARTIFACTS" \
       --device "$FORM_DEVICE" --pid "$FORM_APP_PID" --executable "$FORM_EXECUTABLE" --seconds "$FORM_WAIT_SECONDS"
     FORM_STAGE='repository-readback'
-    xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-terminate.log" 2>&1
+    form_timed 30 xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-terminate.log" 2>&1
     python3 scripts/simulator-smoke-diagnostics.py database --artifacts "$FORM_CASE_ARTIFACTS" \
       --database "$FORM_DATABASE" --scenario "$FORM_SCENARIO" --fixture-manifest "$FORM_FIXTURES/manifest.json"
     FORM_STAGE='completed'

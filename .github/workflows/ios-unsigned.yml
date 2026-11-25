@@ -30,7 +30,7 @@ permissions:
 
 concurrency:
   group: form15-standard-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   iphone:
@@ -105,8 +105,13 @@ jobs:
           set -o pipefail
           pod install 2>&1 | tee ../artifacts/pods.log
 
-      - name: Release-App im iPhone-Simulator starten und überwachen
-        run: bash scripts/simulator-smoke.sh
+      - name: Release-App für die Simulator-Hostarchitektur kompilieren
+        timeout-minutes: 25
+        run: bash scripts/build-ios-simulator.sh
+
+      - name: Drei Release-Starts und FORM10-Daten im Simulator prüfen
+        timeout-minutes: 15
+        run: bash scripts/simulator-smoke.sh --skip-build
 
       - name: Echte iPhone-IPA kompilieren und prüfen
         run: npm run build:ios:unsigned

@@ -2,32 +2,196 @@
 set -euo pipefail
 FORM_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$FORM_ROOT"
-FORM_WORKSPACE="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
-[[ -n "$FORM_WORKSPACE" ]] || { echo 'ERROR: Workspace fehlt.' >&2; exit 1; }
-FORM_SCHEME="$(basename "$FORM_WORKSPACE" .xcworkspace)"
-mkdir -p artifacts
-rm -rf artifacts/simulator-build.xcresult
-xcodebuild -workspace "$FORM_WORKSPACE" -scheme "$FORM_SCHEME" -configuration Release -sdk iphonesimulator \
-  -destination 'generic/platform=iOS Simulator' -derivedDataPath "$FORM_ROOT/artifacts/SimulatorDerivedData" \
-  -resultBundlePath "$FORM_ROOT/artifacts/simulator-build.xcresult" CODE_SIGNING_ALLOWED=NO build \
-  2>&1 | tee "$FORM_ROOT/artifacts/simulator-build.log"
-FORM_APP="$(find artifacts/SimulatorDerivedData/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -print -quit)"
-[[ -n "$FORM_APP" ]] || { echo 'ERROR: Simulator-App fehlt.' >&2; exit 1; }
-xcrun simctl list devices available --json > artifacts/simulator-devices.json
-FORM_DEVICE="$(python3 - <<'PY'
-import json
+FORM_ARTIFACTS="$FORM_ROOT/artifacts"
+FORM_SMOKE_ROOT="$FORM_ARTIFACTS/simulator-smoke"
+FORM_FIXTURES="$FORM_SMOKE_ROOT/fixtures"
+FORM_BUNDLE='app.athleteos.personal'
+FORM_WAIT_SECONDS="${FORM_SMOKE_WAIT_SECONDS:-20}"
+FORM_STAGE='setup'
+FORM_DEVICE=''
+FORM_DIAGNOSIS=''
+FORM_VERIFIED='false'
+mkdir -p "$FORM_SMOKE_ROOT"
+
+form_fail() { FORM_DIAGNOSIS="$1"; echo "ERROR: $FORM_DIAGNOSIS" >&2; exit 1; }
+form_finish() {
+  FORM_EXIT_CODE=$?
+  trap - EXIT
+  set +e
+  if [[ "$FORM_EXIT_CODE" -eq 0 && "$FORM_VERIFIED" != 'true' ]]; then
+    FORM_EXIT_CODE=1
+    FORM_DIAGNOSIS='Der Startcheck endete ohne drei bestätigte Szenarien.'
+  fi
+  # Only the simulator created by this invocation is ever shut down/deleted.
+  if [[ -n "$FORM_DEVICE" ]]; then
+    xcrun simctl shutdown "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
+    xcrun simctl delete "$FORM_DEVICE" >> "$FORM_ARTIFACTS/simulator-cleanup.log" 2>&1
+  fi
+  python3 - "$FORM_SMOKE_ROOT" "$FORM_ARTIFACTS/simulator-status.json" "$FORM_EXIT_CODE" "$FORM_STAGE" "$FORM_DIAGNOSIS" <<'PY'
+from datetime import datetime,timezone
+import json,sys
 from pathlib import Path
-items=[(runtime,d) for runtime,devices in json.loads(Path('artifacts/simulator-devices.json').read_text())['devices'].items() for d in devices if 'iOS' in runtime and d.get('isAvailable') and d['name'].startswith('iPhone')]
-if not items:raise SystemExit('Kein iPhone-Simulator verfügbar.')
-items.sort(key=lambda item:('SE' in item[1]['name'],item[0],item[1]['name']),reverse=True)
-print(items[0][1]['udid'])
+root,output=Path(sys.argv[1]),Path(sys.argv[2])
+scenarios=[]
+for name in ('fresh','v10-home','v10-live'):
+    file=root/name/'simulator-status.json'
+    value=json.loads(file.read_text()) if file.is_file() else {'status':'not-run'}
+    scenarios.append({'scenario':name,**value})
+passed=int(sys.argv[3])==0 and all(s['status']=='startup-and-repository-verified' for s in scenarios)
+report={'status':'three-scenarios-passed' if passed else 'failed','exitCode':int(sys.argv[3]),'stage':sys.argv[4],'diagnosis':sys.argv[5] or None,'at':datetime.now(timezone.utc).isoformat(),'scenarios':scenarios,'scope':'Release simulator startup, same-PID/executable observation, screenshots, and read-only schema9/data checks. Screenshots require visual review. No physical iPhone, signing, or complete workout-flow proof.'}
+output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+print('Simulator smoke:',report['status'])
+PY
+  if [[ "$FORM_EXIT_CODE" -ne 0 ]]; then
+    echo "ERROR: ${FORM_DIAGNOSIS:-Startcheck in Phase $FORM_STAGE fehlgeschlagen.}" >&2
+    echo 'Diagnose: artifacts/simulator-status.json und artifacts/simulator-smoke/<scenario>/ (App-Ausgaben, Systemlogs, Prozessstatus, DB-Prüfung, Screenshots, Crashreports).' >&2
+  fi
+  exit "$FORM_EXIT_CODE"
+}
+trap form_finish EXIT
+[[ "$FORM_WAIT_SECONDS" =~ ^[0-9]+$ ]] && (( FORM_WAIT_SECONDS >= 10 && FORM_WAIT_SECONDS <= 120 )) || form_fail 'FORM_SMOKE_WAIT_SECONDS muss zwischen 10 und 120 Sekunden liegen.'
+FORM_WORKSPACE="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
+[[ -n "$FORM_WORKSPACE" ]] || form_fail 'Workspace fehlt.'
+FORM_SCHEME="$(basename "$FORM_WORKSPACE" .xcworkspace)"
+FORM_STAGE='release-build'
+rm -rf "$FORM_ARTIFACTS/simulator-build.xcresult"
+xcodebuild -workspace "$FORM_WORKSPACE" -scheme "$FORM_SCHEME" -configuration Release -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' -derivedDataPath "$FORM_ARTIFACTS/SimulatorDerivedData" \
+  -resultBundlePath "$FORM_ARTIFACTS/simulator-build.xcresult" CODE_SIGNING_ALLOWED=NO build \
+  2>&1 | tee "$FORM_ARTIFACTS/simulator-build.log"
+FORM_APP="$(find artifacts/SimulatorDerivedData/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -print -quit)"
+[[ -n "$FORM_APP" ]] || form_fail 'Simulator-App fehlt.'
+FORM_EXECUTABLE_NAME="$(python3 - "$FORM_APP/Info.plist" "$FORM_BUNDLE" <<'PY'
+import plistlib,sys
+with open(sys.argv[1],'rb') as source:
+    info=plistlib.load(source)
+if info.get('CFBundleIdentifier') != sys.argv[2]:
+    raise SystemExit('Die gebaute Simulator-App hat eine unerwartete Bundle-ID.')
+name=info.get('CFBundleExecutable')
+if not isinstance(name,str) or not name or '/' in name or '\\' in name or name in ('.','..'):
+    raise SystemExit('CFBundleExecutable fehlt oder ist ungültig.')
+print(name)
 PY
 )"
-# Booting an already booted device reports an error; bootstatus verifies the actual state below.
-xcrun simctl boot "$FORM_DEVICE" >/dev/null 2>&1 || true
-xcrun simctl bootstatus "$FORM_DEVICE" -b
-xcrun simctl install "$FORM_DEVICE" "$FORM_APP"
-xcrun simctl launch "$FORM_DEVICE" app.athleteos.personal | tee artifacts/simulator-launch.log
-sleep 4
-xcrun simctl io "$FORM_DEVICE" screenshot artifacts/FORM_15_0_0_fresh-install-smoke.png
-node -e "require('node:fs').writeFileSync('artifacts/simulator-status.json',JSON.stringify({status:'launch-command-completed',scope:'Fresh-install launch smoke; screenshot requires visual review. No upgrade, workout UI, HealthKit or device roundtrip proven.',at:new Date().toISOString()},null,2))"
+FORM_STAGE='synthetic-fixtures'
+node scripts/create-startup-v10-fixture.cjs "$FORM_FIXTURES" > "$FORM_ARTIFACTS/simulator-fixtures.log"
+FORM_STAGE='dedicated-simulator'
+xcrun simctl list devices available --json > "$FORM_ARTIFACTS/simulator-devices.json"
+xcrun simctl list devicetypes --json > "$FORM_ARTIFACTS/simulator-device-types.json"
+FORM_DEVICE_TYPE_AND_RUNTIME="$(python3 - "$FORM_ARTIFACTS/simulator-devices.json" "$FORM_ARTIFACTS/simulator-device-types.json" <<'PY'
+import json,re,sys
+from pathlib import Path
+devices=json.loads(Path(sys.argv[1]).read_text())['devices']
+types=json.loads(Path(sys.argv[2]).read_text())['devicetypes']
+items=[(runtime,d) for runtime,group in devices.items() for d in group if 'iOS' in runtime and d.get('isAvailable') and d['name'].startswith('iPhone')]
+if not items:
+    raise SystemExit('Kein iPhone-Simulator verfügbar.')
+items.sort(key=lambda item:(tuple(int(n) for n in re.findall(r'\d+',item[0])),'SE' not in item[1]['name'],item[1]['name']),reverse=True)
+runtime,device=items[0]
+type_id=device.get('deviceTypeIdentifier') or next((t['identifier'] for t in types if t['name']==device['name']),None)
+if not type_id:
+    raise SystemExit('Kein eindeutiger Gerätetyp für einen eigenen Testsimulator.')
+print(type_id,runtime)
+PY
+)"
+read -r FORM_DEVICE_TYPE FORM_RUNTIME <<< "$FORM_DEVICE_TYPE_AND_RUNTIME"
+FORM_DEVICE="$(xcrun simctl create "FORM Startup Smoke ${GITHUB_RUN_ID:-local}-$$" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME")"
+[[ "$FORM_DEVICE" =~ ^[A-Fa-f0-9-]{36}$ ]] || form_fail 'Neuer Testsimulator lieferte keine eindeutige UDID.'
+xcrun simctl boot "$FORM_DEVICE" > "$FORM_ARTIFACTS/simulator-boot-request.log" 2>&1
+xcrun simctl bootstatus "$FORM_DEVICE" -b 2>&1 | tee "$FORM_ARTIFACTS/simulator-boot.log"
+xcrun simctl help launch > "$FORM_ARTIFACTS/simulator-launch-help.log" 2>&1
+FORM_PREDICATE="$(python3 - "$FORM_EXECUTABLE_NAME" "$FORM_BUNDLE" <<'PY'
+import json,sys
+print('process == '+json.dumps(sys.argv[1])+' OR eventMessage CONTAINS '+json.dumps(sys.argv[2])+' OR process == "ReportCrash"')
+PY
+)"
+FORM_ANY_FAILURE=0
+for FORM_SCENARIO in fresh v10-home v10-live; do
+  FORM_STAGE="$FORM_SCENARIO"
+  # Each scenario has its own trap; a failed launch does not hide the other cases.
+  set +e
+  (
+    set -euo pipefail
+    FORM_CASE_ARTIFACTS="$FORM_SMOKE_ROOT/$FORM_SCENARIO"
+    FORM_LOG_PID=''; FORM_APP_PID=''; FORM_EXECUTABLE=''; FORM_DIAGNOSIS=''
+    FORM_STARTED="$(date +%s)"
+    mkdir -p "$FORM_CASE_ARTIFACTS"
+    form_scenario_finish() {
+      FORM_CASE_EXIT=$?
+      trap - EXIT
+      set +e
+      if [[ -n "$FORM_LOG_PID" ]]; then
+        kill "$FORM_LOG_PID" 2>/dev/null
+        wait "$FORM_LOG_PID" 2>/dev/null
+      fi
+      python3 "$FORM_ROOT/scripts/simulator-smoke-diagnostics.py" collect \
+        --artifacts "$FORM_CASE_ARTIFACTS" --device "$FORM_DEVICE" --bundle "$FORM_BUNDLE" \
+        --executable "$FORM_EXECUTABLE" --pid "${FORM_APP_PID:-0}" --since "$FORM_STARTED" \
+        --seconds "$FORM_WAIT_SECONDS" --stage "$FORM_STAGE" --exit-code "$FORM_CASE_EXIT" --diagnosis "$FORM_DIAGNOSIS"
+      FORM_COLLECT_EXIT=$?
+      [[ "$FORM_COLLECT_EXIT" -eq 0 ]] || FORM_CASE_EXIT=1
+      exit "$FORM_CASE_EXIT"
+    }
+    trap form_scenario_finish EXIT
+    if [[ "$FORM_SCENARIO" != 'fresh' ]]; then
+      xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-terminate.log" 2>&1 || true
+      xcrun simctl uninstall "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-uninstall.log" 2>&1
+    fi
+    FORM_STAGE='install'
+    xcrun simctl install "$FORM_DEVICE" "$FORM_APP" 2>&1 | tee "$FORM_CASE_ARTIFACTS/simulator-install.log"
+    FORM_INSTALLED_APP="$(xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" app)"
+    FORM_DATA="$(xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" data)"
+    FORM_EXECUTABLE="$FORM_INSTALLED_APP/$FORM_EXECUTABLE_NAME"
+    [[ -x "$FORM_EXECUTABLE" ]] || form_fail 'Installierte App hat keine ausführbare Startdatei.'
+    FORM_DATABASE="$FORM_DATA/Documents/SQLite/form-v84-clean.db"
+    [[ ! -e "$FORM_DATABASE" ]] || form_fail 'Der eigene neue Testcontainer enthält unerwartet bereits eine Datenbank.'
+    if [[ "$FORM_SCENARIO" != 'fresh' ]]; then
+      FORM_CASE="${FORM_SCENARIO#v10-}"
+      mkdir -p "$(dirname "$FORM_DATABASE")"
+      cp "$FORM_FIXTURES/$FORM_CASE/form-v84-clean.db" "$FORM_DATABASE"
+      cmp -s "$FORM_FIXTURES/$FORM_CASE/form-v84-clean.db" "$FORM_DATABASE" || form_fail 'Fixture-Kopie ist nicht bytegleich.'
+    fi
+    FORM_STARTED="$(date +%s)"
+    xcrun simctl spawn "$FORM_DEVICE" log stream --style compact --level debug --predicate "$FORM_PREDICATE" \
+      > "$FORM_CASE_ARTIFACTS/simulator-unified.log" 2> "$FORM_CASE_ARTIFACTS/simulator-unified-stream.stderr.log" &
+    FORM_LOG_PID=$!
+    FORM_STAGE='launch'
+    # No debugger or console attachment: observe an ordinary Release start.
+    set +e
+    xcrun simctl launch --terminate-running-process \
+      --stdout="$FORM_CASE_ARTIFACTS/simulator-app.stdout.log" --stderr="$FORM_CASE_ARTIFACTS/simulator-app.stderr.log" \
+      "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-launch.stdout.log" 2> "$FORM_CASE_ARTIFACTS/simulator-launch.stderr.log"
+    FORM_LAUNCH_EXIT=$?
+    set -e
+    cat "$FORM_CASE_ARTIFACTS/simulator-launch.stdout.log" "$FORM_CASE_ARTIFACTS/simulator-launch.stderr.log" | tee "$FORM_CASE_ARTIFACTS/simulator-launch.log"
+    [[ "$FORM_LAUNCH_EXIT" -eq 0 ]] || form_fail "simctl konnte die Release-App nicht starten (Exit $FORM_LAUNCH_EXIT)."
+    FORM_APP_PID="$(python3 - "$FORM_CASE_ARTIFACTS/simulator-launch.log" "$FORM_BUNDLE" <<'PY'
+import re,sys
+from pathlib import Path
+matches=re.findall(r'^'+re.escape(sys.argv[2])+r':\s*([1-9][0-9]*)\s*$',Path(sys.argv[1]).read_text(),re.MULTILINE)
+if len(set(matches)) != 1:
+    raise SystemExit('Keine eindeutige App-PID in simctl launch; ein erfolgreicher Startbefehl genügt nicht.')
+print(matches[0])
+PY
+)"
+    FORM_STAGE='observe-process'
+    python3 scripts/simulator-smoke-diagnostics.py monitor --artifacts "$FORM_CASE_ARTIFACTS" \
+      --device "$FORM_DEVICE" --pid "$FORM_APP_PID" --executable "$FORM_EXECUTABLE" --seconds "$FORM_WAIT_SECONDS"
+    FORM_STAGE='repository-readback'
+    xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-terminate.log" 2>&1
+    python3 scripts/simulator-smoke-diagnostics.py database --artifacts "$FORM_CASE_ARTIFACTS" \
+      --database "$FORM_DATABASE" --scenario "$FORM_SCENARIO" --fixture-manifest "$FORM_FIXTURES/manifest.json"
+    FORM_STAGE='completed'
+    echo "PASS: $FORM_SCENARIO — Release-PID über ${FORM_WAIT_SECONDS}s bestätigt, Screenshot erfasst, SQLite-Schema9 und Szenariodaten gelesen."
+  )
+  FORM_CASE_EXIT=$?
+  set -e
+  if [[ "$FORM_CASE_EXIT" -ne 0 ]]; then
+    FORM_ANY_FAILURE=1
+    echo "ERROR: Szenario $FORM_SCENARIO fehlgeschlagen (Exit $FORM_CASE_EXIT); nächste isolierte Testinstallation folgt." >&2
+  fi
+done
+[[ "$FORM_ANY_FAILURE" -eq 0 ]] || form_fail 'Mindestens ein Simulator-Startszenario ist fehlgeschlagen; keine IPA-Freigabe.'
+FORM_STAGE='completed'
+FORM_VERIFIED='true'
+echo 'PASS: Fresh, FORM10-Home und FORM10-Live bestanden den Prozess-/Repository-Startcheck. Alle Screenshots benötigen noch visuelle Prüfung.'

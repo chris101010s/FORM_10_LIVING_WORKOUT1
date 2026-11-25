@@ -227,8 +227,9 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
       echo "ERROR: $FORM_DIAGNOSIS" >&2
       exit "$FORM_INSTALL_EXIT"
     fi
-    FORM_CONTAINER_SECONDS=30
-    [[ "$FORM_SCENARIO" != 'fresh' ]] || FORM_CONTAINER_SECONDS=180
+    # Run 13 showed container registration can also lag after a later reinstall.
+    # Bound every lookup equally; no retries, inferred paths or skipped gates.
+    FORM_CONTAINER_SECONDS=180
     for FORM_CONTAINER_KIND in app data; do
       FORM_STAGE="$FORM_CONTAINER_KIND-container"
       echo "CONTAINER: $FORM_SCENARIO/$FORM_CONTAINER_KIND, bis zu ${FORM_CONTAINER_SECONDS}s."

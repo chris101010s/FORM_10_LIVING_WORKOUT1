@@ -24,17 +24,36 @@ form_fail() { FORM_DIAGNOSIS="$1"; echo "ERROR: $FORM_DIAGNOSIS" >&2; exit 1; }
 # Python supplies real command timeouts; simctl has no invented timeout flags.
 form_timed() {
   python3 - "$@" <<'PY_TIMEOUT'
-import subprocess,sys
+from datetime import datetime,timezone
+import json,os
+from pathlib import Path
+import subprocess,sys,time
 seconds=int(sys.argv[1])
+started_at=datetime.now(timezone.utc).isoformat()
+started=time.monotonic()
+exit_code=1
+timed_out=False
 try:
     result=subprocess.run(sys.argv[2:],timeout=seconds,check=False)
-    raise SystemExit(result.returncode if result.returncode>=0 else 128-result.returncode)
+    exit_code=result.returncode if result.returncode>=0 else 128-result.returncode
 except subprocess.TimeoutExpired:
+    exit_code=124
+    timed_out=True
     print('ERROR: Timeout nach '+str(seconds)+'s: '+' '.join(sys.argv[2:]),file=sys.stderr)
-    raise SystemExit(124)
 except OSError as error:
+    exit_code=127
     print('ERROR: '+str(error),file=sys.stderr)
-    raise SystemExit(127)
+finally:
+    status_file=os.environ.get('FORM_TIMED_STATUS_FILE')
+    if status_file:
+        report={'status':'timeout' if timed_out else ('succeeded' if exit_code==0 else 'failed'),
+                'operation':os.environ.get('FORM_TIMED_OPERATION'),
+                'startedAt':started_at,'finishedAt':datetime.now(timezone.utc).isoformat(),
+                'elapsedSeconds':round(time.monotonic()-started,3),'timeoutSeconds':seconds,
+                'exitCode':exit_code,'timedOut':timed_out}
+        Path(status_file).write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+        print('TIMING: '+json.dumps(report,ensure_ascii=False),flush=True)
+raise SystemExit(exit_code)
 PY_TIMEOUT
 }
 form_finish() {
@@ -180,7 +199,23 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
       form_timed 120 xcrun simctl uninstall "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-prior-uninstall.log" 2>&1
     fi
     FORM_STAGE='install'
-    form_timed 120 xcrun simctl install "$FORM_DEVICE" "$FORM_APP" 2>&1 | tee "$FORM_CASE_ARTIFACTS/simulator-install.log"
+    # The first install also waits for a newly created simulator's cold services.
+    # Give that one command more time; never retry a launch or hide a failed case.
+    FORM_INSTALL_SECONDS=120
+    [[ "$FORM_SCENARIO" != 'fresh' ]] || FORM_INSTALL_SECONDS=360
+    echo "INSTALL: $FORM_SCENARIO, einmalig bis zu ${FORM_INSTALL_SECONDS}s."
+    set +e
+    FORM_TIMED_STATUS_FILE="$FORM_CASE_ARTIFACTS/simulator-install-status.json" \
+      FORM_TIMED_OPERATION="$FORM_SCENARIO-install" \
+      form_timed "$FORM_INSTALL_SECONDS" xcrun simctl install "$FORM_DEVICE" "$FORM_APP" \
+      2>&1 | tee "$FORM_CASE_ARTIFACTS/simulator-install.log"
+    FORM_INSTALL_EXIT=$?
+    set -e
+    if [[ "$FORM_INSTALL_EXIT" -ne 0 ]]; then
+      FORM_DIAGNOSIS="Installation für $FORM_SCENARIO fehlgeschlagen (Exit $FORM_INSTALL_EXIT, Zeitbudget ${FORM_INSTALL_SECONDS}s); kein App-Start."
+      echo "ERROR: $FORM_DIAGNOSIS" >&2
+      exit "$FORM_INSTALL_EXIT"
+    fi
     FORM_INSTALLED_APP="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" app)"
     FORM_DATA="$(form_timed 30 xcrun simctl get_app_container "$FORM_DEVICE" "$FORM_BUNDLE" data)"
     FORM_EXECUTABLE="$FORM_INSTALLED_APP/$FORM_EXECUTABLE_NAME"

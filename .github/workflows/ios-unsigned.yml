@@ -96,7 +96,7 @@ jobs:
         run: bash scripts/build-ios-simulator.sh
 
       - name: Drei Release-Starts und FORM10-Daten im Simulator prüfen
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: bash scripts/simulator-smoke.sh --skip-build
 
       - name: Startnachweise vor dem iPhone-Build sichern

@@ -69,20 +69,6 @@ jobs:
       - name: Xcode-Version protokollieren
         run: xcodebuild -version
 
-      - name: Native Startklassennamen unter Swift prüfen
-        run: |
-          set -o pipefail
-          mkdir -p artifacts
-          bash scripts/test-scene-runtime-name.sh | tee artifacts/scene-runtime-status.json
-
-      - name: Frühe Startdiagnose sichern
-        uses: actions/upload-artifact@v6
-        with:
-          name: FORM_15_0_0_Startup_Diagnosis-${{ github.run_number }}
-          path: artifacts/scene-runtime-status.json
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Reproduzierbare Abhängigkeiten installieren
         run: npm ci --no-audit --no-fund
 
@@ -112,6 +98,20 @@ jobs:
       - name: Drei Release-Starts und FORM10-Daten im Simulator prüfen
         timeout-minutes: 15
         run: bash scripts/simulator-smoke.sh --skip-build
+
+      - name: Startnachweise vor dem iPhone-Build sichern
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: FORM_15_0_0_Startcheck-${{ github.run_number }}
+          path: |
+            artifacts/simulator-*status.json
+            artifacts/simulator-architecture.log
+            artifacts/simulator-boot*.log
+            artifacts/simulator-cleanup.log
+            artifacts/simulator-smoke/**
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Echte iPhone-IPA kompilieren und prüfen
         run: npm run build:ios:unsigned

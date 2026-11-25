@@ -1,10 +1,16 @@
 # FORM 15.0.0 · The Living Sketchbook
 
-Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150002**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
+Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150003**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
 
 Der Quellcode enthält individuelle Sollzeilen, Planversionen, bewusst erlaubte Extras, atomisches Undo, private Medien und geprüfte Sicherungen. Die eigene Produktwelt umfasst 48 kanonische Motive, 16 Pip-Posen, zehn neutrale Kategorien, eigene Tabs, ein festes Ink-App-Symbol und ein ereignisgebundenes Motion-/Textsystem. Neue Analyse- und Suchansichten verwenden vorhandene Daten.
 
 **Lieferstatus und genaue Nachweise:** `RELEASE_REPORT_15_SECOND_PASS.md` und `TEST_MATRIX_15_SECOND_PASS.md`. Es wird keine verifizierte IPA behauptet. CocoaPods/Xcode, echtes iPhone-Upgrade, native Bedienung und YAZIO-Roundtrip sind getrennte offene Gates. Die originalen Berichte des ersten Durchgangs bleiben als historische Belege erhalten.
+
+## Reparatur Build 150003: Startabsturz
+
+Der Release-Starttest hat den unmittelbaren Abbruch beim Vorbereiten privater Dateien reproduziert: `import('react-native')` wertete auch den optionalen `PushNotificationIOS`-Export aus und löste `NativeEventEmitter(null)` aus. Der Dateiadapter lädt jetzt nur die benötigten Modulzugriffe, weiterhin erst bei Bedarf. Die bestehenden Datenpfade, Datenbank, Migration und Backup-Inhalte werden dafür nicht verändert.
+
+Der Regressionstest verwendet Metros tatsächliche Import-Laufzeit und prüft den fehlerhaften bisherigen Import gegen die Korrektur. Vor einer Standard-IPA sind drei echte Release-Starts mit frischen Daten sowie zwei synthetischen FORM10-Beständen erforderlich. Der Startnachweis wird vor dem iPhone-Build hochgeladen. Die Simulatorwahl verwendet ein tatsächlich vorhandenes nummeriertes iPhone mit allgemeiner iOS-Runtime. Einzelheiten und Grenzen stehen in `REPAIR_STARTUP_150003.md`.
 
 ## Reparatur Build 150002: festes App-Symbol
 

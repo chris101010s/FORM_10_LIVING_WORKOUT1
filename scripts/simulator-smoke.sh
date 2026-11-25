@@ -109,22 +109,7 @@ FORM_STAGE='dedicated-simulator'
 echo 'PHASE: Eigenen Testsimulator erstellen und booten (Bootstatus maximal 300s).'
 form_timed 60 xcrun simctl list devices available --json > "$FORM_ARTIFACTS/simulator-devices.json"
 form_timed 60 xcrun simctl list devicetypes --json > "$FORM_ARTIFACTS/simulator-device-types.json"
-FORM_DEVICE_TYPE_AND_RUNTIME="$(python3 - "$FORM_ARTIFACTS/simulator-devices.json" "$FORM_ARTIFACTS/simulator-device-types.json" <<'PY'
-import json,re,sys
-from pathlib import Path
-devices=json.loads(Path(sys.argv[1]).read_text())['devices']
-types=json.loads(Path(sys.argv[2]).read_text())['devicetypes']
-items=[(runtime,d) for runtime,group in devices.items() for d in group if 'iOS' in runtime and d.get('isAvailable') and d['name'].startswith('iPhone')]
-if not items:
-    raise SystemExit('Kein iPhone-Simulator verfügbar.')
-items.sort(key=lambda item:(tuple(int(n) for n in re.findall(r'\d+',item[0])),'SE' not in item[1]['name'],item[1]['name']),reverse=True)
-runtime,device=items[0]
-type_id=device.get('deviceTypeIdentifier') or next((t['identifier'] for t in types if t['name']==device['name']),None)
-if not type_id:
-    raise SystemExit('Kein eindeutiger Gerätetyp für einen eigenen Testsimulator.')
-print(type_id,runtime)
-PY
-)"
+FORM_DEVICE_TYPE_AND_RUNTIME="$(python3 "$FORM_ROOT/scripts/select-ios-simulator.py" "$FORM_ARTIFACTS/simulator-devices.json" "$FORM_ARTIFACTS/simulator-device-types.json")"
 read -r FORM_DEVICE_TYPE FORM_RUNTIME <<< "$FORM_DEVICE_TYPE_AND_RUNTIME"
 FORM_DEVICE="$(form_timed 60 xcrun simctl create "FORM Startup Smoke ${GITHUB_RUN_ID:-local}-$$" "$FORM_DEVICE_TYPE" "$FORM_RUNTIME")"
 [[ "$FORM_DEVICE" =~ ^[A-Fa-f0-9-]{36}$ ]] || form_fail 'Neuer Testsimulator lieferte keine eindeutige UDID.'

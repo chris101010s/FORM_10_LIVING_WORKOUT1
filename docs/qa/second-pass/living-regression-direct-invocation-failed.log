@@ -1,0 +1,42 @@
+$ node tests/test-living-workout.cjs
+Started 2026-11-25T09:47:32.333333+00:00
+<ref *1> Error: spawnSync tsc ENOENT
+    at Object.spawnSync (node:internal/child_process:1191:20)
+    at spawnSync (node:child_process:929:24)
+    at execFileSync (node:child_process:972:15)
+    at /workspace/scratch/a16b8270c191/form15/tests/test-living-workout.cjs:4:32
+    at Object.<anonymous> (/workspace/scratch/a16b8270c191/form15/tests/test-living-workout.cjs:23:84)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawnSync tsc',
+  path: 'tsc',
+  spawnargs: [
+    '--target',
+    'ES2022',
+    '--module',
+    'commonjs',
+    '--strict',
+    '--skipLibCheck',
+    '--rootDir',
+    '/workspace/scratch/a16b8270c191/form15/src',
+    '--outDir',
+    '/tmp/form-living-4O50q8',
+    '/workspace/scratch/a16b8270c191/form15/src/utils/livingWorkout.ts',
+    '/workspace/scratch/a16b8270c191/form15/src/data/relational.ts',
+    '/workspace/scratch/a16b8270c191/form15/src/utils/setup.ts'
+  ],
+  error: [Circular *1],
+  status: null,
+  signal: null,
+  output: null,
+  pid: 0,
+  stdout: undefined,
+  stderr: undefined
+}
+
+EXIT_CODE=1

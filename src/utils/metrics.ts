@@ -40,7 +40,7 @@ export function projectedWeeks(entries: WeightEntry[], target: number | null): n
 }
 export function estimatedOneRepMax(kg:number,reps:number):number|null {return kg>0&&reps>0&&reps<=15?kg*(1+reps/30):null;}
 export function latestExerciseSets(workouts:Workout[],exerciseId:string):GymSet[] {
- const sorted=[...workouts].sort((a,b)=>b.finishedAt.localeCompare(a.finishedAt));
+ const sorted=[...workouts].sort((a,b)=>Date.parse(b.finishedAt)-Date.parse(a.finishedAt));
  const previous=sorted.find(w=>w.sets.some(s=>s.exerciseId===exerciseId));
  return previous?previous.sets.filter(s=>s.exerciseId===exerciseId):[];
 }

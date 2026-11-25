@@ -10,9 +10,9 @@ let repairNeeded=false;
 
 export async function loadData():Promise<AthleteData>{
  const current=await KV.getItem(KEY);
- if(!current){
+ if(current===null){
   const backup=await KV.getItem(RECOVERY_KEY);
-  if(!backup)return emptyData();
+  if(backup===null)return emptyData();
   try{const restored=validateRestoredData(JSON.parse(backup));lastWritten=backup;repairNeeded=true;return restored;}
   catch{throw new Error('Die Hauptdaten fehlen und die letzte Sicherung ist beschädigt. Nichts wurde überschrieben.');}
  }
@@ -20,7 +20,7 @@ export async function loadData():Promise<AthleteData>{
  try {const value=validateRestoredData(JSON.parse(current));lastWritten=current;repairNeeded=false;return value;}
  catch(primaryError){
   const backup=await KV.getItem(RECOVERY_KEY);
-  if(backup){
+  if(backup!==null){
    try {const value=validateRestoredData(JSON.parse(backup));lastWritten=backup;repairNeeded=true;return value;}
    catch {/* preserve error from primary record */}
   }

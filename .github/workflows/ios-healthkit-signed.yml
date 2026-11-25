@@ -1,0 +1,84 @@
+name: FORM 15.0.0 · HealthKit signiert
+on:
+  workflow_dispatch:
+    inputs:
+      export_method:
+        description: Passend zum eigenen registrierten Development-/Ad-hoc-Profil
+        type: choice
+        options: [debugging, release-testing]
+        default: debugging
+      custom_tabs:
+        description: Kompatibilitätsmodus mit eigener Tab-Leiste
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: form15-healthkit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  signed:
+    name: Optional · vorhandene HealthKit-Signierrechte
+    runs-on: xcode-27
+    timeout-minutes: 75
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      FORM_HEALTHKIT: '1'
+      FORM_WIDGETS: '0'
+      FORM_TEAM_ID: ${{ secrets.FORM_APPLE_TEAM_ID }}
+      FORM_EXPORT_METHOD: ${{ inputs.export_method }}
+      EXPO_PUBLIC_FORM_CUSTOM_TABS: ${{ inputs.custom_tabs && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Quelldateien und Git-Tracking früh prüfen
+        run: node scripts/preflight.cjs
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24.22.3'
+          cache: npm
+      - name: Abhängigkeiten reproduzierbar installieren
+        run: npm ci --no-audit --no-fund
+      - name: Gemeinsame Release-Prüfungen
+        run: npm run qa:release
+      - name: Native Dateien und Pods erzeugen
+        run: |
+          set -o pipefail
+          npx --no-install expo prebuild --platform ios --clean --no-install 2>&1 | tee artifacts/prebuild.log
+          cd ios
+          pod install 2>&1 | tee ../artifacts/pods.log
+      - name: Eigenes Signiermaterial im temporären Runner installieren
+        env:
+          FORM_CERTIFICATE_P12_BASE64: ${{ secrets.FORM_CERTIFICATE_P12_BASE64 }}
+          FORM_CERTIFICATE_PASSWORD: ${{ secrets.FORM_CERTIFICATE_PASSWORD }}
+          FORM_PROFILE_BASE64: ${{ secrets.FORM_PROFILE_BASE64 }}
+          FORM_KEYCHAIN_PASSWORD: ${{ secrets.FORM_KEYCHAIN_PASSWORD }}
+        run: bash scripts/setup-ci-signing.sh
+      - name: Profil prüfen, archivieren und signierte IPA prüfen
+        run: npm run build:ios:signed-health
+      - name: Temporäre Signierdaten entfernen
+        if: always()
+        run: bash scripts/cleanup-ci-signing.sh
+      - name: Tatsächliche Build- und Prüfprotokolle
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: FORM_15_0_0_HealthKit_QA-${{ github.run_number }}
+          path: |
+            artifacts/*.log
+            artifacts/*status.json
+            artifacts/*manifest.json
+            artifacts/*.xcresult
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Signierte HealthKit-IPA und SHA-256
+        if: success()
+        uses: actions/upload-artifact@v6
+        with:
+          name: FORM_15_0_0_HealthKit_signed_IPA-${{ github.run_number }}
+          path: |
+            artifacts/FORM_15_0_0_HealthKit_signed.ipa
+            artifacts/FORM_15_0_0_HealthKit_signed.manifest.json
+            artifacts/FORM_15_0_0_HealthKit_signed.sha256
+          if-no-files-found: error
+          retention-days: 7

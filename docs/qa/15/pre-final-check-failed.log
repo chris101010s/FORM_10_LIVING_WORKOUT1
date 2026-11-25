@@ -1,0 +1,80 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 check
+> npm run test:all && npm run typecheck && npm run lint
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:all
+> npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh && npm run test:redesign && npm run test:native && npm run test:form84 && npm run test:living && npm run test:switch-contract && npm run test:plan15 && npm run test:nutrition15 && npm run test:migration15 && npm run test:repository15 && npm run test:plan-management15 && npm run test:build15 && npm run test:progress15
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:preflight
+> node scripts/preflight.cjs
+
+PASS: Kernquellen und Git-Tracking vorhanden.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:syntax
+> node scripts/check-project.mjs
+
+72 TypeScript-/TSX-Quelldateien und 453 Importpfade geprüft: 0 Fehler
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:logic
+> node scripts/check-logic.cjs
+
+PASS: 17 Prüfschritte – Zahlen, Datum, Trends, Scan-Parser, Vorwerte, Cardio
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:catalog
+> node tests/test-catalog.cjs
+
+OK – Katalogtests: echte Suchlogik, DE-Synonyme, Filter, Daten-Validator und Startbestand.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:csv
+> node tests/test-csv.cjs
+
+OK – CSV: Quotes, Newlines, BOM, German decimals, dates and invalid headers.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:validation
+> node tests/test-validation.cjs
+
+PASS: 22 Backup-, Schema-, Datenmigration- und Sicherheitsprüfungen.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:workout
+> node tests/test-workout.cjs
+
+PASS: 12 Workout-Vorwert-, Progressions- und Wochenstatistikprüfungen.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:compat
+> node tests/test-compat.cjs
+
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: Frühe Quellenprüfung fehlt
+    at ok (/workspace/scratch/a16b8270c191/form15/tests/test-compat.cjs:5:45)
+    at Object.<anonymous> (/workspace/scratch/a16b8270c191/form15/tests/test-compat.cjs:19:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.3

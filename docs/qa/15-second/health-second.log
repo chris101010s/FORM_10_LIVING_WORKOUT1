@@ -1,0 +1,8 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:health-second
+> node tests/test-health-second.cjs
+
+PASS: 172 second-pass Health assertions (durable sync queue, history/DST, cancellation/re-entry, save errors, unknown values, device sources, provenance, own-export deletion). Native HealthKit/YAZIO execution remains unverified.
+
+EXIT_CODE=0

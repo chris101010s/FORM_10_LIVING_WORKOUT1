@@ -1,5 +1,5 @@
-# Lizenz / Übungsbilder und Fonts
+# Aktuelle Asset- und Lizenzliste
 
-Originalquelle: https://github.com/yuhonas/free-exercise-db (Unlicense laut Repository). Originalbildpfade werden ausschließlich exakt anhand der Quell-ID verwendet. Der Build lädt die erste Ansicht, validiert JPEG-Kennung und Größe und bindet sie lokal ein. Weitere Originalbilder nur auf Nutzeraktion herunterladen. Lokaler Fallback ist nicht als 800 echte Originalbilder auszugeben. Keine Google-Bilder übernommen. Eigene Nutzerfotos sind privat und Teil des JSON-Backups.
+Für FORM 15 gilt `ASSET_LICENSES_15.md`. Sie enthält die tatsächlich gebündelten vier Schriftfamilien samt Lizenzdateien und Hashes, die zwölf neuen eigenen SVGs sowie Herkunft und Grenzen des vorhandenen Übungskatalogs.
 
-Google Fonts: https://github.com/google/fonts/tree/main/ofl — Plus Jakarta Sans, DM Sans, IBM Plex Mono. Das Build-Skript verlangt die zugehörige SIL Open Font License und legt sie neben den heruntergeladenen Dateien ab. Ohne Abruf: Systemfonts. Keine Fontdateien sind separat im Lieferpaket enthalten.
+Der normale Release-Build verwendet den gelieferten Assetbestand. Er lädt nicht ungefragt neue Kataloge, Schriften oder Fotos nach. Die entsprechenden Fetch-Skripte bleiben ausdrückliche Wartungsaktionen.

@@ -1,0 +1,75 @@
+{
+  "method": "WCAG sRGB relative luminance; opaque color tokens only, not a native screenshot audit",
+  "pairs": [
+    {
+      "pair": "Light: text / paper",
+      "foreground": "#1D2025",
+      "background": "#FAF9F3",
+      "contrast": 15.487,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Light: secondary / paper",
+      "foreground": "#606369",
+      "background": "#FAF9F3",
+      "contrast": 5.711,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Light: white / primary",
+      "foreground": "#FFFFFF",
+      "background": "#2655D9",
+      "contrast": 6.206,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Light: blue / paper",
+      "foreground": "#2655D9",
+      "background": "#FAF9F3",
+      "contrast": 5.884,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Light: text / yellow",
+      "foreground": "#1D2025",
+      "background": "#FFE48A",
+      "contrast": 13.003,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Light: secondary / mint",
+      "foreground": "#606369",
+      "background": "#CFE8D5",
+      "contrast": 4.635,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Dark: text / paper",
+      "foreground": "#F3F5F7",
+      "background": "#17191D",
+      "contrast": 16.103,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Dark: secondary / sheet",
+      "foreground": "#B1B9C4",
+      "background": "#22262C",
+      "contrast": 7.677,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Dark: primary text / blue",
+      "foreground": "#17191D",
+      "background": "#9BCCFF",
+      "contrast": 10.455,
+      "normalText4_5": true
+    },
+    {
+      "pair": "Paper mode: secondary / background",
+      "foreground": "#5E605A",
+      "background": "#F5F3EE",
+      "contrast": 5.744,
+      "normalText4_5": true
+    }
+  ]
+}

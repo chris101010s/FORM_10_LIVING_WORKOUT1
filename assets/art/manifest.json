@@ -1,0 +1,639 @@
+{
+  "version": "15.0.0",
+  "build": 150001,
+  "motifs": 48,
+  "categories": 10,
+  "tabStates": 12,
+  "assets": [
+    {
+      "id": "barbell",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/barbell.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Plan: Krafttage",
+      "sha256": "98fe928092886d779878cef0fa324703be50a859379e8801cceefc204010eb1f",
+      "pathSha256": "3db7c556e31b10eae9176aca4a7550017ac933c42b4e2c9e6635613430170ee9"
+    },
+    {
+      "id": "dumbbell",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/dumbbell.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Training und Übungsverlauf",
+      "sha256": "9a0b5143429f12a394f00bc6ff82685dbc8f6d59a9b2c2078ce002af1e5e9767",
+      "pathSha256": "d1417cd915dfb556c0abbf8b9be767386cbeae2a95e334767b262c514367053f"
+    },
+    {
+      "id": "kettlebell",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/kettlebell.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Katalog: freie Gewichte",
+      "sha256": "44ce9b86adda54d1d8d31807b825568172491e480b84549a4660b992c457472f",
+      "pathSha256": "7071aafdc78ed1309ff60ed1cdc89f2bccd54d71b7de24b0cb76669b5567c36a"
+    },
+    {
+      "id": "plates",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/plates.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Profil: Ausrüstung",
+      "sha256": "e6314da1238908be641e21491bc230e7d58ddfc558328811e0f483c3dd4f7f8b",
+      "pathSha256": "8209332a104e99e417824a1c3ba4ea1fb9181110833360a891b4f0010d3ec2be"
+    },
+    {
+      "id": "rack",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/rack.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Studio-/Gerätenotizen",
+      "sha256": "16fe98aac580928c8a8638c6bb147fb04b0db2221c68d1c7acb49d987eb40f41",
+      "pathSha256": "ed505e8c1698d960efde8fc8d70fa8bdc9a5a44d0856467d46b5bb1bed0ea5a5"
+    },
+    {
+      "id": "shoe",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/shoe.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Aktivität",
+      "sha256": "a7eb31f1632a3521fb0d9214ee7a1bb6b5d318ef75235f0d2de36af37d402f3d",
+      "pathSha256": "fcf9b55c5114d0260cdc2e29775594985fac48b0143c1ee605b491220149a971"
+    },
+    {
+      "id": "bench",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/bench.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Übungsdetails",
+      "sha256": "6bda137f072fc32e71826bf93adc83703768a0bb12733db23078923200622bba",
+      "pathSha256": "d55b30456516159eb7e67854d7b8b0f2d2c0108570c6023b791b1d294156ba01"
+    },
+    {
+      "id": "stopwatch",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/stopwatch.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Training: Uhr",
+      "sha256": "bdab70b26e127ba58cb44b01dbcea6b44a0e42dde6fac626a82a12a43c39f421",
+      "pathSha256": "c52423389d56eea55099006e42be9e9ffa5383cdd58199784ac118da01862e8a"
+    },
+    {
+      "id": "notebook",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/notebook.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Plan und Heute",
+      "sha256": "58ccc31bb4aa05d9e54ad289a90128ccc753c942b25c767b9e374dd27efbe320",
+      "pathSha256": "b0176ad4b8039efb6c4bcac114c50081013f85f01ae06be1f607fa017a20dc95"
+    },
+    {
+      "id": "pencil",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/pencil.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Planeditor",
+      "sha256": "0d21a598cfecf4e909f531d8b32215cf073c5c4daec2c576bb81c0d5708a37a8",
+      "pathSha256": "6ad335bfad51ff33a4bdd012102f550cb6ba3f194843937b9ee7a7d7446152db"
+    },
+    {
+      "id": "eraser",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/eraser.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Undo",
+      "sha256": "8171bb3cd20a5caf9a847a8a7fc4dd0e25aa8e476bc78e6e892356108d1989d9",
+      "pathSha256": "77d08a33fccf26ccb3518e836ad35bda8ab991f14339b5667c2ae4caf50b0ffa"
+    },
+    {
+      "id": "tape",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/tape.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Schließbare Randnotiz",
+      "sha256": "8dcbce9209ead45c2b7a74406421290baaa4949f19277546838e0c1ef999b843",
+      "pathSha256": "c0409f3339a08418f4c7a7f610559a307f80bcab158cb0fa330cd0f219c234bc"
+    },
+    {
+      "id": "clip",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/clip.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Gespeicherte Studionotiz",
+      "sha256": "ea8d54b4195fb4fc322e6c3d44f1befcc846c8211a0ef5a1c2cc80a32df4aacc",
+      "pathSha256": "15707bef25f4188cfbb090e743f5febe0096f408b5f6d2bb904a440efda88c99"
+    },
+    {
+      "id": "folder",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/folder.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Archiv und Planliste",
+      "sha256": "2924b317672eb21a3ed534f8365029a789f3e1d682349726eca98b6d5409e729",
+      "pathSha256": "bfd7431c9d56bb64a50d0e78796014cabac5e7be97807f99f1be25129234d4cd"
+    },
+    {
+      "id": "floppy",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/floppy.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Datensicherung",
+      "sha256": "60876e36b9772c2807a586747e3aea15038588a5770604e30eec51f9a50494d2",
+      "pathSha256": "dca98344bf61dcc94cff42cc2ab6b7183444b7a8f72cac1f1bebae5b7ab3f169"
+    },
+    {
+      "id": "window",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/window.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Optionaler Retro-Dialog",
+      "sha256": "af00ff67d090254cafae6054cbe9b159d1fbfcc950b099a6736610cf8231741a",
+      "pathSha256": "3060da911de13f80aa44bc4eaedc8a933d3610ab9d80696d1a59e6ac4804be2e"
+    },
+    {
+      "id": "moon",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/moon.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Schlaf",
+      "sha256": "f53f31dac914ae24c2faeeb9776e7903822fe325bb8d17b1450b0b78513c4616",
+      "pathSha256": "0a0dba80514b42a20fce3566489047e8db74753db0aba057414aa12871d1844c"
+    },
+    {
+      "id": "waterGlass",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/waterGlass.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Wasser",
+      "sha256": "12da46bf43dfdde4301895254c1d6de5be1f525235d1f1897a5f173330a68d43",
+      "pathSha256": "089a80f6c782e491ff43b6c0945d6f4db1d4b1db120c5792f4d639cb33ba9d91"
+    },
+    {
+      "id": "meal",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/meal.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ernährung",
+      "sha256": "d296d2cc28f659e36b5d79341512a79e067642adec7d8f4f8d67c372517e1890",
+      "pathSha256": "88a9256e9aaee18c2734ea22f52f2636283da9552fdba36ea152fa46b10ac67f"
+    },
+    {
+      "id": "heart",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/heart.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Gesundheit",
+      "sha256": "9ccc9241d774db4ad93608643c1220b6b1cf505a8357ebd3edcf852eebbc7aaf",
+      "pathSha256": "6bfd9b3c996287722ef4253aaf053b0693b6d0feb39c0877cdb6e13f508fceca"
+    },
+    {
+      "id": "steps",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/steps.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Schritte",
+      "sha256": "c0867b717726619b7644cf34ca09dafb16810271f27a2a99646c50b3a8916d53",
+      "pathSha256": "c08aea66c6c81184426ebf50ab1daf302fc47a7f288c25f7bb674b354be45886"
+    },
+    {
+      "id": "recovery",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/recovery.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Erholung",
+      "sha256": "e655e0b43ed7887b53025839f628821529e89676692ffe0548320915f2440d17",
+      "pathSha256": "b21474b03ca13ecdee508057f0b06fc9bde50008cae1115cf1357873c9cb1e48"
+    },
+    {
+      "id": "star",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/star.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Belegte Rekorde",
+      "sha256": "7b01d7134d4a00dbe235263d581d497e893792163d634b2b80858542014a7f6f",
+      "pathSha256": "01abcd00e92a88339379f27dbe8d6480afe1a83eddae33ab987b014281196fa5"
+    },
+    {
+      "id": "arrow",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/arrow.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Fortschritt",
+      "sha256": "a64a34af5c7d3c539f2919359fa42afe513751da0a392ad930b7632838b3f236",
+      "pathSha256": "f17a3052612ff282a1130bcca9b7abd17747556efaf75c014707568ef9557ba8"
+    },
+    {
+      "id": "calendarStamp",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/calendarStamp.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Kalender und abgeschlossene Termine",
+      "sha256": "cf4b1bdbd0206c95f2792b6c2d33efac498ceeec55084e0a58d20c590ba7141d",
+      "pathSha256": "2db77b577b5f02b803524359af3ed4cad6e6743b12da4eaed82333f115e056f2"
+    },
+    {
+      "id": "filmstrip",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/filmstrip.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Monats-/Jahresverlauf",
+      "sha256": "ca09d3de07613911a9df5ea7b25fbfc7e3442447ef039e352cd204a4d04e0635",
+      "pathSha256": "9e34aeb8e97c8e4215235064343feb4a835d342a7d9b9ef7c57589570ffe007f"
+    },
+    {
+      "id": "receipt",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/receipt.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Workoutabschluss",
+      "sha256": "dbb3ebc0c6f3d58120a1011ed583294109b3ae69499be02c31b5fc295fd7b3e6",
+      "pathSha256": "285a60112c34e2271748f3041c0fbf191f3d52c5759b45c33f582ffcad83139e"
+    },
+    {
+      "id": "searchNone",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/searchNone.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Suche ohne Treffer",
+      "sha256": "2d8aeb4a6f97469e6f69fbb898ffae0e4d3685485106764671dd414dc6140888",
+      "pathSha256": "7bde58339f0844add7b35a880c21b58203585b83cc3879bce93d630ea8db1555"
+    },
+    {
+      "id": "offline",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/offline.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Offline-Hinweis",
+      "sha256": "b5b2a01f006d98004440fa9e2a05e6a25570b76903b416cafaedb70f5d25a94e",
+      "pathSha256": "f443651220d8d3b2965331064683b8b28f2a1cfa89f9f8bfd8cf82f05306ad4f"
+    },
+    {
+      "id": "localSave",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/localSave.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Bestätigtes Speichern",
+      "sha256": "3c81bbedf75a0b488e66f0e2b3f9547cee7459a4d25c9e06dc5244e531c723af",
+      "pathSha256": "9a62acfbcbae2eb9f1df419685572c5abfef92bc5be06e8ef666ad1b3bed7aae"
+    },
+    {
+      "id": "connection",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/connection.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Bestätigte Health-Verbindung",
+      "sha256": "7a1db9cd8478abfd0a81386c4f3615a1154358fb20f424f95f1432f378f8fdff",
+      "pathSha256": "9f2ae5ca75e8e7f103856c666bd3af18874458a1611d101c04d7ccf1d864eb5f"
+    },
+    {
+      "id": "repair",
+      "source": "src/art/objects.ts",
+      "file": "assets/art/repair.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Speicherfehler/Retry",
+      "sha256": "7587d974daf443567c2ea75ece4b5747860c31c77338e5e2e130969c642d8b4a",
+      "pathSha256": "b3b701358e82ccc3faeb8cda7d4059d6bbe67451a4548f24f70820f80bac578b"
+    },
+    {
+      "id": "pipNeutral",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipNeutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "e08c94664dd12cd74167f3ab971f04d8fa169f25c31e16eac16b0bc488239c53",
+      "pathSha256": "7208cb73de533289c5d28d39695739d0abe4c37387c90e8d85fca6f49ffb2c64"
+    },
+    {
+      "id": "pipSmile",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipSmile.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "76dc5c61b71f5a36fe5893ce27f3c0731de14ba05dd1c1cae2383236e598d9ba",
+      "pathSha256": "fb1884eebf12f3d3482fdc31bfcd4a1f8633f462706dc0d1f1cb9f1fc7ad2e3f"
+    },
+    {
+      "id": "pipWave",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipWave.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "5848b721ea01d53338dfa35539966ac56779bb76231a9876b2703e2eb67f8e51",
+      "pathSha256": "66788aef1ea130ae8a7b494ff57d66567af35499c6609a35ab5e24a589a685e8"
+    },
+    {
+      "id": "pipFocused",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipFocused.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "b8cb8002d690a18cb62993522af1bf403eb7adf8dc5e7fc8a0fe3325d695f6cb",
+      "pathSha256": "e3744d54eb8931e0767a776daec1358876fdce9e91bb7b5545a653643bcaffeb"
+    },
+    {
+      "id": "pipReady",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipReady.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "26a7c92d13566dfa62ae7f6ad23495ce11d121ddde82e66ddc31a444d5d8a875",
+      "pathSha256": "526f59b8d1cca4176817157ef783424046de7e9d9a98c59387da0c33bb904bc2"
+    },
+    {
+      "id": "pipWriting",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipWriting.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "029bd3c98111c291e2770f240438fab4f37e8df350a16a2c05e02138203f3266",
+      "pathSha256": "e1bd0a5394be4830b16fe959d41d3911074da92670e02d976b9ef9c5e8d7a7dd"
+    },
+    {
+      "id": "pipDumbbell",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipDumbbell.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "f4ad04132e44a11bdf37d2f1186eb9888055328aaf0a7efc9071217b8038f528",
+      "pathSha256": "2fd5aad55bed69bc0cb73b0b030e0e6371b88d899fbe5d411926c1ff919453d4"
+    },
+    {
+      "id": "pipStopwatch",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipStopwatch.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "c6186158d6ea22ed086dfc72e4c0c6845d9723ebc9f31b122a6e371e342ebae1",
+      "pathSha256": "f22a1cda3be295c9f001d541e56b60d7c8d49023dbe4a7948460544c37b693a0"
+    },
+    {
+      "id": "pipThumbsUp",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipThumbsUp.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "062711ecce48a7dc6459a39b33ef12ec131095cb132fc864dcba73edd27cc728",
+      "pathSha256": "441d63cd29199a7efe4bd4b1771a8c74064ba9f24e6142b58e935ca336308890"
+    },
+    {
+      "id": "pipResting",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipResting.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "3ef52857ca90a7e16f0fa3be0071721133845c21dd9757a74ad5c341ec351d1b",
+      "pathSha256": "0fd7472bed3a23bcf705b8a9b88570d64715dacb706bacf16005f4f08235e361"
+    },
+    {
+      "id": "pipSleeping",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipSleeping.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "ee46e392a3e3fefbd0eaf9650d4ff43b793618d7857b70f7a20e657737d8b9e6",
+      "pathSha256": "098a244412ddb7821a6ed6dc379f74fcfa7f4ac1573000ab0a8d050c7bb9a206"
+    },
+    {
+      "id": "pipThinking",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipThinking.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "032e84a33fd8eaf7038ce941cc8617a80c16693923409c6df25010e10337e79b",
+      "pathSha256": "c11a5b573374eddc3efb455e7949606cfbeef34f0765ce7243d33256c132d768"
+    },
+    {
+      "id": "pipSurprised",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipSurprised.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "6def21d8c1d56e5c2a1a3a3d02f04bd97c969f3c663934ab644e18eb04792dff",
+      "pathSha256": "0a60ecb1ec04b5c920bc3c0f24010e894cee29e8c5dcc4fb58c90677122d9448"
+    },
+    {
+      "id": "pipCelebrating",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipCelebrating.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "7d11bc87a51ff20f2e6e6f61afb551b852627cf22ee061193a3e264af3f73fe2",
+      "pathSha256": "374e3b19e514331df2b8cebe72e96574973339eca60255efc5d42c23d0873243"
+    },
+    {
+      "id": "pipMagnifier",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipMagnifier.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "4ffe4359884042dd8787304d617b75e7c7948b5caa9899ec9b2d224821931611",
+      "pathSha256": "44b0c08a85a0674ccd1d95db7e8db33ad3765b9683171157a02625cac233666b"
+    },
+    {
+      "id": "pipRepair",
+      "source": "src/art/pip.ts",
+      "file": "assets/art/pipRepair.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Ereignisgebundene Pip-Pose über Personality.tsx; getrenntes Opt-in",
+      "sha256": "6de466ba985615feedc23d536866f43ec73bb8f47d3acb6f9de8af9ae9c50527",
+      "pathSha256": "b8217e923aaf9d108436ceb125bfd142fd05de944b9446fce891496127f25c7a"
+    },
+    {
+      "id": "freeWeights",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-freeWeights.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "0d2762efc8c8741f21ca8bec239cbffae3fc9bfc0962121a12b9e2c5250aba4d",
+      "pathSha256": "4b46353911447f1ea2f16a9ff653fb9d195d5d9e67e80e6ccd60c5059a0d4121"
+    },
+    {
+      "id": "machine",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-machine.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "21c911420cf0d49e747daeb5f40fc5f66d90fea005286db4a4a73a00cb063c33",
+      "pathSha256": "6c4846c58d23ae5f24ccf08b12b6e772d2e7d7e504c24af21b9fbe102a51da81"
+    },
+    {
+      "id": "cable",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-cable.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "91bcbf062e551f66ef744bedfcc175ec87145141c1982a73c71b2f86c56e7593",
+      "pathSha256": "44dd3729b60bd272ed6be31c86aeb0a247c88fab8f8b7a12adf9e32f40013f7b"
+    },
+    {
+      "id": "bodyweight",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-bodyweight.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "a7378b8e0600d148244554f53508fc80c23f26289e0857dc67a21215c96d2d50",
+      "pathSha256": "9c5907aa3f1d03804543a2b762c74e12fa4b77f480fd2dc3ee49b594e2ad4d9e"
+    },
+    {
+      "id": "bands",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-bands.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "1da664dea0b64fe8673ff51dfcb6cb432e6992dce83fdb0f9f736789991e363a",
+      "pathSha256": "ea886b39b86e9f50008a2c755fbc7ae5e39b58d65a16e3f915901a4296aebb37"
+    },
+    {
+      "id": "cardio",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-cardio.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "d578fee3d99f47190766cdc09d23d88c3ffc8a51037ea2827202cf484e4b32d6",
+      "pathSha256": "fc25c85f5c6c96491aa9f17ca24a38975d432d9ee8c7b9ddd505877ce2064848"
+    },
+    {
+      "id": "core",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-core.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "bbc43db4b36884588b5768e24370f75df13601c5a740fae006cf3253b4f8c686",
+      "pathSha256": "7bf49ca0672773b4e4ada5622acc0464268d56e27a2488c1a8369b3651376e1c"
+    },
+    {
+      "id": "mobility",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-mobility.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "be38148d166863e81942e0849689cbabf06c11e7ab3a5935d1e44763dbebf7f6",
+      "pathSha256": "497b4a85368af3cb84415c0bd54b1174c6eb2d08387d1cc26a19dd30b9961095"
+    },
+    {
+      "id": "balance",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-balance.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "2e01e7f7c156f26f825dd905a83cdbbfe7c0e4afe4fc07602d61f170a588c479",
+      "pathSha256": "f96d9ee97b091c1ccca7c3217bf6b6893716fadf65cbf8c66bbb34f84de2d049"
+    },
+    {
+      "id": "mixed",
+      "source": "src/art/categories.ts",
+      "file": "assets/art/category-mixed.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Geräte-/Muskelgruppenfilter und neutraler Katalogplatzhalter; keine Übungsanleitung",
+      "sha256": "f7d974d4490af5cc9b05642b253be6f95c918a639a68e496f7b93213accca3d6",
+      "pathSha256": "00247a1796b32077dfad703f670eb5787dedcdf66c4464935cf82cf8866c727b"
+    },
+    {
+      "id": "tab-home-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-home-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "a810fd9cba2b25ec66907984d331c5d13fc25416000b62a9348e07b43ba94332",
+      "pathSha256": "ca432d76cdbc2b60a40913167fbd317eb1ef171a3b49d185c0ee1793300c4409"
+    },
+    {
+      "id": "tab-home-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-home-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "b48a5ea3ec90fd970a54d15d9881b8b45765ace955d3905abc735f540fadc7a2",
+      "pathSha256": "562ca068d2ed6c2415f1a86172c5ae14b6204025a14f22ef26b8de809c6f17a4"
+    },
+    {
+      "id": "tab-plans-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-plans-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "17f045f13cc18a567051aa185a07b68429f6596f5c4e1568dc1ce4addc116e79",
+      "pathSha256": "9bf96c1c9ce6168801ee869c98b82f1488aa67e3c8913b7ff0d1f6136b1d3a2f"
+    },
+    {
+      "id": "tab-plans-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-plans-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "9e5f59d5681f53c5f78f1bfc206909fb8b9f1ff1bbc4621d3356911af7db295c",
+      "pathSha256": "53290f878f4ecac23b4a93de0a057721fa1f929d9319755ceecc3999a3330a12"
+    },
+    {
+      "id": "tab-gym-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-gym-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "c3af1d8afa0527d4946a1a3057e99e3fb5da9b37f623d005ffafc3b238f3632d",
+      "pathSha256": "fd3d875f8b5bdbf2664fc54e287fdfb3f2e5af7960b8d50a6fe4217dcfd79616"
+    },
+    {
+      "id": "tab-gym-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-gym-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "e403b0a833fe12718a6cf7e539d5e12ec211102766d8da178bea2358c5961488",
+      "pathSha256": "08716a9a95f49dd4a00508ed5d27730a2da90a32e55ec4969fa9a7ea36b7e735"
+    },
+    {
+      "id": "tab-weight-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-weight-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "f38964cde6b33cc0597548237a06b7a9a146587435b5be4bc0abdca896cdac37",
+      "pathSha256": "3a11b73d0dbe71d1268c2dc0905075391c24bdca47a95e404f4505e5e187a1c7"
+    },
+    {
+      "id": "tab-weight-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-weight-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "039e3abba9c916ab6199de8351a38088e73f318b13121fa4039294b6f200b9bb",
+      "pathSha256": "739913560ca84d76514f09ad42a735afec315302f8fbd2a83a4415e2b73a027d"
+    },
+    {
+      "id": "tab-health-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-health-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "98ed2cdfc8d6003a669f1ec8ba89fc385ff5fd628bc28dcbc8a9a44ef7101b43",
+      "pathSha256": "c357ca9651625e757f2f6c6e6d0cc125963c582d38ab59e5bf7738ae3d5d5c6e"
+    },
+    {
+      "id": "tab-health-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-health-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "57a6c9cb4593ad2aafe7fd7402595eb7f11310db53afa28995a71cd0d7eb8b5f",
+      "pathSha256": "795e631dfcee04723e87f1cdfe0fe7a66f700cbcf969402a5055c6c25ca407bd"
+    },
+    {
+      "id": "tab-profile-neutral",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-profile-neutral.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "3c2878369578d251c0d325b3b5d2225444f70a3ba0fc7df15de82c8178ae0d45",
+      "pathSha256": "c547b534a183f9de4d49db67334c6727f81e19d76598db02abad68d11129d810"
+    },
+    {
+      "id": "tab-profile-active",
+      "source": "src/art/tabs.ts",
+      "file": "assets/art/tab-profile-active.svg",
+      "license": "Original FORM artwork · unrestricted use and modification with this app",
+      "use": "Native und Fallback-Navigation, Profilzugang",
+      "sha256": "7027446354860eef797b6f28ad3178a026aaa14639366a8bb1b8b71d78d6a64a",
+      "pathSha256": "4c9e31ec43743e00fc6210e008770b21d451aafb3114b44c8328e811ad5d7f04"
+    }
+  ]
+}

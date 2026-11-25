@@ -1,0 +1,39 @@
+{
+  "mode": "standard",
+  "generatedProject": "/workspace/scratch/a16b8270c191/form15-second-prebuild-tg4_z30p",
+  "checkedAt": "2026-11-25T09:51:29.776341+00:00",
+  "version": "15.0.0",
+  "build": "150001",
+  "entitlements": {},
+  "healthUsageDescriptions": false,
+  "widgets": false,
+  "primaryPixelsMatchInk": true,
+  "alternateSourceAssets": [
+    {
+      "key": "paper",
+      "sha256": "4d3eb3509b9569b3613f50177ebb77e0c6ec5db3b16a07e2c54157426f25f6fe",
+      "pixels": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "key": "blueprint",
+      "sha256": "d33de9ec770fefd22cf3542e1225cf6018f05f2b82b4dad489f7b472157d07e9",
+      "pixels": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "key": "retro",
+      "sha256": "4f807a9635061ea198e8d0bfde3c7724589ef88da15d0efcab9e622d99e743e0",
+      "pixels": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "nativeCompile": "BLOCKED: Linux; generated configuration only",
+  "compiledInfoPlistAlternates": "Not verified until Xcode invokes scripts/verify-ios-presentation.cjs"
+}

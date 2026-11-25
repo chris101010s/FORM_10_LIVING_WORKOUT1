@@ -1,0 +1,9 @@
+{
+  "command": "npm run check",
+  "startedAt": "2026-11-25T10:11:00.953304+00:00",
+  "finishedAt": "2026-11-25T10:12:18.772586+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 77.82,
+  "log": "docs/qa/15-second/final-check.log",
+  "previousAttempt": "final-check-lint-failed.log: one promise-executor-return lint error in the new test, corrected before this run"
+}

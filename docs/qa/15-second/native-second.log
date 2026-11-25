@@ -1,0 +1,8 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:native-second
+> node tests/test-native-second.cjs
+
+PASS: 97 second-pass native-adapter assertions (KeepAwake lifecycle/races, notification identity/undo/cancel/retry, occurrence-aware widgets, native timer payloads, capability/readback). No iPhone, entitlement or native compile success claimed.
+
+EXIT_CODE=0

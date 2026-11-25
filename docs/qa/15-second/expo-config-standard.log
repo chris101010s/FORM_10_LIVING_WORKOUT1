@@ -1,0 +1,62 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 config:check
+> expo config --type public
+
+
+{
+  name: [32m'FORM 15.0.0'[39m,
+  slug: [32m'athlete-os'[39m,
+  scheme: [32m'athleteos'[39m,
+  version: [32m'15.0.0'[39m,
+  orientation: [32m'portrait'[39m,
+  userInterfaceStyle: [32m'automatic'[39m,
+  backgroundColor: [32m'#FAF9F3'[39m,
+  platforms: [
+    [32m'ios'[39m,
+    [32m'android'[39m
+  ],
+  plugins: [
+    [32m'expo-document-picker'[39m,
+    [32m'expo-image-picker'[39m,
+    [
+      [32m'expo-notifications'[39m,
+      {
+        enableRemoteNotifications: [33mfalse[39m
+      }
+    ],
+    [32m'expo-local-authentication'[39m,
+    [32m'./plugins/withAlternateIcons'[39m
+  ],
+  icon: [32m'./assets/icons/ink.png'[39m,
+  description: [90mundefined[39m,
+  sdkVersion: [32m'58.0.0'[39m,
+  ios: {
+    bundleIdentifier: [32m'app.athleteos.personal'[39m,
+    supportsTablet: [33mtrue[39m,
+    icon: [32m'./assets/icons/ink.png'[39m,
+    buildNumber: [32m'150001'[39m,
+    infoPlist: {
+      NSPhotoLibraryUsageDescription: [32m'Optional: ein Foto für eine eigene Übung auswählen.'[39m,
+      UIFileSharingEnabled: [33mtrue[39m,
+      LSSupportsOpeningDocumentsInPlace: [33mtrue[39m,
+      NSFaceIDUsageDescription: [32m'Optionaler Schutz deiner privaten Trainings- und Gesundheitsdaten.'[39m
+    },
+    entitlements: {}
+  },
+  android: {
+    package: [32m'app.athleteos.personal'[39m,
+    versionCode: [33m150001[39m,
+    permissions: [
+      [32m'android.permission.RECORD_AUDIO'[39m,
+      [32m'android.permission.USE_BIOMETRIC'[39m,
+      [32m'android.permission.USE_FINGERPRINT'[39m
+    ]
+  },
+  extra: {
+    privacy: [32m'All personal data remains on device until user explicitly exports or shares it.'[39m
+  }
+}
+
+
+EXIT_CODE=0

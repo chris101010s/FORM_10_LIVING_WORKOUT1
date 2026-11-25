@@ -18,7 +18,8 @@ check(base.measurements,[]);check(base.goals,[]);check(base.weeklyPlan,[]);check
 check(util.currentCalendarWeek('2026-11-24'),{start:'2026-11-23',end:'2026-11-29'});
 const w1={id:'w1',name:'Upper',startedAt:'2026-11-23T09:00:00Z',finishedAt:'2026-11-23T10:00:00Z',sets:[{id:'s1',exerciseId:'bench',weightKg:40,reps:8,at:'2026-11-23T09:10:00Z',kind:'work'},{id:'s2',exerciseId:'bench',weightKg:20,reps:10,at:'2026-11-23T09:00:00Z',kind:'warmup'}]};
 const w2={id:'w2',name:'Upper',startedAt:'2026-11-24T09:00:00Z',finishedAt:'2026-11-24T10:00:00Z',sets:[{id:'s3',exerciseId:'bench',weightKg:45,reps:8,at:'2026-11-24T09:10:00Z',kind:'work'}]};
-const d={...base,workouts:[w1,w2],weeklyPlan:[{day:1,routineId:null},{day:2,routineId:null},{day:6,routineId:null}],performance:[{id:'p1',kind:'Push-ups',value:12,unit:'Wiederholungen',date:'2026-11-23'}],measurements:[{id:'m1',date:'2026-11-23',metric:'waist',cm:91}],recovery:[{id:'z1',date:'2026-11-23',sleepHours:7.5,energy:4,soreness:2}],weights:[{id:'a',date:'2026-11-22',kg:90},{id:'b',date:'2026-11-24',kg:89}]};
+// FORM15: planned adherence requires a real assigned routine; unassigned legacy placeholders are not new training days.
+const d={...base,workouts:[w1,w2],routines:[{id:'planned-upper',name:'Upper',exerciseIds:['bench'],restSeconds:90,prescriptions:{bench:{sets:3,reps:8}}}],weeklyPlan:[{day:1,routineId:'planned-upper'},{day:2,routineId:'planned-upper'},{day:6,routineId:'planned-upper'}],performance:[{id:'p1',kind:'Push-ups',value:12,unit:'Wiederholungen',date:'2026-11-23'}],measurements:[{id:'m1',date:'2026-11-23',metric:'waist',cm:91}],recovery:[{id:'z1',date:'2026-11-23',sleepHours:7.5,energy:4,soreness:2}],weights:[{id:'a',date:'2026-11-22',kg:90},{id:'b',date:'2026-11-24',kg:89}]};
 check(workoutVolume(w1.sets),320,'Warmups must not count in volume');
 check(util.weeklyAdherence(d,'2026-11-24'),{expected:2,actual:2,plannedTotal:3});
 check(util.weeklyTrainingMinutes(d,'2026-11-24'),120);

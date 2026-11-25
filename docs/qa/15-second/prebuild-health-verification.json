@@ -1,0 +1,14 @@
+{
+  "mode": "healthkit-optional",
+  "generatedProject": "/workspace/scratch/a16b8270c191/form15-second-prebuild-tg4_z30p",
+  "checkedAt": "2026-11-25T09:55:10.975687+00:00",
+  "version": "15.0.0",
+  "build": "150001",
+  "entitlements": {
+    "com.apple.developer.healthkit": true
+  },
+  "healthUsageDescriptions": true,
+  "widgets": false,
+  "alternateCatalogBuildSettings": true,
+  "nativeCompile": "BLOCKED: Linux; generated configuration only"
+}

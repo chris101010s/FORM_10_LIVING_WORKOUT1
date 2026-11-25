@@ -1,0 +1,7 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:migration15
+> node tests/test-migration15.cjs
+
+{"environment":"Node v24.22.3; real node:sqlite; desktop Linux, not Expo/iOS","sets":10000,"weights":2000,"bulkWriteMs":714,"draftWriteMs":6.64,"draftSqlWrites":2,"draftPayloadSerializations":3}
+PASS: 81 FORM 10→15 migration, snapshot, idempotence, crash rollback, extension, restart, backup, row contract and incremental persistence assertions.

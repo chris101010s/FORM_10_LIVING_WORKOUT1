@@ -1,0 +1,8 @@
+{
+  "copiedTrackedFiles": 502,
+  "source": "/workspace/scratch/a16b8270c191/form15",
+  "destination": "/workspace/scratch/a16b8270c191/form15-second-clean-install-b6cifr30",
+  "nativeModuleSourceIncluded": true,
+  "exclusions": "Only generated root ios/android, .git and node_modules were not copied; local module Swift source is included.",
+  "note": "The previous JS export succeeded; the final clean-source sync additionally updates all native-module source files before reinstall and export."
+}

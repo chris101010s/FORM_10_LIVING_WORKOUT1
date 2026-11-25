@@ -1,34 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT"
-WS="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
-if [[ -z "$WS" ]]; then echo 'ERROR: ios Workspace fehlt.' >&2; exit 1; fi
-SCHEME="$(basename "$WS" .xcworkspace)"
+FORM_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$FORM_ROOT"
+[[ "$(uname -s)" == Darwin ]] || { echo 'ERROR: Ein echter iPhone-Build benötigt macOS und Xcode.' >&2; exit 1; }
+[[ "${FORM_HEALTHKIT:-0}" != 1 && "${FORM_WIDGETS:-0}" != 1 ]] || { echo 'ERROR: Der Standard-Build erlaubt keine HealthKit-/Widget-Entitlements.' >&2; exit 1; }
+FORM_WORKSPACE="$(find ios -maxdepth 1 -name '*.xcworkspace' -print -quit)"
+[[ -n "$FORM_WORKSPACE" ]] || { echo 'ERROR: ios Workspace fehlt. Expo Prebuild und pod install ausführen.' >&2; exit 1; }
+FORM_SCHEME="$(basename "$FORM_WORKSPACE" .xcworkspace)"
 mkdir -p artifacts
-# Ein echter iphoneos-Device-Build, NICHT iOS-Simulator; React Native bündelt JS im Release-Build.
-xcodebuild -workspace "$WS" -scheme "$SCHEME" \
+python3 - <<'PY'
+from pathlib import Path
+import plistlib
+for path in Path('ios').rglob('*.entitlements'):
+    values=plistlib.loads(path.read_bytes())
+    if any(key.startswith('com.apple.developer.healthkit') for key in values) or values.get('com.apple.security.application-groups') or values.get('aps-environment'):
+        raise SystemExit('ERROR: Optionales Entitlement im Standardprojekt: '+str(path))
+PY
+rm -rf "$FORM_ROOT/artifacts/device-build.xcresult"
+xcodebuild -workspace "$FORM_WORKSPACE" -scheme "$FORM_SCHEME" \
   -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
-  -derivedDataPath "$ROOT/artifacts/DerivedData" \
+  -derivedDataPath "$FORM_ROOT/artifacts/DerivedData" \
+  -resultBundlePath "$FORM_ROOT/artifacts/device-build.xcresult" \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' \
-  build 2>&1 | tee "$ROOT/artifacts/xcodebuild.log"
-APP="$(find "$ROOT/artifacts/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name '*.app' -print -quit)"
-if [[ -z "$APP" ]]; then echo 'ERROR: iPhone .app nicht gefunden.' >&2; exit 1; fi
-[[ -f "$APP/Info.plist" ]] || { echo 'ERROR: Info.plist fehlt.' >&2; exit 1; }
-[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Info.plist")" == "app.athleteos.personal" ]] || { echo 'ERROR: Bundle-ID stimmt nicht.' >&2; exit 1; }
-[[ -f "$APP/main.jsbundle" ]] || { echo 'ERROR: Release JavaScript bundle fehlt.' >&2; exit 1; }
-rm -rf "$ROOT/artifacts/Payload"
-mkdir -p "$ROOT/artifacts/Payload"
-cp -R "$APP" "$ROOT/artifacts/Payload/"
-rm -f "$ROOT/artifacts/ATHLETE_OS_unsigned.ipa"
-(cd "$ROOT/artifacts" && /usr/bin/zip -q -r ATHLETE_OS_unsigned.ipa Payload)
-[[ -s "$ROOT/artifacts/ATHLETE_OS_unsigned.ipa" ]] || { echo 'ERROR: IPA leer.' >&2; exit 1; }
-echo 'FERTIG: artifacts/ATHLETE_OS_unsigned.ipa (nicht signiert)'
-/usr/bin/unzip -tq "$ROOT/artifacts/ATHLETE_OS_unsigned.ipa"
-node - <<'JS'
-const fs=require('node:fs'),crypto=require('node:crypto'),cp=require('node:child_process');
-const app=require('./app.json').expo;
-const assets={exercises:require('./src/catalog/exercises.generated.json').length,photos:(fs.readFileSync('src/catalog/photos.generated.ts','utf8').match(/require\('\.\.\/\.\.\/assets\/exercises\//g)||[]).length,fonts:(fs.readFileSync('src/components/fonts.generated.ts','utf8').match(/require\('\.\.\/\.\.\/assets\/fonts\//g)||[]).length};
-const manifest={assets,customTabs:process.env.EXPO_PUBLIC_FORM_CUSTOM_TABS==='1',testStatus:"passed-in-workflow",version:app.version,bundleIdentifier:app.ios.bundleIdentifier,commit:process.env.GITHUB_SHA||null,builtAt:new Date().toISOString(),xcode:cp.execFileSync('xcodebuild',['-version'],{encoding:'utf8'}).trim(),sha256:crypto.createHash('sha256').update(fs.readFileSync('artifacts/ATHLETE_OS_unsigned.ipa')).digest('hex')};
-fs.writeFileSync('artifacts/release-manifest.json',JSON.stringify(manifest,null,2));
-JS
+  build 2>&1 | tee "$FORM_ROOT/artifacts/xcodebuild.log"
+FORM_APP="$(find "$FORM_ROOT/artifacts/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name '*.app' -print -quit)"
+[[ -n "$FORM_APP" && -f "$FORM_APP/Info.plist" ]] || { echo 'ERROR: iPhone App fehlt.' >&2; exit 1; }
+[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$FORM_APP/Info.plist")" == 'app.athleteos.personal' ]] || { echo 'ERROR: Bundle-ID stimmt nicht.' >&2; exit 1; }
+[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$FORM_APP/Info.plist")" == '15.0.0' ]] || { echo 'ERROR: Release-Version stimmt nicht.' >&2; exit 1; }
+[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$FORM_APP/Info.plist")" == '150001' ]] || { echo 'ERROR: Buildnummer stimmt nicht.' >&2; exit 1; }
+node scripts/verify-ios-presentation.cjs "$FORM_APP"
+[[ -f "$FORM_APP/main.jsbundle" ]] || { echo 'ERROR: Release JavaScript bundle fehlt.' >&2; exit 1; }
+[[ -z "$(find "$FORM_APP" -type d -name '*.appex' -print -quit)" ]] || { echo 'ERROR: Unerwartete Extension im Standard-Build.' >&2; exit 1; }
+FORM_STAGE="$(mktemp -d "$FORM_ROOT/artifacts/package.XXXXXX")"
+trap 'rm -rf "$FORM_STAGE"' EXIT
+mkdir -p "$FORM_STAGE/Payload"
+cp -R "$FORM_APP" "$FORM_STAGE/Payload/"
+FORM_IPA="$FORM_ROOT/artifacts/FORM_15_0_0_unsigned.ipa"
+rm -f "$FORM_IPA"
+(cd "$FORM_STAGE" && /usr/bin/zip -q -r "$FORM_IPA" Payload)
+[[ -s "$FORM_IPA" ]] || { echo 'ERROR: IPA leer.' >&2; exit 1; }
+/usr/bin/unzip -tq "$FORM_IPA" | tee "$FORM_ROOT/artifacts/ipa-integrity.log"
+node scripts/release-manifest.cjs unsigned "$FORM_IPA"
+echo 'Erstellt: artifacts/FORM_15_0_0_unsigned.ipa (noch nicht signiert/installiert).'

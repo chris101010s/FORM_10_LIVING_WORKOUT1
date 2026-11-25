@@ -1,0 +1,210 @@
+{
+  "capturedAt": "2026-11-25T09:02:29.601770+00:00",
+  "source": "/workspace/scratch/a16b8270c191/form15",
+  "isolatedCopy": "/workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb",
+  "independentNodeModules": true,
+  "lockfileSha256": "343af19861c9c1c0ddf4125b1267c8c6df3fee13e86f35abfbdd95b70c981ac2",
+  "inputFileCount": 107,
+  "inputSha256": {
+    "src/art/doodles.ts": "75dbbe91610fb23c628d3e1c590b68feaa0900816ad48fb99e2f06dd05f6c285",
+    "src/catalog/catalog.ts": "12b06d46704c683a75bdfa9e9f17510f42ae70553a228df1b6f7e5ea9cef11bf",
+    "src/catalog/curated-fallback.json": "005bb993571eee2313edd269e53e5c8fe223b89829094a1dfda5e0c899388375",
+    "src/catalog/exercises.generated.json": "a1fd3dea12df444acad0486b9f6fcb14b44b9afaf21fd6925e78ae0999e355f7",
+    "src/catalog/photos.generated.ts": "09741dd573d2e7b10ae1e0ddaf3431a2b25545f3df7701b1d7d95bab65514fe6",
+    "src/catalog/starter-legacy.json": "a1fd3dea12df444acad0486b9f6fcb14b44b9afaf21fd6925e78ae0999e355f7",
+    "src/components/BackupCenter.tsx": "fd9fddcb07606439e115dc00a77a52e30edd898b8c2e54ca42f626400e6a1e0e",
+    "src/components/BlockEditor.tsx": "47116fc9e0b6077a3a4dc215bd2c5734bfb8c34b11bdbd8cf53dcdab0935c1d6",
+    "src/components/CelebrationStrip.tsx": "58e16e600cb6bcf87ee71560d916e9af51bb09dc4222aa4edc635ec133b58401",
+    "src/components/DateField.tsx": "625847cc0baa36d365dc7600efd22a508461c3f83a09305333b85c0630f68e3f",
+    "src/components/Design.tsx": "a198d39ea891977ddb77f7dc32e46136eeaa45509b79a9e89873cee59ed16f92",
+    "src/components/DragHandle.tsx": "9633065d90fcbebee842d51fb75d2d4e7e098d7e3494cc4b935addea306439d6",
+    "src/components/InlineSetTable.tsx": "8adec6af5ec0a65a446e9b5a8bf790244a7b79fad625e544eee7ec3b6fe5c5b0",
+    "src/components/NativeFeatures.tsx": "1156b1d78ca47b68bc90298c1f4f0d06cda61d6a99cfa27842d95d685cd1c408",
+    "src/components/Overlay.tsx": "34da3d541e7c0363390806d968556284072f6cb7d43fc0ab0c6e832ba553ede9",
+    "src/components/PrescriptionEditor.tsx": "dd3142125f41c85a7c07c15b7ef60e37d0c2749668fbbce1658ea5085725675a",
+    "src/components/SetEditor.tsx": "0328d7cec4cd60c1b4071905955566f22c53ae8ec9247f6088d66b7dea3cc5d6",
+    "src/components/Sketchbook.tsx": "3d8e29247b8317f263eb729523ff175e6cd26c20ff61f3dde2dc0b6e2c92c35e",
+    "src/components/TrendChart.tsx": "95d97752c3a49cf6713fdc427cdae94e72a5c267c0de581539c66d4f03817b67",
+    "src/components/WidgetSync.tsx": "0f51405f5a000cb672f17a7395a15d350fa73f28218e8f222e02be7b0baf9c7f",
+    "src/components/YearReview.tsx": "02ced9c65a268e8bc2bbe5a4d9b9e26aa7b1142390736fcd9bd33ae7b5146e6b",
+    "src/components/fonts.generated.ts": "8bfeecf5fe56ac238e6b1749423ac3139279a3b67b4ce177a1be0bfe9bbf771a",
+    "src/data/context.tsx": "3833d51cf895fee8db84e48418d272f982f4a356686131222e60395402a23ff2",
+    "src/data/relational.ts": "097241939a097a04ea201193742d548b8d3c41043544ab7b4a2ed447522b1584",
+    "src/data/repository.ts": "019c30a57d3050abf401282595d542fed6680ecb2c36c57938fae30987a8f04a",
+    "src/data/schema.ts": "7e085e0343f8d9440c43ee38bd0cff3644d3b97b92bb8ae5a1537c13d622019c",
+    "src/data/storage.ts": "869852b07c6505266d0dbbfaaa912b02a56a85a4777fa5df452b7c500e310580",
+    "src/data/validation.ts": "dd695e851bdc164a49fdd6a5f741ba745bff7695e6e696141565e6c861c374b3",
+    "src/features/workout/LivingComponents.tsx": "58c67d2eacac303455a324d1bc19766637111f10c3e301bf771fd6bb8d678746",
+    "src/screens/AppleHealth.tsx": "2aff39b385bb295038be052945ba655f9e7fca9f9205c9897651213386de4fcf",
+    "src/screens/Gym.tsx": "b049dae4ba00ed031340f11ebb17814904ce32670c6368d17d80a32c2d6c248f",
+    "src/screens/Habits.tsx": "298f3f3a54a4bd7c3de408a68ef8f4d9d3124d09654624ec0b331f124b37225c",
+    "src/screens/Health.tsx": "aea762daaa021ecede111e9190a867c935c6d6d38a014151771a60ffb3a47275",
+    "src/screens/Home.tsx": "5834697ccce2faeb8ea6f3c1203c7d6a355f8560721b56a1be452c59442d6991",
+    "src/screens/Insights.tsx": "44ab0ae47421fcc8e99869976aea8f05fbd12e5705e6fb919369a64a95a21822",
+    "src/screens/Journal.tsx": "fbe4a13254bc78eac43d47c614501c15b647646e1243aca19e571e8ca4d1b7c8",
+    "src/screens/More.tsx": "9eda820d0690376952a97a811cb5e0459b690f47ca09290a1197ddfb557cf344",
+    "src/screens/Nutrition.tsx": "1d1d2e4dfe173e747c2e3d2a412f1dbf8018fab75df628a47d58c87ce74f1cbe",
+    "src/screens/PerformanceHub.tsx": "01c79b90f3810239e621b0b67b370c9d77b351a8c499556f1219565ffd859e93",
+    "src/screens/PlanRoutineEditor.tsx": "bfd57c1e639399d5fbfcef6a2cfc44aebf262d81d6db7d26a65fba5f7fe95a78",
+    "src/screens/Plans.tsx": "70f0554e77ce1f0e7d3e065a7a761da019fa3f860120c7e81e033c4fbae740ca",
+    "src/screens/Setup.tsx": "9a0f46ff8fb2e6d98b565aa3c192e9b996619e28df4ee6c682e09d92d44ec45b",
+    "src/screens/Story.tsx": "4815f3d453831d28a7e54b4ca783e693a28e357cc56be43039fb14d54b898d41",
+    "src/screens/Weight.tsx": "bec30584318b51111ba6f1565457f5b7e6ead16b61a5244db8ff70b734174739",
+    "src/utils/advanced.ts": "a3879c3476b47302e028b1e60b4ac957516cdf34a051e66ce97dce4e7bf8f78f",
+    "src/utils/backup.ts": "549bc32028bcd3a5501246110fcc4552b50b4e4080af50f4d36e8f38b26f24ae",
+    "src/utils/celebrations.ts": "e4732fc43676f66530d62e3bd8ca8bd1317c6ef073ae96cf3ebed759612ad9f1",
+    "src/utils/coach.ts": "a5312f27933a4ce3ea6ce7d81c6a0fd507b2a34c7ecca0ed6faabee056c95ba7",
+    "src/utils/csv.ts": "99e3c8decdb72d2ed860a2b19d5581ee3226ab0a77e487b08d50c569f4baee92",
+    "src/utils/form.ts": "a1d59285e1fb10a3505738f6998159ff640ae5835e670d0f697367792502c062",
+    "src/utils/health.ts": "90dcc8645d23d9d349d0145e2dfa7096204986edeee5efee75f78c6fff586466",
+    "src/utils/healthBridge.ts": "0ac238d504d5a6c6e784194baa288e6e64b19ab5fef7906a03afd70f7a8899fe",
+    "src/utils/healthImport.ts": "5cda33d98250a29eb5627e5f2ded2dc56df5ac36e91c992aad3129c0c84099fd",
+    "src/utils/livingWorkout.ts": "8cf6ece5726a78ba184503a0eda8f157e7b21648f245f78f73025f137f6f0080",
+    "src/utils/metrics.ts": "21091b2d79cf2dd7d73c4dbdda408183c0c96aa181bf0ebdb0e49c9056f385ce",
+    "src/utils/nativePreferences.ts": "3d27306da7b4350e2593b4e5998f8d072f2a22896fbc8386847396df09ba8deb",
+    "src/utils/nutritionSync.ts": "9153c2f990c00546ff8acf2b09be113cb176fa1e1a53a20a3b63a67d4173c553",
+    "src/utils/nutritionTypes.ts": "2eea93f213898d9e85694c1ecc8f051749b16a28e093f7db7b3ceea3ee8447d9",
+    "src/utils/planEditorInput.ts": "b16de450d6fcc07b3ac5e8299a7769965774f49e6f127e6da67170bd145d0aee",
+    "src/utils/planImport.ts": "f64e09c3f340f8fa963be7ab0bdf439c90844958c018e0456f15e63f5ec274cf",
+    "src/utils/planOverview.ts": "1011f0a0a7335d4fb297ff8934ec17a0631a3132d2f6754e35994afd0980cc56",
+    "src/utils/planWorkout.ts": "f4dc69ffe5881826818f87ef71c30ca51232d56362b414bc16bf39366f8acb05",
+    "src/utils/plannedTargets.ts": "63a4f131ce0e531a9052690af3258394642d4283095a5b4d3beb4336c95193f7",
+    "src/utils/plans.ts": "7ce0b7295b562ed114a8b7187b075cb4444560c1ad9ebc47e5fd14d795b189c1",
+    "src/utils/progress15.ts": "a43aae5d67d19572850b6cd9cfdb256087df9453aa9bbd84ab2fd5bb833ff830",
+    "src/utils/segments.ts": "3c458d1b8a691ded63f4e350f2a49f545b23f866faf932a27dc55654e84dc321",
+    "src/utils/setup.ts": "b1b80069a318b2d0f3b43e40a675a2910a8c41bd338314e301dc81bec73577d0",
+    "src/utils/story.ts": "1036330cad6d5e2c8a6c51601e451b22e2396e8a8b457aacf028b219d1ffa3c6",
+    "src/utils/trainingEngine.ts": "5a0eda5d9b630a4db370648faabd8d248428a8cad922c305070b91704decfe89",
+    "src/utils/widgetData.ts": "2955bc377553263157b2d7d08788aa8246f680588d282e3bdf880d1f457c099f",
+    "src/utils/workout.ts": "b2a72e6f45ccdc794960f6d421cd97f40391d3278a388e9d2498a9fe8af0a728",
+    "src/utils/yearReview.ts": "84796a9768b9ee2f564769bc7bc1f951c19ceaa2b378d1859117019e595c1e46",
+    "src/widgets/TrainingActivity.tsx": "d0bdcab72a63dc6dc4c70248a63fd8d57620cea836a2d672368106155d6e33cd",
+    "src/widgets/TrainingWidget.tsx": "9a4008e225f0b6ba63510e085ed3be4fc5beb2174016c0c9a9c785c3c88be4d4",
+    "modules/form-health/expo-module.config.json": "7b8ff8bc7eeb408f149f07f7b22840c34cc88da0a22b6353b8e47455909993a4",
+    "modules/form-health/ios/FormBackupCrypto.swift": "aaa86f4083e03275ec01501545d52454d9630723a010dad05e24bd1a92b6ac0a",
+    "modules/form-health/ios/FormHealth.podspec": "a31b6e7e6a3046eeee6b101cc0ef55d3658492d278ddf0eaa5eb7d4a93fa04f1",
+    "modules/form-health/ios/FormHealthModule.swift": "89b86ebf461fc1f05fa62e9be19104d0d882a8150dee2dd6d7cb193863fc9909",
+    "modules/form-health/ios/FormNutritionBridge.swift": "75a780129d26de3a23cec68ea3d557255a3df1736b0bbb3785605f2149c053ab",
+    "assets/doodles/FORM_15_DOODLE_ATLAS.svg": "3de518181879b8434ea771df21cc749630fa8d699adecea4d7059961c7a181c3",
+    "assets/doodles/bottle.svg": "991fe0d4cf06474d7439e0c97b144664407c50c622ad0fc1398dcc7ddd560d3f",
+    "assets/doodles/calendar.svg": "0ed79b09aae220da8a5a8ba04dd0d355cbc63508ba9774d6d2df0d22ab28a0ed",
+    "assets/doodles/dumbbell.svg": "4502484fec270b6798b267c1ffd048daf52bbc3c4e9bbba1008d9799145fc14f",
+    "assets/doodles/helper.svg": "d930df9d70bfe984956f5087c6afa20ca6368acf1a6bb0ccdafcd0bd37356394",
+    "assets/doodles/meal.svg": "154d1047192a7d2d878f55f307be22e034f19150c404e888780e9d6e14e7114b",
+    "assets/doodles/moon.svg": "a3ebb91cebcf9faafa9e063068d19832b043cd64972cd7f8ecc331d755441f79",
+    "assets/doodles/notebook.svg": "ea6d7999aadbed3ee52a9325157788efecc152c22961ff6a68c6e788af76858f",
+    "assets/doodles/plate.svg": "26a8a57e31c7be817b294dbb0b4fcc61eb30ae99cd667d0d1a94de10d989ab7b",
+    "assets/doodles/progress.svg": "0fee6639eaf7dfe0ee85c81fb792cfce948114d68efd33945c329172ecbb5b8e",
+    "assets/doodles/shoe.svg": "73ea176d54ade7f3e6b09fc71d6dfcde47cf86644289476e5712531c9981f0f0",
+    "assets/doodles/star.svg": "8daf24b910370ed0bea67110c941f427f18b276c27d2c0597023c0e6aa344a1f",
+    "assets/doodles/stopwatch.svg": "8dce62b98ebcd50495c042c8a9db4a1a86aa8fa9d866b294d3d43ef3e1e455b6",
+    "assets/fonts/FormDisplay-OFL.txt": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416",
+    "assets/fonts/FormDisplay.ttf": "fc7287273e66929776e2ba54f144fe699080bec29f61bf649d70d871468aeade",
+    "assets/fonts/FormHand-OFL.txt": "377f4f9c19e935228552478eb68cc2ed82910988a60ba60e2ac73b09f32d02d1",
+    "assets/fonts/FormHand.ttf": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc",
+    "assets/fonts/FormMono-OFL.txt": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d",
+    "assets/fonts/FormMono.ttf": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda",
+    "assets/fonts/FormText-OFL.txt": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1",
+    "assets/fonts/FormText.ttf": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d",
+    "assets/icon.png": "fd7d3d8d7b6b1d6b650d3d1fc7b9edd6002244b743756af72549d07ed83d2aa7",
+    "App.tsx": "cbf907169131f5a173abea162cb7debd990d47162c1db3445a6170656b8ffaa5",
+    "app.config.js": "ea6c9bf33a24649837fc5738eaaa0cd36d6682b608fbb3901961f6a411af4eea",
+    "app.json": "b9f884af35911ef05a600a4ca68ac856102d278bea64d713f6a8894887cf8ce1",
+    "package.json": "446d8040fc4c62d73774ac1453f4b9e9c3cbb612b491328b8281ea6a00492273",
+    "package-lock.json": "343af19861c9c1c0ddf4125b1267c8c6df3fee13e86f35abfbdd95b70c981ac2",
+    "tsconfig.json": "ef3e599abd9f6f7d592e685f1f66b89ca9c8d79a3a57ad30df20afd83a2f92ec"
+  },
+  "outputFiles": {
+    "_expo/static/js/ios/AppEntry-0831bbccbb3f26e6660e1c0c61493a40.hbc": {
+      "bytes": 3366766,
+      "sha256": "f815359989c7f4e0326db57c161fae27e1abfd0b976d685482074ae30ea85915"
+    },
+    "assets/0747a1317bbe9c6fc340b889ef8ab3ae": {
+      "bytes": 332,
+      "sha256": "2325c53a73e54c438cbbc60dffdd8b513d471ba42e2f56713ef404b95e0ca1fc"
+    },
+    "assets/09d1eaa1672d3815b7b121457ebda2d0": {
+      "bytes": 240164,
+      "sha256": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d"
+    },
+    "assets/0a328cd9c1afd0afe8e3b1ec5165b1b4": {
+      "bytes": 653,
+      "sha256": "9adb8c5efca932e2b732b293da813bd2e31952263056bce9e2517fec0f0b6a76"
+    },
+    "assets/0ea69b5077e7c4696db85dbcba75b0e1": {
+      "bytes": 761,
+      "sha256": "3ddd0773ed27e23d25789f301731b3ac455ad8be5aa27a0a1b838f89c6d27225"
+    },
+    "assets/1190ab078c57159f4245a328118fcd9a": {
+      "bytes": 201,
+      "sha256": "cbdf9213e55f65c48d076acd8423b7c9aee4f1b81101ff6c95a38c4cd8a86461"
+    },
+    "assets/2d0a9133e39524f138be6d4db9f4851f": {
+      "bytes": 809,
+      "sha256": "92ed8176ac8cb44362a5fc6a3703626a0006ac6b7cb272ee99f5850262ec070e"
+    },
+    "assets/3cd68ccdb8938e3711da2e8831b85493": {
+      "bytes": 645,
+      "sha256": "c86bb485eee687e06c500fc4234f51a6784b4530c2ae11d0c76481110bce3105"
+    },
+    "assets/4d05bb0e4a6903fc39fac52353f8e3d9": {
+      "bytes": 187208,
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda"
+    },
+    "assets/5771ceaf12961b3c26914a70e18dcca8": {
+      "bytes": 214772,
+      "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc"
+    },
+    "assets/61ca7e64b7d605716c57706cef640b9a": {
+      "bytes": 220,
+      "sha256": "d03a5cd7a66ef10c5147916f9d5878b2d0a0a5ad46f405a31cd9967efaa55afd"
+    },
+    "assets/78c625386b4d0690b421eb0fc78f7b9c": {
+      "bytes": 266,
+      "sha256": "d05c9d30d79f45a78e5585a2e7ec67c6a06a883dd9137e1d5059e8c87b33ce76"
+    },
+    "assets/7d40544b395c5949f4646f5e150fe020": {
+      "bytes": 290,
+      "sha256": "2cdfeb8e5ccde7976f7012fb8cce73af2229029ee21d4f1509fed114871c6cd8"
+    },
+    "assets/a132ecc4ba5c1517ff83c0fb321bc7fc": {
+      "bytes": 405,
+      "sha256": "2b7443a9a58e92ca11a575bdc11598615a57dde305cd8ce70d602606b302cd98"
+    },
+    "assets/aff2c65b39a296d4f7e96d0f58169170": {
+      "bytes": 334,
+      "sha256": "ab5613d2ce70fa67c5926e831353664945199fc195fa6fe76c5fe3cec452e31a"
+    },
+    "assets/d62ddc38b69aff346c20a28774933d6a": {
+      "bytes": 839,
+      "sha256": "b434a7cf18c2d4ce747c70942ea2fee2d4412d93967ed92b372f810bb9261ea5"
+    },
+    "assets/d84e297c3b3e49a614248143d53e40ca": {
+      "bytes": 141,
+      "sha256": "b1bc1810ca23e2c38cd76971c43591d726161061240d8b792b05757196ddb528"
+    },
+    "assets/d8e7601e3df962f83c62371ac14964d8": {
+      "bytes": 502,
+      "sha256": "c4e54e6a0a7de636aa153378fbc62ea4a41695bfedf807f90df7b18ffd733f67"
+    },
+    "assets/dad2fa9f4394a630f0f9a0d6dabd44bc": {
+      "bytes": 317,
+      "sha256": "dc56b976bd45638e1125f6689743525e6886ae0bef2c8f4651994833685a831f"
+    },
+    "assets/e31a3aa5fce3366bcadb8e9027f26178": {
+      "bytes": 110884,
+      "sha256": "fc7287273e66929776e2ba54f144fe699080bec29f61bf649d70d871468aeade"
+    },
+    "assets/f3a81967828232c893d547162e922764": {
+      "bytes": 589,
+      "sha256": "ef13fc0dfc52ec23817585fd7e109fbdf593a3b2549c40ce71ac9b0eda12cc2c"
+    },
+    "metadata.json": {
+      "bytes": 1404,
+      "sha256": "012c0dd02ec7f59c8f8b1930c6b37bd158e2d7684d2ce1be012164ed5f7e9288"
+    }
+  },
+  "verificationLog": "docs/qa/15/ios-metro-export-final.log",
+  "nativeCompile": false,
+  "currentRuntimeInputDifferences": []
+}

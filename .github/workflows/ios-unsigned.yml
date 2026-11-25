@@ -1,11 +1,15 @@
-name: FORM 10.0 – iOS IPA (unsigned)
+name: FORM 15.0.0 · Standard iOS IPA
 on:
   workflow_dispatch:
     inputs:
       custom_tabs:
-        description: "Kompatibilitätsmodus mit bisheriger GlassBar statt nativer Tab-Leiste"
+        description: Kompatibilitätsmodus mit eigener Tab-Leiste
         type: boolean
         default: false
+      simulator_smoke:
+        description: Zusätzlich im verfügbaren iPhone-Simulator bauen und starten
+        type: boolean
+        default: true
   push:
     branches: [main]
     paths:
@@ -14,93 +18,85 @@ on:
       - 'app.config.js'
       - 'assets/**'
       - 'tsconfig.json'
+      - 'eslint.config.mjs'
       - 'package-lock.json'
       - 'package.json'
       - 'src/**'
-      - 'docs/**'
       - 'tests/**'
       - 'scripts/**'
       - 'modules/**'
+      - 'plugins/**'
       - '.github/workflows/ios-unsigned.yml'
 permissions:
   contents: read
+concurrency:
+  group: form15-standard-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   iphone:
-    name: iPhone Release App ohne Signatur
+    name: Standard · ohne HealthKit und Widgets
     runs-on: xcode-27
-    timeout-minutes: 65
+    timeout-minutes: 85
     env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      FORM_HEALTHKIT: '0'
+      FORM_WIDGETS: '0'
       EXPO_PUBLIC_FORM_CUSTOM_TABS: ${{ inputs.custom_tabs && '1' || '0' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Quelldateien und Git-Tracking früh prüfen
         run: node scripts/preflight.cjs
-      - name: Node.js 22
-        uses: actions/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: '22.16.0'
-      - name: Verfügbare Xcode-Version anzeigen
+          node-version: '24.22.3'
+          cache: npm
+      - name: Xcode-Version protokollieren
         run: xcodebuild -version
-      - name: Expo Abhängigkeiten installieren
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci --no-audit --no-fund
-          else
-            npm install --no-audit --no-fund
-          fi
-      - name: Expo Konfiguration prüfen
-        run: |
-          npx expo config --type public > /tmp/form-expo-config.json
-          npx expo install --check
-      - name: Offiziellen Übungskatalog abrufen (mit Offline-Fallback)
-        run: npm run catalog:fetch
-      - name: Lizenzierte Übungsbilder und Schriften vorbereiten
-        run: |
-          npm run catalog:photos
-          npm run assets:fonts
-      - name: Tests und TypeScript prüfen
-        run: |
-          mkdir -p artifacts
-          set -o pipefail
-          npm run check 2>&1 | tee artifacts/check.log
-      - name: Apple Kryptografie kompilieren und testen
+      - name: Reproduzierbare Abhängigkeiten installieren
+        run: npm ci --no-audit --no-fund
+      - name: Tests, TypeScript, Lint, Expo-Konfiguration und Doctor
+        run: npm run qa:release
+      - name: Apple Backup-Kryptografie kompilieren und testen
         run: |
           set -o pipefail
           bash scripts/test-apple-crypto.sh 2>&1 | tee artifacts/crypto.log
-      - name: Native iOS Projekt generieren
-        run: npx expo prebuild -p ios --clean --no-install
-        env:
-          CI: '1'
-          EXPO_NO_TELEMETRY: '1'
-      - name: CocoaPods installieren
+      - name: Native iOS-Dateien erzeugen
         run: |
-          cd ios
-          pod install
-      - name: App ohne Apple-Signatur bauen
-        run: bash scripts/build-ios-unsigned.sh
-        env:
-          CI: '1'
-          EXPO_NO_TELEMETRY: '1'
-      - name: Xcode-Fehlerlog bereitstellen
-        if: failure()
+          set -o pipefail
+          npx --no-install expo prebuild --platform ios --clean --no-install 2>&1 | tee artifacts/prebuild.log
+      - name: CocoaPods installieren
+        working-directory: ios
+        run: |
+          set -o pipefail
+          pod install 2>&1 | tee ../artifacts/pods.log
+      - name: Echte iPhone-IPA kompilieren und prüfen
+        run: npm run build:ios:unsigned
+      - name: Optionaler Simulator-Starttest
+        if: github.event_name == 'workflow_dispatch' && inputs.simulator_smoke
+        run: bash scripts/simulator-smoke.sh
+      - name: Tatsächliche Build- und Prüfprotokolle
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: ATHLETE_OS_Xcode_Fehlerlog
+          name: FORM_15_0_0_Standard_QA-${{ github.run_number }}
           path: |
-            artifacts/xcodebuild.log
-            artifacts/check.log
-            artifacts/crypto.log
-            package-lock.json
-          if-no-files-found: ignore
-          retention-days: 7
-      - name: Unsignierte IPA als Download bereitstellen
-        uses: actions/upload-artifact@v6
-        with:
-          name: ATHLETE_OS_unsigned_IPA-${{ github.run_number }}
-          path: |
-            artifacts/ATHLETE_OS_unsigned.ipa
-            artifacts/release-manifest.json
-            package-lock.json
+            artifacts/*.log
+            artifacts/*status.json
+            artifacts/*manifest.json
+            artifacts/*.png
+            artifacts/*.xcresult
+          if-no-files-found: warn
           retention-days: 14
+      - name: Standard-IPA und SHA-256
+        if: success()
+        uses: actions/upload-artifact@v6
+        with:
+          name: FORM_15_0_0_unsigned_IPA-${{ github.run_number }}
+          path: |
+            artifacts/FORM_15_0_0_unsigned.ipa
+            artifacts/FORM_15_0_0_unsigned.manifest.json
+            artifacts/FORM_15_0_0_unsigned.sha256
+            package-lock.json
           if-no-files-found: error
+          retention-days: 14

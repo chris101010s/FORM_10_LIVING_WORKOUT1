@@ -1,0 +1,8 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:search-second
+> node tests/test-search-second.cjs
+
+PASS: 49 second-pass local-search assertions (real bundled catalogue, aliases, filters, stable detail identities, local dates, optional history/backup, bounded results). Synthetic 6500-record filter: 218.3 ms on this host; not an iPhone performance claim.
+
+EXIT_CODE=0

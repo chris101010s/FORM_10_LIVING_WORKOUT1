@@ -1,0 +1,9 @@
+$ npm run typecheck
+
+> athlete-os-form@10.0.0 typecheck
+> tsc --noEmit
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+sh: 1: tsc: not found
+
+EXIT_CODE=127

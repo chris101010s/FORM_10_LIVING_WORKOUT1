@@ -1,0 +1,27 @@
+{
+  "repository": "chris101010s/FORM_10_LIVING_WORKOUT1",
+  "branch": "main",
+  "commit": "e0066a240400d6c38480b9a0de4e119a8a50e5bb",
+  "message": "Update1",
+  "committedAt": "2026-11-24T14:25:21+01:00",
+  "baseline": "b5f7d88",
+  "baselineFiles": 142,
+  "remoteFiles": 143,
+  "commonByteIdentical": 140,
+  "applicationTestBuildSourceDifferences": 0,
+  "differences": [
+    {
+      "path": ".gitattributes",
+      "detail": "remote-only text=auto; retained in v15"
+    },
+    {
+      "path": "docs/FORM_10_SPECIFICATION.txt",
+      "detail": "CRLF vs LF only"
+    },
+    {
+      "path": "RELEASE_REPORT.md",
+      "detail": "supplied kit additionally documents Switch hotfix; code is identical"
+    }
+  ],
+  "remoteWrites": false
+}

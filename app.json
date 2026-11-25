@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "FORM 10.0",
+    "name": "FORM 15.0.0",
     "slug": "athlete-os",
     "scheme": "athleteos",
-    "version": "10.0.0",
+    "version": "15.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#FAF9F4",
+    "backgroundColor": "#FAF9F3",
     "ios": {
       "bundleIdentifier": "app.athleteos.personal",
       "supportsTablet": true,
@@ -16,10 +16,12 @@
         "LSSupportsOpeningDocumentsInPlace": true,
         "NSFaceIDUsageDescription": "Optionaler Schutz deiner privaten Trainings- und Gesundheitsdaten."
       },
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icons/ink.png",
+      "buildNumber": "150001"
     },
     "android": {
-      "package": "app.athleteos.personal"
+      "package": "app.athleteos.personal",
+      "versionCode": 150001
     },
     "platforms": [
       "ios",
@@ -28,12 +30,18 @@
     "plugins": [
       "expo-document-picker",
       "expo-image-picker",
-      "expo-notifications",
-      "expo-local-authentication"
+      [
+        "expo-notifications",
+        {
+          "enableRemoteNotifications": false
+        }
+      ],
+      "expo-local-authentication",
+      "./plugins/withAlternateIcons"
     ],
     "extra": {
       "privacy": "All personal data remains on device until user explicitly exports or shares it."
     },
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icons/ink.png"
   }
 }

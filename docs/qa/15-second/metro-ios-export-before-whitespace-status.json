@@ -1,0 +1,11 @@
+{
+  "command": "npm exec --no -- expo export --platform ios --output-dir artifacts/second-ios-export --clear --source-maps",
+  "directory": "/workspace/scratch/a16b8270c191/form15-second-clean-install-b6cifr30",
+  "startedAt": "2026-11-25T10:11:50.407784+00:00",
+  "finishedAt": "2026-11-25T10:12:15.861233+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 25.45,
+  "log": "docs/qa/15-second/metro-ios-export.log",
+  "node": "v24.22.3",
+  "npm": "11.19.1"
+}

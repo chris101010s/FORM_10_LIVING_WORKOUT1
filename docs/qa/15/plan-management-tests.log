@@ -1,0 +1,28 @@
+$ node tests/test-plan-management15.cjs
+error TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use '--ignoreConfig' to skip this error.
+node:child_process:982
+    throw err;
+    ^
+
+Error: Command failed: tsc --strict --target ES2022 --module commonjs --skipLibCheck --rootDir /workspace/scratch/a16b8270c191/form15/src --outDir /tmp/form-plan-management-tDkv4u /workspace/scratch/a16b8270c191/form15/src/utils/planImport.ts /workspace/scratch/a16b8270c191/form15/src/utils/planOverview.ts /workspace/scratch/a16b8270c191/form15/src/data/validation.ts
+    at genericNodeError (node:internal/errors:986:15)
+    at wrappedFn (node:internal/errors:540:14)
+    at checkExecSyncError (node:child_process:943:11)
+    at execFileSync (node:child_process:979:15)
+    at Object.<anonymous> (/workspace/scratch/a16b8270c191/form15/tests/test-plan-management15.cjs:4:32)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19) {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 14,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.22.3
+
+EXIT_CODE=1

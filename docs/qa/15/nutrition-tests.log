@@ -1,0 +1,6 @@
+UTC 2026-11-25T08:44:57.491011+00:00
+$ node tests/test-nutrition15.cjs
+PASS: 66 FORM15 HealthKit nutrition/export checks. Pure JS + mocked native adapter; no native compile or YAZIO roundtrip claimed.
+
+EXIT_CODE=0
+Environment: Linux; native adapter mocked; no native HealthKit execution.

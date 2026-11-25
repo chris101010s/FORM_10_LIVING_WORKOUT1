@@ -1,0 +1,56 @@
+$ npm exec --no -- expo export --platform ios --output-dir artifacts/second-ios-export --clear --source-maps
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:19) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS Bundled 25250ms node_modules/expo/AppEntry.js (1389 modules)
+
+› Assets (60):
+assets/fonts/FormDisplay.ttf (111KB)
+assets/fonts/FormHand.ttf (215KB)
+assets/fonts/FormMono.ttf (187KB)
+assets/fonts/FormText.ttf (240KB)
+assets/icons/blueprint.png (28KB)
+assets/icons/ink.png (24KB)
+assets/icons/paper.png (28KB)
+assets/icons/retro.png (13KB)
+assets/tabs/gym-active.png (3 variations | 791B)
+assets/tabs/gym-neutral.png (3 variations | 521B)
+assets/tabs/health-active.png (3 variations | 2.2KB)
+assets/tabs/health-neutral.png (3 variations | 1.7KB)
+assets/tabs/home-active.png (3 variations | 1.6KB)
+assets/tabs/home-neutral.png (3 variations | 1.1KB)
+assets/tabs/plans-active.png (3 variations | 877B)
+assets/tabs/plans-neutral.png (3 variations | 631B)
+assets/tabs/profile-active.png (3 variations | 1.9KB)
+assets/tabs/profile-neutral.png (3 variations | 1.5KB)
+assets/tabs/weight-active.png (3 variations | 1.3KB)
+assets/tabs/weight-neutral.png (3 variations | 895B)
+node_modules/@react-navigation/elements/lib/module/assets/back-icon-mask.png (653B)
+node_modules/@react-navigation/elements/lib/module/assets/back-icon.png (4 variations | 566B)
+node_modules/@react-navigation/elements/lib/module/assets/clear-icon.png (4 variations | 425B)
+node_modules/@react-navigation/elements/lib/module/assets/close-icon.png (4 variations | 235B)
+node_modules/@react-navigation/elements/lib/module/assets/search-icon.png (3 variations | 582B)
+
+› ios bundles (2):
+_expo/static/js/ios/AppEntry-4c4b53661b374b1ba6d47a34bd2f8870.hbc (3.2MB)
+_expo/static/js/ios/AppEntry-4c4b53661b374b1ba6d47a34bd2f8870.hbc.map (7.3MB)
+
+› Files (1):
+metadata.json (3.9KB)
+
+Exported: artifacts/second-ios-export
+
+EXIT_CODE=0

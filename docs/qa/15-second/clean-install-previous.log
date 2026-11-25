@@ -1,0 +1,6 @@
+$ npm ci --no-audit --no-fund
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+added 591 packages in 12s
+
+EXIT_CODE=0

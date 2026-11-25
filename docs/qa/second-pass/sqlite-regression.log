@@ -1,0 +1,11 @@
+$ npm run test:sqlite
+Started 2026-11-25T09:50:23.397354+00:00
+
+> athlete-os-form@15.0.0 test:sqlite
+> node tests/test-relational.cjs
+
+SQLite large migration 1185 ms (desktop Node SQLite, not Expo/iOS)
+PASS: 22 real SQLite migration, restart, transaction rollback, incremental update and volume tests.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+EXIT_CODE=0

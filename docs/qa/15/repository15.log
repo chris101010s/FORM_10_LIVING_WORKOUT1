@@ -1,0 +1,7 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:repository15
+> node tests/test-repository15.cjs
+
+PASS: 65 native-adapter repository assertions using actual SQLite files: startup proof, identity, backup-before-migrate, queue capture/failure/retry, restore snapshot, restart, corruption preservation and legacy isolation.
+Scope: Expo adapters are mocked; SQL and files are real. No native device execution or signing claim.

@@ -1,0 +1,4 @@
+$ npx eslint src/data/repository.ts src/data/relational.ts src/data/validation.ts src/data/context.tsx src/data/secondPassValidation.ts src/data/persistenceTypes.ts src/utils/backup.ts src/utils/privateFiles.ts src/utils/portableCodec.ts src/utils/portableBackup.ts src/utils/mediaAssets.ts src/utils/localSnapshots.ts src/utils/diagnostics.ts src/utils/shareTextExport.ts src/components/AutoBackupSync.tsx src/components/BackupCenter.tsx src/components/PrivacyDiagnostics.tsx src/components/PrivatePhoto.tsx tests/test-second-pass-data.cjs tests/test-share-text-export.cjs tests/test-repository15.cjs tests/fixtures/repository-harness.cjs tests/fixtures/private-files.cjs --max-warnings 0
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+EXIT_CODE=0

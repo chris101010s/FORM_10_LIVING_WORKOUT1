@@ -1,0 +1,11 @@
+$ npm run test:second-pass-data
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:second-pass-data
+> node tests/test-second-pass-data.cjs
+
+PASS: 66 transient text-export assertions: awaited write/readback, distinct concurrent files, unavailable/cancel/share/write/read/create failures, basename rejection and explicit cleanup failure. Expo filesystem/share/UUID adapters are controlled; no device claim.
+PASS: 276 Second Pass data assertions: actual provider logic with hook adapters, real SQLite migration/restart/commit failure, immutable revisions, private JPEG/EXIF, portable manifest integrity/staging, verified 7/3 rotation, retry and diagnostic privacy.
+Native filesystem/React adapters are mocked; SQLite files, media files and SHA-256 are real. iOS process/crypto/protection verification remains a device gate.
+
+EXIT_CODE=0

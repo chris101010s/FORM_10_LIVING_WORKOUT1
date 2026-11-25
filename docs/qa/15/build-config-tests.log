@@ -1,0 +1,5 @@
+UTC 2026-11-25T08:54:25.678164+00:00
+$ node tests/test-build15.cjs
+PASS: 39 FORM15 build identity, optional capability isolation, lockfile version and shell syntax checks. No native compile claimed.
+
+EXIT_CODE=0

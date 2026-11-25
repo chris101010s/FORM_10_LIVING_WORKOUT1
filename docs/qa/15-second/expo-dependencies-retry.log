@@ -1,0 +1,15 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+Error: HTTP Proxy timed out
+Error: HTTP Proxy timed out
+    at ClientRequest.<anonymous> (/workspace/scratch/a16b8270c191/form15/node_modules/fetch-nodeshim/dist/minifetch.js:384:17)
+    at ClientRequest.wrapper (node:events:639:12)
+    at ClientRequest.emit (node:events:514:28)
+    at Socket.emitRequestTimeout (node:_http_client:1130:9)
+    at Socket.wrapper (node:events:639:12)
+    at Socket.emit (node:events:526:24)
+    at Socket._onTimeout (node:net:886:8)
+    at Timeout.onStreamTimeout [as _onTimeout] (node:internal/stream_base_commons:242:10)
+    at listOnTimeout (node:internal/timers:687:11)
+    at process.processTimers (node:internal/timers:618:7)
+
+EXIT_CODE=1

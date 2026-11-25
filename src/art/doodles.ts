@@ -1,0 +1,10 @@
+import {objects} from './objects';
+import {pip} from './pip';
+import {categories} from './categories';
+import type {InkDrawing} from './types';
+export type {InkDrawing,PipPose} from './types';
+const pipDrawings={pipNeutral:pip.neutral,pipSmile:pip.smile,pipWave:pip.wave,pipFocused:pip.focused,pipReady:pip.ready,pipWriting:pip.writing,pipDumbbell:pip.dumbbell,pipStopwatch:pip.stopwatch,pipThumbsUp:pip.thumbsUp,pipResting:pip.resting,pipSleeping:pip.sleeping,pipThinking:pip.thinking,pipSurprised:pip.surprised,pipCelebrating:pip.celebrating,pipMagnifier:pip.magnifier,pipRepair:pip.repair};
+const categoryDrawings={categoryFreeWeights:categories.freeWeights,categoryMachine:categories.machine,categoryCable:categories.cable,categoryBodyweight:categories.bodyweight,categoryBands:categories.bands,categoryCardio:categories.cardio,categoryCore:categories.core,categoryMobility:categories.mobility,categoryBalance:categories.balance,categoryMixed:categories.mixed};
+export const canonicalDoodles={...objects,...pipDrawings};
+export const doodles={...canonicalDoodles,...categoryDrawings,plate:objects.plates,calendar:objects.calendarStamp,progress:objects.arrow,bottle:objects.waterGlass,helper:pip.neutral} satisfies Record<string,InkDrawing>;
+export type DoodleName=keyof typeof doodles;

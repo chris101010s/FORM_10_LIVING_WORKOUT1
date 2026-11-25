@@ -1,0 +1,11 @@
+{
+  "command": "npm ci --no-audit --no-fund",
+  "directory": "/workspace/scratch/a16b8270c191/form15-second-clean-install-b6cifr30",
+  "startedAt": "2026-11-25T10:11:37.169690+00:00",
+  "finishedAt": "2026-11-25T10:11:50.407240+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 13.24,
+  "log": "docs/qa/15-second/clean-install.log",
+  "node": "v24.22.3",
+  "npm": "11.19.1"
+}

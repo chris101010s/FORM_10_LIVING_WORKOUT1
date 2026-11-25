@@ -5,7 +5,7 @@ export function habitDue(h:Habit,day:string){return !h.paused&&!h.archived&&(!h.
 export type Insight={title:string;detail:string;basis:string};
 export function localInsights(data:AthleteData,today=dateKey()):Insight[]{
  if(!data.settings.coach||data.settings.tone==='off')return [];
- const out:Insight[]=[];const recent=[...data.workouts].filter(w=>dayNumber(today)-dayNumber(dateKey(new Date(w.finishedAt)))>=0).sort((a,b)=>b.finishedAt.localeCompare(a.finishedAt));
+ const out:Insight[]=[];const recent=[...data.workouts].filter(w=>dayNumber(today)-dayNumber(dateKey(new Date(w.finishedAt)))>=0).sort((a,b)=>Date.parse(b.finishedAt)-Date.parse(a.finishedAt));
  const ids=[...new Set(recent.slice(0,12).flatMap(w=>w.sets.filter(weightedSet).map(s=>s.exerciseId)))];
  for(const id of ids){const sessions=recent.filter(w=>w.sets.some(s=>s.exerciseId===id&&weightedSet(s)&&s.kind!=='warmup')).slice(0,3).reverse();if(sessions.length<3)continue;
  const top=sessions.map(w=>w.sets.filter(s=>s.exerciseId===id&&weightedSet(s)&&s.kind!=='warmup'&&(!s.side||s.side==='both')).sort((a,b)=>b.weightKg-a.weightKg||b.reps-a.reps)[0]);

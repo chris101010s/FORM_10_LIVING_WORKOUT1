@@ -1,0 +1,6 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 test:plan15
+> node tests/test-plan-workout15.cjs
+
+PASS: 94 FORM 15 plan-only / planned-row / allowance / snapshot / legacy / real SQLite restart / backup assertions.

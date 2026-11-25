@@ -1,0 +1,40 @@
+UTC 2026-11-25T08:55:17.276387+00:00
+Temporary code copy: /workspace/scratch/a16b8270c191/form15-ios-export-xou403rr
+$ expo export --platform ios --output-dir /workspace/scratch/a16b8270c191/form15-ios-export-xou403rr/ios-js-export
+Starting Metro Bundler
+
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS Bundled 17568ms ../form15/node_modules/expo/AppEntry.js (1308 modules)
+
+› Assets (20):
+../form15/assets/fonts/FormDisplay.ttf (111KB)
+../form15/assets/fonts/FormHand.ttf (215KB)
+../form15/assets/fonts/FormMono.ttf (187KB)
+../form15/assets/fonts/FormText.ttf (240KB)
+../form15/node_modules/@react-navigation/elements/lib/module/assets/back-icon-mask.png (653B)
+../form15/node_modules/@react-navigation/elements/lib/module/assets/back-icon.png (4 variations | 566B)
+../form15/node_modules/@react-navigation/elements/lib/module/assets/clear-icon.png (4 variations | 425B)
+../form15/node_modules/@react-navigation/elements/lib/module/assets/close-icon.png (4 variations | 235B)
+../form15/node_modules/@react-navigation/elements/lib/module/assets/search-icon.png (3 variations | 582B)
+
+› ios bundles (1):
+_expo/static/js/ios/AppEntry-6b92341d1fdb7075ac900cc0e32c0975.hbc (3.4MB)
+
+› Files (1):
+metadata.json (1.4KB)
+
+Exported: /workspace/scratch/a16b8270c191/form15-ios-export-xou403rr/ios-js-export
+
+EXIT_CODE=0
+This is native-platform Metro bundling, not Xcode compilation or simulator execution.

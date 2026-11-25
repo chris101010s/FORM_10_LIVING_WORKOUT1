@@ -1,38 +1,39 @@
-import {weightQuality} from '../utils/yearReview';
 import {DateField} from '../components/DateField';
 import React,{useMemo,useState} from 'react';
-import {View,Text,Alert,ScrollView} from 'react-native';
+import {View,Text,Alert} from 'react-native';
 import {useAthlete} from '../data/context';
-import {dateKey,dayNumber,numberInput,projectedWeeks,rateKgPerWeek,rollingWeight,sortedWeight,validWeight,validateDate} from '../utils/metrics';
-import {BodyScan,WeightEntry} from '../data/schema';
-import {Title,Card,Metric,Button,Field,Section,Chip,Empty,color,Muted,Label,usePalette,surfaceTint} from '../components/Design';
+import {dateKey,dayNumber,numberInput,rollingWeight,sortedWeight,validWeight,validateDate} from '../utils/metrics';
+import type {WeightEntry} from '../data/schema';
+import {Button,Field,Section,Chip,Muted,Label,usePalette} from '../components/Design';
 import {Overlay} from '../components/Overlay';
 import {TrendChart} from '../components/TrendChart';
+import {NotebookHeader,InkRule} from '../components/Sketchbook';
 const uid=()=>`${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-export function WeightScreen(){const color=usePalette();
- const {data,update}=useAthlete();const [open,setOpen]=useState(false);const [editGoal,setEditGoal]=useState(false);const [kg,setKg]=useState('');const [day,setDay]=useState(dateKey());const [note,setNote]=useState('');const [target,setTarget]=useState(data.profile.targetKg==null?'':String(data.profile.targetKg));const [range,setRange]=useState(90);const [span,setSpan]=useState(7);const [editId,setEditId]=useState<string|null>(null);const [limit,setLimit]=useState(25);const [details,setDetails]=useState(false);
- const all=useMemo(()=>sortedWeight(data.weights),[data.weights]);const latest=all.length?all[all.length-1]:null;
- const shown=range===0?all:all.filter(e=>all.length&&dayNumber(all[all.length-1].date)-dayNumber(e.date)<range);
- const shownDates=new Set(shown.map(e=>e.date));const moving=rollingWeight(all,span).filter(p=>shownDates.has(p.date));
- const quality=weightQuality(data);const rate=rateKgPerWeek(all),weeks=projectedWeeks(all,data.profile.targetKg);
- const delta=shown.length>1?shown[shown.length-1].kg-shown[0].kg:null;
- const add=()=>{const n=numberInput(kg);if(!validWeight(n)||!validateDate(day)||day>dateKey())return Alert.alert('Eingabe prüfen','Gewicht 20–350 kg, gültiges Datum und kein Zukunftsdatum erforderlich.');
-  const entry:WeightEntry={id:editId||uid(),date:day,kg:n,note:note.trim()};update(s=>({...s,weights:[...s.weights.filter(x=>x.id!==entry.id),entry]}));setOpen(false);setEditId(null);setKg('');setNote('');setDay(dateKey());};
- const saveTarget=()=>{const n=numberInput(target);if(target.trim()&&!validWeight(n))return Alert.alert('Ungültiges Ziel','Bitte ein realistisches Gewicht eingeben oder leer lassen.');update(s=>({...s,profile:{...s.profile,targetKg:n}}));setEditGoal(false)};
- const del=(item:WeightEntry)=>Alert.alert('Eintrag löschen?',`${item.date} · ${item.kg} kg`,[{text:'Abbrechen',style:'cancel'},{text:'Löschen',style:'destructive',onPress:()=>update(s=>({...s,weights:s.weights.filter(x=>x.id!==item.id)}))}]);
- return <View><Title sub="Dein Verlauf. Deine Entscheidungen.">Gewicht</Title>{data.settings.eggs&&data.settings.tone!=='off'&&quality&&<Muted>Datengrundlage: mindestens drei Messtage in jedem der letzten drei 7-Tage-Fenster.</Muted>}
- <View style={{flexDirection:'row',gap:10}}><Metric label="Aktueller Wert" value={latest?latest.kg.toFixed(1):'–'} unit="kg"/><Metric label="Im Zeitraum" value={delta===null?'–':(delta>0?'+':'')+delta.toFixed(1)} unit="kg"/></View>
- <Section title="Verlauf" action={<Button small title="+ Eintragen" onPress={()=>{setEditId(null);setKg('');setNote('');setDay(dateKey());setOpen(true)}}/>}/>
- <Card><View style={{flexDirection:'row',flexWrap:'wrap',marginBottom:12}}>{[[7,'7T'],[30,'30T'],[90,'90T'],[180,'180T'],[365,'1J'],[0,'Alle']].map(([n,l])=><Chip key={n} text={String(l)} active={range===n} onPress={()=>setRange(Number(n))}/>)}</View>
- <TrendChart points={shown.map(e=>({date:e.date,value:e.kg}))} target={data.profile.targetKg}/>
- {moving.length>=2?<TrendChart points={moving.map(p=>({date:p.date,value:p.average}))} height={118} line="#8DB9AB"/>:null}
- <View style={{flexDirection:'row',flexWrap:'wrap'}}>{[7,14,28].map(n=><Chip key={n} text={`${n} Tage Ø`} active={span===n} onPress={()=>setSpan(n)}/>)}</View><Muted>Die zweite Kurve zeigt den gleitenden {span}-Tage-Mittelwert.</Muted></Card>
- <Button secondary title={details?"Details ausblenden":"Analyse und Messhistorie"} onPress={()=>setDetails(x=>!x)}/>{details&&<><Section title="Auswertung"/>
- <View style={{flexDirection:'row',gap:10}}><Metric label="Trend/Woche" value={rate===null?'–':`${rate>0?'+':''}${rate.toFixed(2)}`} unit="kg"/><Metric label="Prognose" value={weeks===null?'–':weeks===0?'Erreicht':`${Math.round(weeks)}`} unit={weeks===0?'':'Wochen'}/></View>
- <Card style={{marginTop:10}}><Label>Zielgewicht</Label><Text style={{fontSize:24,fontWeight:'800',color:color.ink}}>{data.profile.targetKg==null?'Noch kein Ziel':data.profile.targetKg.toFixed(1)+' kg'}</Text><View style={{marginTop:12}}><Button title="Ziel bearbeiten" secondary small onPress={()=>{setTarget(data.profile.targetKg==null?'':String(data.profile.targetKg));setEditGoal(true)}}/></View><Muted>Prognosen werden erst ab mindestens drei Werten über mindestens 14 Tage angezeigt. Sie sind keine Garantie.</Muted></Card>
- <Section title="Messhistorie"/>
- {all.length? [...all].reverse().slice(0,limit).map(x=><Card key={x.id} style={{marginBottom:9}}><View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}><View><Text style={{fontSize:17,fontWeight:'800',color:color.ink}}>{x.kg.toFixed(1)} kg</Text><Muted>{x.date} {x.note?'· '+x.note:''}</Muted></View><View style={{gap:6}}><Button title="Bearbeiten" secondary small onPress={()=>{setEditId(x.id);setKg(String(x.kg));setDay(x.date);setNote(x.note||'');setOpen(true)}}/><Button title="Löschen" secondary small onPress={()=>del(x)}/></View></View></Card>):<Card><Empty title="Noch keine Messungen" text="Du startest mit einer leeren Datenbank. Trage deinen ersten Wert ein."/></Card>}
- {all.length>limit&&<Button secondary title="Weitere Messungen" onPress={()=>setLimit(n=>n+25)}/>}</>}<Overlay title="Gewicht erfassen" visible={open} onClose={()=>setOpen(false)}><Field label="Gewicht (kg)" value={kg} onChangeText={setKg} keyboardType="decimal-pad" placeholder="z. B. 92,4"/><DateField label="Datum (JJJJ-MM-TT)" value={day} onChangeText={setDay}/><Field label="Notiz (optional)" value={note} onChangeText={setNote} placeholder="Wie ging es dir?"/><Button title="Messung speichern" onPress={add}/></Overlay>
- <Overlay title="Gewichtsziel" visible={editGoal} onClose={()=>setEditGoal(false)}><Field label="Ziel in kg (leer = kein Ziel)" value={target} onChangeText={setTarget} keyboardType="decimal-pad"/><Button title="Ziel speichern" onPress={saveTarget}/></Overlay>
- </View>
+export function WeightScreen(){
+ const color=usePalette(),{data,update,saving,fault}=useAthlete();
+ const [open,setOpen]=useState(false),[editGoal,setEditGoal]=useState(false),[kg,setKg]=useState(''),[day,setDay]=useState(dateKey()),[note,setNote]=useState(''),[target,setTarget]=useState(data.profile.targetKg==null?'':String(data.profile.targetKg)),[range,setRange]=useState(90),[span,setSpan]=useState(7),[mode,setMode]=useState<'raw'|'average'>('raw'),[editId,setEditId]=useState<string|null>(null),[page,setPage]=useState(0),[history,setHistory]=useState(false);
+ const all=useMemo(()=>sortedWeight(data.weights),[data.weights]),latest=all[all.length-1],end=dayNumber(dateKey());
+ const shown=useMemo(()=>all.filter(e=>dayNumber(e.date)<=end&&(range===0||end-dayNumber(e.date)<range)),[all,range,end]);
+ const moving=useMemo(()=>{const selected=new Set(shown.map(e=>e.date));return rollingWeight(all,span).filter(p=>selected.has(p.date))},[all,span,shown]);
+ const points=useMemo(()=>mode==='raw'?shown.map(e=>({date:e.date,value:e.kg})):moving.map(e=>({date:e.date,value:e.average})),[mode,shown,moving]);
+ const reversed=useMemo(()=>[...all].reverse(),[all]),delta=shown.length>1?shown[shown.length-1].kg-shown[0].kg:null;
+ const edit=(entry?:WeightEntry)=>{setEditId(entry?.id??null);setKg(entry?String(entry.kg):'');setDay(entry?.date??dateKey());setNote(entry?.note??'');setOpen(true)};
+ const save=async()=>{const value=numberInput(kg);if(!validWeight(value)||!validateDate(day)||day>dateKey())return Alert.alert('Eingabe prüfen','Gewicht zwischen 20 und 350 kg und ein gültiges Datum bis heute eingeben.');const entry:WeightEntry={id:editId??uid(),date:day,kg:value,note:note.trim()};const ok=await update(d=>({...d,weights:[...d.weights.filter(e=>e.id!==entry.id),entry]}));if(ok){setOpen(false);setEditId(null);setKg('');setNote('');setPage(0)}};
+ const saveTarget=async()=>{const value=numberInput(target);if(target.trim()&&!validWeight(value))return Alert.alert('Zielwert prüfen','Ein Gewicht zwischen 20 und 350 kg eingeben oder das Feld leer lassen.');if(await update(d=>({...d,profile:{...d.profile,targetKg:value}})))setEditGoal(false)};
+ const remove=(entry:WeightEntry)=>Alert.alert('Messung löschen?',`${entry.date} · ${entry.kg} kg`,[{text:'Abbrechen',style:'cancel'},{text:'Löschen',style:'destructive',onPress:()=>void update(d=>({...d,weights:d.weights.filter(e=>e.id!==entry.id)}))}]);
+ return <View style={{gap:14}}>
+ <NotebookHeader eyebrow="DEIN KÖRPERVERLAUF" title="Eine Messung. Ein Moment." subtitle="Werte beschreiben deinen Verlauf, nicht deinen Wert." doodle="plate"/>
+ <Label>LETZTE DOKUMENTIERTE MESSUNG</Label><Text style={{fontSize:43,color:color.ink,fontWeight:'700',fontVariant:['tabular-nums']}}>{latest?latest.kg.toFixed(1):'—'} <Text style={{fontSize:18}}>kg</Text></Text><Muted>{latest?`${latest.date}${latest.note?' · '+latest.note:''}`:'Noch kein Gewicht eingetragen.'}</Muted>
+ <Button title="Gewicht eintragen" onPress={()=>edit()} disabled={saving||!!fault}/>
+ <InkRule/><Label>ZEITRAUM BIS HEUTE</Label><View style={{flexDirection:'row',flexWrap:'wrap'}}>{[[7,'7 Tage'],[30,'30 Tage'],[90,'90 Tage'],[365,'1 Jahr'],[0,'Alle']].map(([n,label])=><Chip key={n} text={String(label)} active={range===n} onPress={()=>setRange(Number(n))}/>)}</View>
+ <View style={{flexDirection:'row',flexWrap:'wrap'}}><Chip text="Einzelmessungen" active={mode==='raw'} onPress={()=>setMode('raw')}/><Chip text="Gleitender Mittelwert" active={mode==='average'} onPress={()=>setMode('average')}/></View>
+ {mode==='average'&&<View style={{flexDirection:'row',flexWrap:'wrap'}}>{[7,14,28].map(n=><Chip key={n} text={`${n} Tage`} active={span===n} onPress={()=>setSpan(n)}/>)}</View>}
+ <TrendChart points={points} target={data.profile.targetKg} unit="kg"/>
+ <Muted>{mode==='average'?`Gleitender ${span}-Tage-Mittelwert aus tatsächlich gemessenen Tagen. Mehrere Messungen eines Tages werden zuerst gemittelt.`:'Einzelne Messungen mit ihren tatsächlichen Datumsabständen.'}{delta===null?'':` Veränderung zwischen erster und letzter Messung im Zeitraum: ${delta>0?'+':''}${delta.toFixed(1)} kg.`}</Muted>
+ <View style={{borderTopWidth:1,borderColor:color.line,paddingTop:15,gap:8}}><Label>DEIN OPTIONALER ZIELWERT</Label><Text style={{color:color.ink,fontSize:21}}>{data.profile.targetKg==null?'Kein Zielwert gesetzt':`${data.profile.targetKg.toFixed(1)} kg`}</Text><Button secondary small title="Eigenen Zielwert bearbeiten" onPress={()=>{setTarget(data.profile.targetKg==null?'':String(data.profile.targetKg));setEditGoal(true)}}/><Muted>Du kannst diesen Wert jederzeit ändern oder entfernen. Es wird kein Erreichungsdatum vorhergesagt.</Muted></View>
+ <Button secondary title={history?'Messhistorie schließen':'Messhistorie öffnen'} onPress={()=>setHistory(v=>!v)}/>
+ {history&&<><Section title="Deine bisherigen Messungen"/>{reversed.slice(page*25,(page+1)*25).map(entry=><View key={entry.id} style={{borderBottomWidth:1,borderColor:color.line,paddingVertical:12,gap:8}}><Text style={{color:color.ink,fontSize:21,fontWeight:'700'}}>{entry.kg.toFixed(1)} kg</Text><Muted>{entry.date}{entry.note?' · '+entry.note:''}</Muted><View style={{flexDirection:'row',gap:8}}><Button secondary small title="Bearbeiten" onPress={()=>edit(entry)}/><Button secondary small danger title="Löschen" onPress={()=>remove(entry)}/></View></View>)}{!all.length&&<Muted>Noch keine Messungen vorhanden.</Muted>}{all.length>25&&<View style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between',gap:8}}><Button secondary small title="‹ Vorherige" disabled={page===0} onPress={()=>setPage(n=>n-1)}/><Muted>Seite {page+1}/{Math.ceil(all.length/25)}</Muted><Button secondary small title="Nächste ›" disabled={(page+1)*25>=all.length} onPress={()=>setPage(n=>n+1)}/></View>}</>}
+ <Overlay title="Gewicht erfassen" visible={open} onClose={()=>setOpen(false)}><Field label="Gewicht (kg)" value={kg} onChangeText={setKg} keyboardType="decimal-pad" placeholder="Dein Messwert"/><DateField label="Datum" value={day} onChangeText={setDay}/><Field label="Notiz (optional)" value={note} onChangeText={setNote}/><Button title="Messung speichern" disabled={saving||!!fault} onPress={()=>void save()}/></Overlay>
+ <Overlay title="Dein optionaler Zielwert" visible={editGoal} onClose={()=>setEditGoal(false)}><Field label="Ziel in kg · leer lassen zum Entfernen" value={target} onChangeText={setTarget} keyboardType="decimal-pad"/><Button title="Zielwert speichern" disabled={saving||!!fault} onPress={()=>void saveTarget()}/></Overlay>
+ </View>;
 }

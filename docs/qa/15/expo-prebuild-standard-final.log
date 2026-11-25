@@ -1,0 +1,17 @@
+UTC 2026-11-25T08:54:14.054533+00:00
+Temporary copy: /workspace/scratch/a16b8270c191/form15-prebuild-cs6ei04o
+Mode standard
+$ expo prebuild --platform ios --clean --no-install
+- Clearing ios
+✔ Cleared ios code
+- Creating native directory (./ios)
+✔ Created native directory
+- Updating package.json
+✔ Updated package.json
+- Running prebuild
+✔ Finished prebuild
+
+EXIT_CODE=0
+ENTITLEMENTS ios/FORM1500/FORM1500.entitlements {}
+INFO {"CFBundleDisplayName": "FORM 15.0.0", "CFBundleShortVersionString": "15.0.0", "CFBundleVersion": "150000", "FORMHealthKitEnabled": null, "FORMWidgetsEnabled": null, "NSHealthShareUsageDescription": null, "NSHealthUpdateUsageDescription": null, "NSSupportsLiveActivities": null}
+CocoaPods/Xcode not executed on Linux.

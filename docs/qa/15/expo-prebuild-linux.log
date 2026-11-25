@@ -1,0 +1,14 @@
+UTC 2026-11-25T08:51:47.248340+00:00
+Temporary copy: /workspace/scratch/a16b8270c191/form15-prebuild-cs6ei04o
+$ expo prebuild --platform ios --clean --no-install
+- Creating native directory (./ios)
+✔ Created native directory
+- Updating package.json
+✔ Updated package.json
+- Running prebuild
+- Running prebuild
+✔ Finished prebuild
+» ios: ios.backgroundColor: Install expo-system-ui to enable this feature https://docs.expo.dev/versions/latest/sdk/system-ui/
+
+EXIT_CODE=0
+CocoaPods/Xcode not executed on Linux.

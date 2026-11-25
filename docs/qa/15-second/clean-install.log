@@ -1,0 +1,8 @@
+Command: npm ci --no-audit --no-fund
+Directory: /workspace/scratch/a16b8270c191/form15-second-clean-install-b6cifr30
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+added 591 packages in 13s
+
+EXIT_CODE=0

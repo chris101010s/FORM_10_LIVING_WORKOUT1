@@ -1,0 +1,61 @@
+{
+  "phase": "A — read-only runtime audit",
+  "at": "2026-11-25T09:12:48.965Z",
+  "baseline": "05056e2185092d9cc530a9aad5d4935a2de969e0",
+  "environment": {
+    "node": "v24.22.3",
+    "platform": "linux",
+    "tz": "system"
+  },
+  "nativeExecuted": false,
+  "findings": [
+    {
+      "id": "A-TRAIN-01",
+      "case": "Timed warm-up 60s + planned work set 30s",
+      "rowKinds": [
+        "warmup",
+        "timed"
+      ],
+      "storedSetKinds": [
+        "timed",
+        "timed"
+      ],
+      "series": [
+        60
+      ],
+      "expectedWorkOnlySeries": [
+        30
+      ],
+      "finding": "Series uses warm-up 60s because stored set kind is timed."
+    },
+    {
+      "id": "A-TRAIN-02",
+      "case": "Bodyweight planned warm-up with 5 reps and no load input",
+      "rowKind": "warmup",
+      "result": "Gewicht 0–1000 kg und 1–150 ganze Wiederholungen eingeben.",
+      "expected": "bodyweight semantics with no required load"
+    },
+    {
+      "id": "A-TRAIN-03",
+      "case": "Equivalent date formats with offset: later 100kg must follow earlier 90kg",
+      "actualTimeOrder": [
+        "earlier",
+        "later"
+      ],
+      "records": [],
+      "expectedNewRecordSession": "later",
+      "seriesOrder": [
+        "later",
+        "earlier"
+      ]
+    },
+    {
+      "id": "A-TRAIN-04",
+      "case": "Current set removal is not a full Undo",
+      "remainingSets": 0,
+      "restUntil": 1795608150000,
+      "restRemainingAtRemoval": 90000,
+      "finding": "Completion removal keeps newly created rest timer; no persisted inverse action exists."
+    }
+  ]
+}

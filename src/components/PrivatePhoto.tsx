@@ -1,0 +1,5 @@
+import {useEffect,useState} from 'react';
+import {useAthlete} from '../data/context';
+import {privateFiles} from '../utils/privateFiles';
+import {verifyMedia} from '../utils/mediaAssets';
+export function usePrivatePhoto(assetId?:string,legacyPhoto?:string):{uri?:string;missing:boolean;loading:boolean}{const {data}=useAthlete(),asset=data.mediaAssets?.find(a=>a.id===assetId),[state,setState]=useState<{uri?:string;missing:boolean;loading:boolean}>({uri:assetId?undefined:legacyPhoto,missing:false,loading:!!assetId});useEffect(()=>{let current=true;if(!assetId){setState({uri:legacyPhoto,missing:false,loading:false});return;}if(!asset){setState({uri:legacyPhoto,missing:true,loading:false});return;}setState({missing:false,loading:true});void privateFiles().then(async files=>{await verifyMedia(files,asset);if(current)setState({uri:files.uri(asset.relativePath),missing:false,loading:false});}).catch(()=>{if(current)setState({uri:legacyPhoto,missing:true,loading:false});});return()=>{current=false;};},[assetId,asset,legacyPhoto]);return state;}

@@ -7,13 +7,13 @@ export function suggestedSet(workouts:Workout[],live:LiveWorkout|null,exerciseId
  if(!exerciseId)return null;
  const recent=[...(live?.sets||[])].reverse();const today=recent.find(s=>s.exerciseId===exerciseId&&s.kind!=='warmup'&&s.reps>0)||recent.find(s=>s.exerciseId===exerciseId&&s.reps>0);
  if(today)return {weightKg:today.weightKg,reps:today.reps,rir:today.rir};
- const previous=[...workouts].sort((a,b)=>b.finishedAt.localeCompare(a.finishedAt))
+ const previous=[...workouts].sort((a,b)=>Date.parse(b.finishedAt)-Date.parse(a.finishedAt))
   .find(w=>w.sets.some(s=>s.exerciseId===exerciseId&&s.reps>0));
  const options=previous?.sets.filter(s=>s.exerciseId===exerciseId&&s.reps>0)||[];const set=options.slice().reverse().find(s=>s.kind!=='warmup')||options.slice(-1)[0];
  return set?{weightKg:set.weightKg,reps:set.reps,rir:set.rir}:null;
 }
 export function workoutVolume(sets:GymSet[]):number {
- return sets.reduce((total,s)=>total+(s.kind==='warmup'||!weightedSet(s)?0:s.weightKg*s.reps),0);
+ return sets.reduce((total,s)=>total+(s.kind==='warmup'||s.role==='warmup'||!weightedSet(s)?0:s.unilateral?s.unilateral.left.weightKg*s.unilateral.left.reps+s.unilateral.right.weightKg*s.unilateral.right.reps:s.weightKg*s.reps*(s.loadBasis==='perHand'?2:1)),0);
 }
 export type WeekSummary={week:string;sessions:number;sets:number;volumeKg:number};
 function mondayUTC(iso:string):string {

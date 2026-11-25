@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-25T09:00:32.463799+00:00",
+  "userDate": "2026-11-25",
+  "userTimeZone": "Europe/Berlin",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "node": "v24.22.3",
+  "npm": "11.19.1",
+  "nativeTools": {
+    "xcodebuild": null,
+    "swift": null,
+    "pod": null,
+    "xcrun": null
+  },
+  "auth": "GitHub connector became available: public and private FORM10 repositories compared read-only. No remote writes or v15 CI run. Git CLI has no authenticated session."
+}

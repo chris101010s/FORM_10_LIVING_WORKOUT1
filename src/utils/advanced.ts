@@ -24,7 +24,7 @@ export function trainingStreak(workouts:Workout[],today=dateKey()){
 }
 export type ExercisePoint={date:string;bestKg:number;volumeKg:number;maxReps:number;sets:number};
 export function exerciseHistory(workouts:Workout[],exerciseId:string):ExercisePoint[]{
- return [...workouts].sort((a,b)=>a.finishedAt.localeCompare(b.finishedAt))
+ return [...workouts].sort((a,b)=>Date.parse(a.finishedAt)-Date.parse(b.finishedAt))
  .flatMap(w=>{const sets=w.sets.filter(s=>s.exerciseId===exerciseId&&s.kind!=='warmup'&&weightedSet(s));if(!sets.length)return [];
   return [{date:dateKey(new Date(w.finishedAt)),bestKg:Math.max(...sets.map(s=>s.weightKg)),volumeKg:workoutVolume(sets),maxReps:Math.max(...sets.map(s=>s.reps)),sets:sets.length}];});
 }

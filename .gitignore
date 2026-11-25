@@ -30,3 +30,9 @@ private/
 !docs/qa/83-*.log
 
 !docs/qa/10-*.log
+!docs/qa/15/*.log
+/artifacts/
+
+# Reproducible second-pass logs contain synthetic data only
+!docs/qa/15-second/*.log
+!docs/qa/second-pass/*.log

@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 const url='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json';
 const output=new URL('../src/catalog/exercises.generated.json',import.meta.url);
 const fallback=new URL('../src/catalog/curated-fallback.json',import.meta.url);
-const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const wait=ms=>new Promise(resolve=>{setTimeout(resolve,ms)});
 async function tryDownload(){
  for(let attempt=1;attempt<=3;attempt++){
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),30000);

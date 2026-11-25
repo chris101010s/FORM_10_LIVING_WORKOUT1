@@ -1,0 +1,9 @@
+{
+  "command": "npm run check",
+  "startedAt": "2026-11-25T09:05:39.059863+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 44.07,
+  "platform": "linux",
+  "node": "v24.22.3",
+  "log": "final-check.log"
+}

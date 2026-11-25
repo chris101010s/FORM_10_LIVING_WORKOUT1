@@ -1,0 +1,10 @@
+$ npm run test:living
+Started 2026-11-25T09:50:26.077050+00:00
+
+> athlete-os-form@15.0.0 test:living
+> node tests/test-living-workout.cjs
+
+PASS: 62 Living Workout tests — clocks, draft restart, replay protection, rest, swap, history, real SQLite rollback and backup.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+EXIT_CODE=0

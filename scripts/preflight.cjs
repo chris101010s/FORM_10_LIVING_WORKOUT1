@@ -5,6 +5,19 @@ const cp = require('node:child_process');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const required = [
+  'plugins/withAlternateIcons.js', 'scripts/verify-ios-presentation.cjs',
+  'assets/icons/ink.png', 'assets/icons/paper.png', 'assets/icons/blueprint.png', 'assets/icons/retro.png',
+  'modules/form-health/ios/FormPresentationBridge.swift', 'modules/form-health/ios/FormHealthDayBridge.swift',
+  'src/utils/nutritionCoordinator.ts', 'src/utils/nativeReconciliation.ts', 'src/utils/nativeCapabilities.ts', 'src/utils/healthDayTypes.ts', 'src/utils/localSearch.ts',
+  'src/components/HealthSync.tsx', 'src/components/AlternateIconSettings.tsx', 'src/components/WorkoutKeepAwake.tsx', 'src/screens/LocalSearch.tsx',
+  'tests/test-health-second.cjs', 'tests/test-native-second.cjs', 'tests/test-search-second.cjs', 'tests/test-training-second.cjs', 'tests/test-second-pass-data.cjs', 'tests/test-design-second.cjs', 'tests/test-analytics-second.cjs',
+  'package-lock.json', 'eslint.config.mjs', 'src/art/doodles.ts', 'src/components/Sketchbook.tsx',
+  'src/screens/Nutrition.tsx', 'src/utils/nutritionSync.ts', 'src/utils/nutritionTypes.ts', 'src/utils/healthBridge.ts',
+  'modules/form-health/ios/FormNutritionBridge.swift', '.github/workflows/ios-healthkit-signed.yml',
+  'scripts/build-ios-signed.sh', 'scripts/setup-ci-signing.sh', 'scripts/cleanup-ci-signing.sh',
+  'scripts/simulator-smoke.sh', 'scripts/qa-release.mjs', 'scripts/release-manifest.cjs',
+  'tests/test-build15.cjs', 'tests/test-nutrition15.cjs', 'tests/test-plan-workout15.cjs',
+  'tests/test-migration15.cjs', 'tests/test-repository15.cjs', 'tests/test-plan-management15.cjs', 'tests/test-progress15.cjs',
   'src/utils/livingWorkout.ts', 'src/features/workout/LivingComponents.tsx', 'tests/test-living-workout.cjs', 'App.tsx', 'app.json', 'app.config.js', 'package.json',
   'modules/form-health/ios/FormHealthModule.swift', 'modules/form-health/ios/FormBackupCrypto.swift', 'modules/form-health/ios/FormHealth.podspec', 'modules/form-health/expo-module.config.json',
   'src/widgets/TrainingWidget.tsx', 'src/widgets/TrainingActivity.tsx', 'tests/test-native-features.cjs',

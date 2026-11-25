@@ -1,0 +1,6 @@
+UTC 2026-11-25T08:52:01.615931+00:00
+$ npm exec --no -- expo install --check
+Dependencies are up to date
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+EXIT_CODE=0

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "ink",
+    "size": 1024,
+    "file": "assets/icons/ink.png",
+    "sha256": "1d867170ebd20f828d8237a82b493bd96709177dc2077138ffeb02423ab62019",
+    "source": "assets/icons/ink.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "ink",
+    "size": 120,
+    "file": "assets/icons/ink-120.png",
+    "sha256": "27de848dc7a07696e3183fe4e5091bdf12be6ce7df7c0d812815459433e6284e",
+    "source": "assets/icons/ink.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "ink",
+    "size": 180,
+    "file": "assets/icons/ink-180.png",
+    "sha256": "de995a49994d7e1ebbc501d327ea8e3e48b0f0a99169f856179134d8a7f3f562",
+    "source": "assets/icons/ink.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "paper",
+    "size": 1024,
+    "file": "assets/icons/paper.png",
+    "sha256": "4d3eb3509b9569b3613f50177ebb77e0c6ec5db3b16a07e2c54157426f25f6fe",
+    "source": "assets/icons/paper.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "paper",
+    "size": 120,
+    "file": "assets/icons/paper-120.png",
+    "sha256": "b0eca706a5bc804c17ba303d2704b3a2efed5e29adba379ba71ed4b038cb0539",
+    "source": "assets/icons/paper.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "paper",
+    "size": 180,
+    "file": "assets/icons/paper-180.png",
+    "sha256": "1b4a70243e94edb6a1821b14f8dc96acb4029d7430b23ba20fcde9c5525f2ccd",
+    "source": "assets/icons/paper.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "blueprint",
+    "size": 1024,
+    "file": "assets/icons/blueprint.png",
+    "sha256": "d33de9ec770fefd22cf3542e1225cf6018f05f2b82b4dad489f7b472157d07e9",
+    "source": "assets/icons/blueprint.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "blueprint",
+    "size": 120,
+    "file": "assets/icons/blueprint-120.png",
+    "sha256": "63a472e412599ece55f498a47155fda019e6bb50718623d92be2e5137c819478",
+    "source": "assets/icons/blueprint.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "blueprint",
+    "size": 180,
+    "file": "assets/icons/blueprint-180.png",
+    "sha256": "1b9f3bf738b678785dab4c9a311212a2923968708ca6834b83156d745a3dd776",
+    "source": "assets/icons/blueprint.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "retro",
+    "size": 1024,
+    "file": "assets/icons/retro.png",
+    "sha256": "4f807a9635061ea198e8d0bfde3c7724589ef88da15d0efcab9e622d99e743e0",
+    "source": "assets/icons/retro.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "retro",
+    "size": 120,
+    "file": "assets/icons/retro-120.png",
+    "sha256": "62b2d02e9a371a630199a7482748317cf8239c66fcbbc3c20e492d34230abe65",
+    "source": "assets/icons/retro.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  },
+  {
+    "id": "retro",
+    "size": 180,
+    "file": "assets/icons/retro-180.png",
+    "sha256": "51093bd8f5b9828236fce406b35aa8b5505911a2b34dc8876981e90309526435",
+    "source": "assets/icons/retro.svg",
+    "license": "Original FORM artwork; unrestricted use with the app"
+  }
+]

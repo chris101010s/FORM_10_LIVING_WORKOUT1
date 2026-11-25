@@ -1,0 +1,7 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> athlete-os-form@15.0.0 lint
+> eslint App.tsx src app.config.js plugins scripts tests --max-warnings 0
+
+
+EXIT_CODE=0

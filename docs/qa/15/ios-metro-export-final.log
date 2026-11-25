@@ -1,0 +1,46 @@
+Final iOS Metro/Hermes export from independent npm ci snapshot
+Started UTC: 2026-11-25T09:02:29.603284+00:00
+Working directory: /workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb
+Command: /workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb/node_modules/.bin/expo export --platform ios --output-dir /workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb/ios-js-export
+Snapshot includes final missing-database metadata guard, raw-name preservation, paused-rest completion, reopened warmup fixes and final design.
+HealthKit=0; Widgets=0; native modules not compiled by this check
+Input hashes: docs/qa/15/metro-final-snapshot.json
+
+Starting Metro Bundler
+
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:6) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS Bundled 12922ms node_modules/expo/AppEntry.js (1308 modules)
+
+› Assets (20):
+assets/fonts/FormDisplay.ttf (111KB)
+assets/fonts/FormHand.ttf (215KB)
+assets/fonts/FormMono.ttf (187KB)
+assets/fonts/FormText.ttf (240KB)
+node_modules/@react-navigation/elements/lib/module/assets/back-icon-mask.png (653B)
+node_modules/@react-navigation/elements/lib/module/assets/back-icon.png (4 variations | 566B)
+node_modules/@react-navigation/elements/lib/module/assets/clear-icon.png (4 variations | 425B)
+node_modules/@react-navigation/elements/lib/module/assets/close-icon.png (4 variations | 235B)
+node_modules/@react-navigation/elements/lib/module/assets/search-icon.png (3 variations | 582B)
+
+› ios bundles (1):
+_expo/static/js/ios/AppEntry-0831bbccbb3f26e6660e1c0c61493a40.hbc (3.4MB)
+
+› Files (1):
+metadata.json (1.4KB)
+
+Exported: /workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb/ios-js-export
+
+Exit code: 0
+Elapsed seconds: 14.58
+Completed UTC: 2026-11-25T09:02:44.185626+00:00

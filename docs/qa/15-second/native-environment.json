@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-11-25T09:55:53.113646+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "tools": {
+    "xcodebuild": null,
+    "xcrun": null,
+    "swift": null,
+    "pod": null
+  },
+  "nativeBuild": "BLOCKED: macOS/Xcode/iOS SDK required; no signed or unsigned IPA produced by this Linux run",
+  "deviceChecks": "NOT RUN: icons, HealthKit/YAZIO, KeepAwake, notifications, widgets, Face ID, private file protection",
+  "prebuild": "Generated actual iOS projects; does not compile Swift or validate signing"
+}

@@ -4,6 +4,7 @@ import Foundation
 
 public final class FormHealthModule: Module {
   private let store = HKHealthStore()
+  private lazy var nutrition = FormNutritionBridge(store: store)
   private var enabled: Bool { Bundle.main.object(forInfoDictionaryKey: "FORMHealthKitEnabled") as? Bool == true && HKHealthStore.isHealthDataAvailable() }
   private let specs: [(String, HKQuantityTypeIdentifier, HKUnit, HKStatisticsOptions)] = [
     ("steps", .stepCount, .count(), .cumulativeSum),
@@ -16,8 +17,37 @@ public final class FormHealthModule: Module {
     Name("FormHealth")
     AsyncFunction("sealBackup") { (text: String, password: String) -> String in try FormBackupCrypto.seal(text, password) }
     AsyncFunction("openBackup") { (text: String, password: String) -> String in try FormBackupCrypto.open(text, password) }
+    AsyncFunction("preparePrivateStorage") { () -> [String: Any] in try FormPresentationBridge.preparePrivateStorage() }
+    AsyncFunction("nativeCapabilities") { () -> [String: Any] in
+      ["healthKit": ["configured": Bundle.main.object(forInfoDictionaryKey: "FORMHealthKitEnabled") as? Bool == true, "available": self.enabled], "widgets": FormPresentationBridge.widgetSupport(), "icons": FormPresentationBridge.iconState()]
+    }.runOnQueue(.main)
+    AsyncFunction("setAppIcon") { (key: String, promise: Promise) in FormPresentationBridge.changeIcon(key, promise: promise) }.runOnQueue(.main)
     Function("available") { self.enabled }
-    Function("widgetsEnabled") { Bundle.main.object(forInfoDictionaryKey: "FORMWidgetsEnabled") as? Bool == true }
+    Function("widgetsEnabled") { FormPresentationBridge.widgetSupport()["available"] as? Bool == true }
+    AsyncFunction("authorizeNutrition") { (keys: [String], promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.authorize(keys: keys, promise: promise)
+    }
+    AsyncFunction("readNutrition") { (fromMs: Double, toMs: Double, keys: [String], promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.read(fromMs: fromMs, toMs: toMs, keys: keys, promise: promise)
+    }.runOnQueue(.main)
+    AsyncFunction("authorizeExport") { (kind: String, promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.authorizeExport(kind: kind, promise: promise)
+    }
+    AsyncFunction("writeWeight") { (entryId: String, kg: Double, atMs: Double, version: Int, fingerprint: String, promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.writeWeight(entryId: entryId, kg: kg, atMs: atMs, version: version, fingerprint: fingerprint, promise: promise)
+    }
+    AsyncFunction("writeWorkout") { (entryId: String, fromMs: Double, toMs: Double, duration: Double, version: Int, fingerprint: String, promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.writeWorkout(entryId: entryId, fromMs: fromMs, toMs: toMs, duration: duration, version: version, fingerprint: fingerprint, promise: promise)
+    }
+    AsyncFunction("deleteExport") { (kind: String, entryId: String, version: Int, fingerprint: String, expectedUUID: String, promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      self.nutrition.deleteExport(kind: kind, entryId: entryId, version: version, fingerprint: fingerprint, expectedUUID: expectedUUID, promise: promise)
+    }
     AsyncFunction("authorize") { (promise: Promise) in
       guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
       var types = Set<HKObjectType>(self.specs.compactMap { HKQuantityType.quantityType(forIdentifier: $0.1) })
@@ -27,6 +57,10 @@ public final class FormHealthModule: Module {
         if let error = error { promise.reject("HEALTH_PERMISSION", error.localizedDescription) } else { promise.resolve(ok) }
       }
     }
+    AsyncFunction("readDaySources") { (fromMs: Double, toMs: Double, promise: Promise) in
+      guard self.enabled else { promise.reject("HEALTH_UNAVAILABLE", "HealthKit ist in diesem Build nicht aktiviert."); return }
+      FormHealthDayBridge.read(store: self.store, fromMs: fromMs, toMs: toMs, promise: promise)
+    }.runOnQueue(.main)
     AsyncFunction("readDay") { (fromMs: Double, toMs: Double, promise: Promise) in
       guard self.enabled, fromMs.isFinite, toMs.isFinite, toMs > fromMs, toMs - fromMs < 100_000_000 else { promise.reject("HEALTH_RANGE", "HealthKit nicht verfügbar oder Zeitraum ungültig."); return }
       let from = Date(timeIntervalSince1970: fromMs / 1000), to = Date(timeIntervalSince1970: toMs / 1000)
@@ -50,7 +84,9 @@ public final class FormHealthModule: Module {
       if let type = HKQuantityType.quantityType(forIdentifier: .bodyMass) {
         group.enter()
         let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-        self.store.execute(HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sort]) { _, samples, error in
+        // A weight exported by FORM must not return as a second imported measurement.
+        let external = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, NSCompoundPredicate(notPredicateWithSubpredicate: HKQuery.predicateForObjects(from: HKSource.default()))])
+        self.store.execute(HKSampleQuery(sampleType: type, predicate: external, limit: 1, sortDescriptors: [sort]) { _, samples, error in
           let value = (samples?.first as? HKQuantitySample)?.quantity.doubleValue(for: .gramUnit(with: .kilo))
           DispatchQueue.main.async { if let value = value, value.isFinite { values["weight"] = value }; if error != nil { failures.append("weight") }; group.leave() }
         })

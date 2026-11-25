@@ -1,0 +1,9 @@
+UTC 2026-11-25T08:54:25.482858+00:00
+Fresh install directory: /workspace/scratch/a16b8270c191/form15-ci-install-sfykmdrb
+package-lock SHA256: 343af19861c9c1c0ddf4125b1267c8c6df3fee13e86f35abfbdd95b70c981ac2
+$ npm ci --no-audit --no-fund
+
+added 589 packages in 12s
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+EXIT_CODE=0

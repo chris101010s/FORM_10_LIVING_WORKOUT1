@@ -1,0 +1,19 @@
+UTC 2026-11-25T08:51:57.752400+00:00
+$ npm run doctor
+
+> athlete-os-form@15.0.0 doctor
+> expo-doctor
+
+Running 20 checks on your project...
+19/20 checks passed. 1 checks failed. Possible issues detected:
+Use the --verbose flag to see more details about passed checks.
+
+✖ Check dependencies for packages that should not be installed directly
+The package "expo-modules-core" should not be installed directly in your project. You should instead use the exported API from the expo package.
+Advice:
+Remove these packages from your package.json.
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+1 check failed, indicating possible issues with the project.
+
+EXIT_CODE=1

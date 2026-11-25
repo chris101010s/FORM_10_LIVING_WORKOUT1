@@ -70,7 +70,7 @@ FORM_APP="$(find "$FORM_PRIVATE/check/Payload" -maxdepth 1 -name '*.app' -print 
 [[ -z "$(find "$FORM_APP" -type d -name '*.appex' -print -quit)" ]] || { echo 'ERROR: Unerwartete Extension im HealthKit-App-Build.' >&2; exit 1; }
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$FORM_APP/Info.plist")" == 'app.athleteos.personal' ]] || { echo 'ERROR: Bundle-ID stimmt nicht.' >&2; exit 1; }
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$FORM_APP/Info.plist")" == '15.0.0' ]] || { echo 'ERROR: Release-Version stimmt nicht.' >&2; exit 1; }
-[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$FORM_APP/Info.plist")" == '150001' ]] || { echo 'ERROR: Buildnummer stimmt nicht.' >&2; exit 1; }
+[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$FORM_APP/Info.plist")" == '150002' ]] || { echo 'ERROR: Buildnummer stimmt nicht.' >&2; exit 1; }
 node scripts/verify-ios-presentation.cjs "$FORM_APP"
 codesign --verify --deep --strict "$FORM_APP"
 codesign -d --entitlements :- "$FORM_APP" > "$FORM_PRIVATE/signed-entitlements.plist" 2>/dev/null

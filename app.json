@@ -17,11 +17,11 @@
         "NSFaceIDUsageDescription": "Optionaler Schutz deiner privaten Trainings- und Gesundheitsdaten."
       },
       "icon": "./assets/icons/ink.png",
-      "buildNumber": "150001"
+      "buildNumber": "150002"
     },
     "android": {
       "package": "app.athleteos.personal",
-      "versionCode": 150001
+      "versionCode": 150002
     },
     "platforms": [
       "ios",
@@ -37,7 +37,7 @@
         }
       ],
       "expo-local-authentication",
-      "./plugins/withAlternateIcons"
+      "./plugins/withBuildVersion"
     ],
     "extra": {
       "privacy": "All personal data remains on device until user explicitly exports or shares it."

@@ -5,11 +5,11 @@ const cp = require('node:child_process');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const required = [
-  'plugins/withAlternateIcons.js', 'scripts/verify-ios-presentation.cjs',
-  'assets/icons/ink.png', 'assets/icons/paper.png', 'assets/icons/blueprint.png', 'assets/icons/retro.png',
+  'plugins/withBuildVersion.js', 'scripts/verify-ios-presentation.cjs',
+  'assets/icons/ink.png', 'assets/icons/ink-120.png', 'assets/icons/ink-180.png', 'assets/icons/ink.svg', 'assets/icons/manifest.json',
   'modules/form-health/ios/FormPresentationBridge.swift', 'modules/form-health/ios/FormHealthDayBridge.swift',
   'src/utils/nutritionCoordinator.ts', 'src/utils/nativeReconciliation.ts', 'src/utils/nativeCapabilities.ts', 'src/utils/healthDayTypes.ts', 'src/utils/localSearch.ts',
-  'src/components/HealthSync.tsx', 'src/components/AlternateIconSettings.tsx', 'src/components/WorkoutKeepAwake.tsx', 'src/screens/LocalSearch.tsx',
+  'src/components/HealthSync.tsx', 'src/components/WorkoutKeepAwake.tsx', 'src/screens/LocalSearch.tsx',
   'tests/test-health-second.cjs', 'tests/test-native-second.cjs', 'tests/test-search-second.cjs', 'tests/test-training-second.cjs', 'tests/test-second-pass-data.cjs', 'tests/test-design-second.cjs', 'tests/test-analytics-second.cjs',
   'package-lock.json', 'eslint.config.mjs', 'src/art/doodles.ts', 'src/components/Sketchbook.tsx',
   'src/screens/Nutrition.tsx', 'src/utils/nutritionSync.ts', 'src/utils/nutritionTypes.ts', 'src/utils/healthBridge.ts',

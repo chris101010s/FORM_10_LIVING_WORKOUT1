@@ -1,6 +1,6 @@
 # FORM 15.0.0 — The Living Sketchbook
 
-Zweiter Durchgang, Build 150001. Beschrieben wird der implementierte Quellcode. Das Asset-Sheet ist tatsächlich gerendert; native Screenshots, Gerätebedienung und FPS werden nicht vorgetäuscht.
+Zweiter Durchgang mit Icon-Reparatur, Build 150002. Beschrieben wird der implementierte Quellcode. Das Asset-Sheet ist tatsächlich gerendert; native Screenshots, Gerätebedienung und FPS werden nicht vorgetäuscht.
 
 ## Referenz und eigenständige Umsetzung
 
@@ -49,9 +49,9 @@ Die Registry enthält 48 kanonische Motive: 32 Gegenstände/Zustände und 16 ver
 - Quellen: `src/art/objects.ts`, `pip.ts`, `categories.ts`, `tabs.ts`, `registry.ts`.
 - Echte SVGs mit SHA-256: `assets/art/manifest.json`.
 - Native Tab-PNGs: sechs Symbole × zwei Zustände × drei Dichten; der Fallback zeichnet dieselben Pfade.
-- Vier eigene App-Symbole: Ink/Paper/Blueprint/Retro, je 1024/180/120 px, deckend. Das Config-Plugin liefert alternative Kataloge und Buildsettings.
+- Ein festes eigenes Ink-App-Symbol, 1024/180/120 px, deckend. Die Icon-Wechselfunktion und die alternativen App-Icon-Assets sind auf Nutzerwunsch entfernt.
 - Export: `node scripts/export-art15.cjs` und `python3 scripts/export-icons15.py`.
-- Das echte Asset-Sheet `docs/design/FORM_15_SECOND_PASS_ASSET_SHEET.{svg,png}` stammt aus den Registry-Daten. Es wurde visuell angesehen, ebenso die Ink- und Retro-Icon-PNGs.
+- Das echte Asset-Sheet `docs/design/FORM_15_SECOND_PASS_ASSET_SHEET.{svg,png}` stammt aus den Registry-Daten. Es wurde visuell angesehen, ebenso die Ink-Icon-PNGs.
 
 `ASSET_MANIFEST.md` nennt pro Motiv den tatsächlichen Produktpfad. Die zusätzliche Galerie in der Werkstatt ist nur eine ausdrücklich geöffnete Inspektionsansicht. Neutrale Doodles sind keine Übungsanleitung. Vorhandene Originalfotos werden nur anhand der konkreten Quell-ID verwendet; fehlende Fotos erhalten passende neutrale Platzhalter.
 

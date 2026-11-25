@@ -37,6 +37,14 @@ jobs:
         with:
           node-version: '24.22.3'
           cache: npm
+      - name: Python einrichten
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Pillow installieren und prüfen
+        run: |
+          python3 -m pip install Pillow
+          python3 -c "from PIL import Image; print('Pillow OK')"
       - name: Abhängigkeiten reproduzierbar installieren
         run: npm ci --no-audit --no-fund
       - name: Gemeinsame Release-Prüfungen

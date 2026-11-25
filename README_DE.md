@@ -1,10 +1,16 @@
 # FORM 15.0.0 · The Living Sketchbook
 
-Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150001**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
+Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150002**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
 
-Der Quellcode enthält individuelle Sollzeilen, Planversionen, bewusst erlaubte Extras, atomisches Undo, private Medien und geprüfte Sicherungen. Die eigene Produktwelt umfasst 48 kanonische Motive, 16 Pip-Posen, zehn neutrale Kategorien, eigene Tabs, vier App-Symbole und ein ereignisgebundenes Motion-/Textsystem. Neue Analyse- und Suchansichten verwenden vorhandene Daten.
+Der Quellcode enthält individuelle Sollzeilen, Planversionen, bewusst erlaubte Extras, atomisches Undo, private Medien und geprüfte Sicherungen. Die eigene Produktwelt umfasst 48 kanonische Motive, 16 Pip-Posen, zehn neutrale Kategorien, eigene Tabs, ein festes Ink-App-Symbol und ein ereignisgebundenes Motion-/Textsystem. Neue Analyse- und Suchansichten verwenden vorhandene Daten.
 
 **Lieferstatus und genaue Nachweise:** `RELEASE_REPORT_15_SECOND_PASS.md` und `TEST_MATRIX_15_SECOND_PASS.md`. Es wird keine verifizierte IPA behauptet. CocoaPods/Xcode, echtes iPhone-Upgrade, native Bedienung und YAZIO-Roundtrip sind getrennte offene Gates. Die originalen Berichte des ersten Durchgangs bleiben als historische Belege erhalten.
+
+## Reparatur Build 150002: festes App-Symbol
+
+Die App-Icon-Wechselfunktion wurde auf ausdrücklichen Nutzerwunsch vollständig entfernt: keine Auswahl, Suchroute, native Setter oder alternativen Asset-Kataloge. Ink bleibt das feste App-Symbol. `plugins/withBuildVersion.js` erhält die korrekte native Buildnummer; der IPA-Prüfer kontrolliert weiterhin Identität, primäres Icon und reale Bundle-Assets. Die bestehenden Theme-Einstellungen bleiben verfügbar. Historische `settings.appIcon`-Werte bleiben ausschließlich zur verlustfreien Backup-Kompatibilität erhalten und lösen keine Aktion aus.
+
+Die Python/Pillow-Einrichtung des bestehenden Standard-Workflows bleibt erhalten und ist auch im optionalen HealthKit-Workflow vorhanden. Die Second-Pass-Berichte zu Build 150001 dokumentieren den vorherigen Stand; die gezielte Reparatur steht in `REPAIR_FIXED_ICON_150002.md`.
 
 ## Bestehende App und Daten behalten
 

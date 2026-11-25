@@ -10,7 +10,7 @@ Alle neuen FORM-Pfade wurden für dieses Produkt selbst erstellt. Registry-Lizen
 
 `ASSET_MANIFEST.md` nennt pro Motiv die tatsächliche Produktintegration. `CHARACTER_BIBLE.md`, `MOTION_CATALOG.md` und `COPY_GUIDE.md` beschreiben die realen Zustände und Regeln. Das aus den implementierten Assets gerenderte Sheet `docs/design/FORM_15_SECOND_PASS_ASSET_SHEET.png` wurde visuell geprüft. Es ist kein nativer Screenshot. Der alte Doodle-Atlas und `assets/doodles/` bleiben als Herkunft des ersten Durchgangs erhalten und werden nicht neu gezählt.
 
-Vier eigene App-Symbole (Ink, Paper, Blueprint, Retro) liegen in `assets/icons/`, jeweils als SVG sowie deckende PNGs mit 1024/180/120 Pixeln. Das dortige Manifest enthält die PNG-Hashes. Ink und Retro wurden auch visuell angesehen. Der native Prebuild wird auf Kataloge, Info.plist und Buildsettings geprüft; die tatsächliche iOS-Umschaltung ist separat abzunehmen.
+Das eigene feste Ink-App-Symbol liegt in `assets/icons/` als SVG sowie deckende PNGs mit 1024/180/120 Pixeln. Das Manifest enthält die drei PNG-Hashes. Die früheren Paper-/Blueprint-/Retro-App-Symbolvarianten und die Umschaltfunktion wurden in Build 150002 auf Nutzerwunsch entfernt; die Darstellungs-Themes bleiben erhalten.
 
 ## Tatsächlich gebündelte Schriftdateien
 

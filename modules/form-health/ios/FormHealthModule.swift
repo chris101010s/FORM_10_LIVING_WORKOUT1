@@ -19,9 +19,8 @@ public final class FormHealthModule: Module {
     AsyncFunction("openBackup") { (text: String, password: String) -> String in try FormBackupCrypto.open(text, password) }
     AsyncFunction("preparePrivateStorage") { () -> [String: Any] in try FormPresentationBridge.preparePrivateStorage() }
     AsyncFunction("nativeCapabilities") { () -> [String: Any] in
-      ["healthKit": ["configured": Bundle.main.object(forInfoDictionaryKey: "FORMHealthKitEnabled") as? Bool == true, "available": self.enabled], "widgets": FormPresentationBridge.widgetSupport(), "icons": FormPresentationBridge.iconState()]
+      ["healthKit": ["configured": Bundle.main.object(forInfoDictionaryKey: "FORMHealthKitEnabled") as? Bool == true, "available": self.enabled], "widgets": FormPresentationBridge.widgetSupport()]
     }.runOnQueue(.main)
-    AsyncFunction("setAppIcon") { (key: String, promise: Promise) in FormPresentationBridge.changeIcon(key, promise: promise) }.runOnQueue(.main)
     Function("available") { self.enabled }
     Function("widgetsEnabled") { FormPresentationBridge.widgetSupport()["available"] as? Bool == true }
     AsyncFunction("authorizeNutrition") { (keys: [String], promise: Promise) in

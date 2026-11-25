@@ -11,26 +11,28 @@ Die ZIP enthält den tatsächlich weiterentwickelten bestehenden Quellcode. Eine
 | iOS Bundle-ID | `app.athleteos.personal` |
 | URL-Scheme | `athleteos` |
 | SQLite-Datei | `form-v84-clean.db` |
-| Technische Buildnummer | `150001` |
+| Technische Buildnummer | `150002` |
 | Expo / React Native | bestehendes SDK 58 / React Native 0.88.1 |
 
 Die Datenbankversion wird separat durch die Datenerhalt-Migration geführt. Eine neue Marketingversion bedeutet keinen neuen Datencontainer. Der bisherige DB-Dateiname mit „clean“ wurde beibehalten und ist kein Resetauftrag.
 
 ## Second-Pass-Ergänzungen ohne Identitätswechsel
 
-Build 150001 behält Marketingversion, Bundle-ID, Scheme und Datencontainer. Die vorhandenen Artifact-Dateinamen bleiben stabil; das erzeugte Manifest und `CFBundleVersion` unterscheiden den neuen Build eindeutig vom First Pass 150000.
+Build 150002 behält Marketingversion, Bundle-ID, Scheme und Datencontainer. Die vorhandenen Artifact-Dateinamen bleiben stabil; das erzeugte Manifest und `CFBundleVersion` unterscheiden den neuen Build eindeutig vom First Pass 150000.
 
 Neu direkt deklariert sind die zum bestehenden SDK passenden Expo-Pakete `expo-keep-awake ~58.0.4`, `expo-image-manipulator ~58.0.16`, `expo-crypto ~58.0.8` und `expo-constants ~58.0.16`. Sie wurden mit `expo install` aus der vorhandenen SDK-Kompatibilitätszuordnung ausgewählt. Es gibt keinen SDK-/React-Native-Wechsel und keine kostenpflichtige Build-Abhängigkeit. `package-lock.json` enthält die tatsächlich aufgelösten Pakete.
 
 Die neuen Gates `test:health-second`, `test:native-second`, `test:search-second`, `test:training-second`, `test:second-pass-data`, `test:design-second` und `test:analytics-second` sind im gemeinsamen `test:all` enthalten. Vor dem teuren Installieren prüft CI weiterhin mit dem dependency-freien `preflight` auch neue Swift-Quellen, Icon-Plugin und Tests auf tatsächliches Git-Tracking.
 
-### Vier native App-Symbole
+### Ein festes natives App-Symbol
 
-Primär ist `assets/icons/ink.png`. `plugins/withAlternateIcons.js` kopiert die tatsächlichen opaken 1024-Pixel-Assets für Paper, Blueprint und Retro in eigenständige `.appiconset`-Kataloge. Der Config-Plugin setzt `ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES` am App-Target für Debug und Release; er überschreibt keine von Xcode generierten `CFBundleIcons`. Die technische Buildnummer wird auch als `CURRENT_PROJECT_VERSION=150001` gesetzt. [Apple: alternative Icons konfigurieren](https://developer.apple.com/documentation/xcode/configuring-your-app-to-use-alternate-app-icons)
+`assets/icons/ink.png` ist das einzige App-Symbol. Auf Nutzerwunsch sind Icon-Auswahl, alternativer Katalog-Plugin, native Icon-Schnittstelle und ungenutzte Varianten entfernt. Ein altes `settings.appIcon` bleibt als inaktiver kompatibler Backupwert erhalten.
 
-Das lokale Standard-Prebuild wurde tatsächlich erzeugt: Haupticon-Pixel wurden gegen Ink verglichen, alle drei alternativen PNGs bytegleich verifiziert, Katalogdateien und beide Build-Konfigurationen kontrolliert. Das ist ein **Quell-/Projekt-Nachweis**, kein erfolgreicher Asset-Catalog-Compile. Nach einem echten Xcode-Build rufen beide IPA-Skripte zusätzlich `scripts/verify-ios-presentation.cjs` auf. Der Prüfer verlangt Build150001 und tatsächlich generierte Alternate-Icon-Einträge mit Icon-Dateien im kompilierten App-Info.plist.
+Das kleine `plugins/withBuildVersion.js` setzt ausschließlich die App-Buildnummer aus `app.json` in den App-Target-Konfigurationen. Damit geht beim Entfernen des früher kombinierten Icon-Plugins dessen benötigte Versionszuordnung nicht verloren.
 
-Zur Laufzeit liest `FormPresentationBridge` `supportsAlternateIcons`, die tatsächlich im installierten Bundle enthaltenen Varianten und `alternateIconName`. Eine Einstellung wird erst nach erfolgreichem UIKit-Callback und identischem Readback gespeichert. Ein aus einem Backup eingelesener Wunsch ändert kein Symbol heimlich. Bei fehlender Unterstützung bleiben Vorschauen und ehrlicher Status sichtbar. Die native Umschaltung selbst ist hier nicht geräteverifiziert. [Apple: Symbol ändern](https://developer.apple.com/documentation/uikit/uiapplication/setalternateiconname(_:completionhandler:))
+`scripts/verify-ios-presentation.cjs` bleibt in beiden Buildskripten aktiv. Der Prüfer verlangt korrekte App-Identität und Buildnummer, ein wirklich vorhandenes primäres Icon sowie abwesende alternative Icon-Einträge. Er akzeptiert reguläre kompilierte Asset-Catalog-Darstellung und kontrolliert referenzierte Bilddateien bzw. den primären Icon-Eintrag des Asset-Katalogs. Die IPA wird anschließend weiterhin auf JS-Bundle, erlaubte Entitlements, ZIP-Integrität und SHA-256 geprüft.
+
+Der frühere GitHub-Lauf Nr. 4 hatte die Xcode-Kompilierung bereits bestanden, scheiterte jedoch am damaligen Alternate-Icon-Prüfer vor dem Verpacken. Der vollständige neue Durchlauf ist als eigene CI-Abnahme für Build 150002 zu lesen.
 
 ### Native Komfortfunktionen und ihre Grenzen
 

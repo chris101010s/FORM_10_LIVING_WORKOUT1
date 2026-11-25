@@ -31,15 +31,40 @@ const deferred=()=>{let resolve;const promise=new Promise(accept=>{resolve=accep
  const skipped={id:'p@2026-11-23',programId:'p',routineId:'r',originalDate:'2026-11-23',scheduledDate:'2026-11-23',week:0,weekday:1,kind:'training',status:'skipped',updatedAt:new Date(timestamp).toISOString()};eq(notificationPlan({...data,planOccurrences:[skipped]},timestamp).length,2);ok(widgetData({...data,planOccurrences:[skipped]},new Date(timestamp),true).headline!=='Heute');
  const moved={...skipped,status:'scheduled',scheduledDate:'2026-11-24'};const movedAlerts=notificationPlan({...data,planOccurrences:[moved]},timestamp);eq(new Date(movedAlerts[1].at).getDate(),24);eq(movedAlerts.length,3);ok(widgetData({...data,planOccurrences:[moved]},new Date(timestamp),true).headline!=='Heute');
  const activity=liveActivityData({...data.live,pausedMs:120000},timestamp);eq(activity.elapsedStartMs,timestamp-480000);eq(activity.elapsedPaused,null);eq(activity.restEndMs,timestamp+60000);eq(activity.restFromMs,timestamp);eq(activity.clockIssue,false);const paused=liveActivityData({...data.live,pausedMs:120000,pausedAt:timestamp-60000,restUntil:null,restPausedMs:30000},timestamp);eq(paused.elapsedPaused,'0:07:00');eq(paused.restPaused,'0:00:30');eq(paused.restEndMs,null);const clock=liveActivityData(data.live,timestamp-700000);eq(clock.clockIssue,true);eq(clock.elapsedPaused,'—');eq(clock.restEndMs,null);
- // Native availability and UIKit receipts are explicitly mocked, not claimed as a device test.
- const originalLoad=Module._load,platform={OS:'ios'};let form=null,widgetModule=null,awake=true;
- Module._load=function(name,...args){if(name==='react-native')return {Platform:platform};if(name==='expo')return {requireOptionalNativeModule:key=>key==='FormHealth'?form:key==='ExpoWidgets'?widgetModule:null};if(name==='expo-keep-awake')return {isAvailableAsync:async()=>awake};return originalLoad.call(this,name,...args);};
+ // The native registration contract keeps Health, backup and widgets, without an icon-switch API.
+ const nativeSource=fs.readFileSync(path.resolve('modules/form-health/ios/FormHealthModule.swift'),'utf8'),presentationSource=fs.readFileSync(path.resolve('modules/form-health/ios/FormPresentationBridge.swift'),'utf8');
+ eq(Array.from(nativeSource.matchAll(/(?:Async)?Function\("([^"]+)"\)/g),match=>match[1]).sort(),['authorize','authorizeExport','authorizeNutrition','available','deleteExport','nativeCapabilities','openBackup','preparePrivateStorage','readDay','readDaySources','readNutrition','sealBackup','widgetsEnabled','writeWeight','writeWorkout'].sort());
+ eq(Array.from(presentationSource.matchAll(/static func (\w+)\(/g),match=>match[1]).sort(),['preparePrivateStorage','widgetSupport']);
+ eq(/setAppIcon|changeIcon|iconState|"icons"\s*:/.test(nativeSource),false);
+ eq(/UIApplication|UIKit|setAlternateIconName|alternateIconName|supportsAlternateIcons|CFBundleAlternateIcons/.test(presentationSource),false);
+ // Native availability is explicitly mocked, not claimed as a device test.
+ const originalLoad=Module._load,platform={OS:'ios'};let form=null,widgetModule=null,awake=true,awakeError=false;
+ Module._load=function(name,...args){if(name==='react-native')return {Platform:platform};if(name==='expo')return {requireOptionalNativeModule:key=>key==='FormHealth'?form:key==='ExpoWidgets'?widgetModule:null};if(name==='expo-keep-awake')return {isAvailableAsync:async()=>{if(awakeError)throw Error('synthetic KeepAwake unavailable');return awake;}};return originalLoad.call(this,name,...args);};
  try{
-  const capability=require(path.join(temp,'utils/nativeCapabilities.js'));eq((await capability.getRuntimeCapabilities()).nativeModule,false);eq((await capability.getRuntimeCapabilities()).healthKit.available,false);eq((await capability.getRuntimeCapabilities()).keepAwake.available,true);await reject(()=>capability.setAlternateAppIcon('paper'));
-  let selected='ink',receipt='paper';const payload=()=>({healthKit:{configured:false,available:true},widgets:{configured:true,extensionEmbedded:true,groupAccessible:true,available:true,activitiesAllowed:true},icons:{available:true,selected,variants:['ink','paper','blueprint','retro','unknown']}});
-  form={nativeCapabilities:async()=>payload(),setAppIcon:async()=>{selected=receipt;return receipt;}};
-  let observed=await capability.getRuntimeCapabilities();eq(observed.healthKit.available,false);eq(observed.widgets.available,false);eq(observed.icons.variants,['ink','paper','blueprint','retro']);widgetModule={};observed=await capability.getRuntimeCapabilities();eq(observed.widgets.available,true);eq(observed.widgets.activitiesAllowed,true);eq(await capability.setAlternateAppIcon('paper'),'paper');receipt='retro';await reject(()=>capability.setAlternateAppIcon('blueprint'));eq((await capability.getRuntimeCapabilities()).icons.selected,'retro');
-  form.nativeCapabilities=async()=>{throw Error('synthetic native unavailable');};observed=await capability.getRuntimeCapabilities();eq(observed.icons.available,false);ok(observed.error);platform.OS='android';eq((await capability.getRuntimeCapabilities()).nativeModule,false);awake=false;eq((await capability.getRuntimeCapabilities()).keepAwake.available,false);
+  const capability=require(path.join(temp,'utils/nativeCapabilities.js'));
+  eq(Object.keys(capability).sort(),['getRuntimeCapabilities','readNativeCapabilities','unavailableCapabilities']);
+  eq(Object.keys(capability.unavailableCapabilities()).sort(),['checkedAt','healthKit','keepAwake','nativeModule','widgets']);
+  let observed=await capability.getRuntimeCapabilities();eq(observed.nativeModule,false);eq(observed.healthKit.available,false);eq(observed.widgets.available,false);eq(observed.keepAwake.available,true);
+  const payload=()=>({healthKit:{configured:false,available:true},widgets:{configured:true,extensionEmbedded:true,groupAccessible:true,available:true,activitiesAllowed:true}});
+  form={nativeCapabilities:async()=>payload()};
+  observed=await capability.getRuntimeCapabilities();eq(observed.nativeModule,true);eq(observed.healthKit.available,false);eq(observed.widgets.available,false);eq(observed.widgets.activitiesAllowed,false);
+  widgetModule={};observed=await capability.getRuntimeCapabilities();eq(observed.widgets.available,true);eq(observed.widgets.activitiesAllowed,true);
+  for(const key of ['configured','extensionEmbedded','groupAccessible','available']){
+   form.nativeCapabilities=async()=>{const value=payload();value.widgets[key]=false;return value;};
+   observed=await capability.getRuntimeCapabilities();eq(observed.widgets.available,false);eq(observed.widgets.activitiesAllowed,false);
+  }
+  form.nativeCapabilities=async()=>{const value=payload();value.healthKit.configured=true;value.widgets.activitiesAllowed=false;return value;};
+  observed=await capability.getRuntimeCapabilities();eq(observed.healthKit.available,true);eq(observed.widgets.available,true);eq(observed.widgets.activitiesAllowed,false);
+  form.nativeCapabilities=async()=>({...payload(),healthKit:{configured:true,available:false}});eq((await capability.getRuntimeCapabilities()).healthKit.available,false);
+  // Unknown fields from an older native build cannot reintroduce removed runtime capabilities.
+  form.nativeCapabilities=async()=>({...payload(),icons:{available:true,selected:'paper',variants:['ink','paper']}});
+  observed=await capability.getRuntimeCapabilities();eq(Object.hasOwn(observed,'icons'),false);eq(Object.keys(observed).sort(),['checkedAt','healthKit','keepAwake','nativeModule','widgets']);
+  for(const raw of [null,[],{healthKit:null,widgets:[]},{healthKit:{configured:'true',available:1},widgets:{configured:true,extensionEmbedded:true,groupAccessible:true,available:'true',activitiesAllowed:true}}]){
+   form.nativeCapabilities=async()=>raw;observed=await capability.getRuntimeCapabilities();eq(observed.healthKit.available,false);eq(observed.widgets.available,false);eq(observed.widgets.activitiesAllowed,false);
+  }
+  form={};observed=await capability.getRuntimeCapabilities();eq(observed.nativeModule,true);eq(observed.healthKit.available,false);eq(observed.widgets.available,false);
+  form={nativeCapabilities:async()=>{throw Error('synthetic native unavailable');}};observed=await capability.getRuntimeCapabilities();eq(observed.healthKit.available,false);eq(observed.widgets.available,false);ok(observed.error);
+  platform.OS='android';eq((await capability.getRuntimeCapabilities()).nativeModule,false);awake=false;eq((await capability.getRuntimeCapabilities()).keepAwake.available,false);awakeError=true;eq((await capability.getRuntimeCapabilities()).keepAwake.available,false);
  }finally{Module._load=originalLoad;}
- console.log(`PASS: ${count} second-pass native-adapter assertions (KeepAwake lifecycle/races, notification identity/undo/cancel/retry, occurrence-aware widgets, native timer payloads, capability/readback). No iPhone, entitlement or native compile success claimed.`);
+ console.log(`PASS: ${count} second-pass native-adapter assertions (KeepAwake lifecycle/races, notification identity/undo/cancel/retry, occurrence-aware widgets, native timer payloads, capability guards and removed icon-switch contract). No iPhone, entitlement or native compile success claimed.`);
 }finally{if(oldTZ===undefined)delete process.env.TZ;else process.env.TZ=oldTZ;fs.rmSync(temp,{recursive:true,force:true});}})().catch(error=>{console.error(error);process.exitCode=1;});

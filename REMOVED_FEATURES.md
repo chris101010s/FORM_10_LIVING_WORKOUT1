@@ -49,3 +49,7 @@ Automatisierte Tests belegen Domain-, Persistenz- und Datenverhalten. Ein Quellp
 | Einfache unstrukturierte PR-/Jahresübersicht ergänzt | Rekordarchiv, Kalender, Monats-/Jahresfenster, alte Archiv-/Sharefunktionen bleiben | Analytics-Gate |
 
 Es wurden keine Quick-Starts, FITINN-/OCR-Pflicht, neue Accounts, Community oder KI-Chatseite hinzugefügt. Figur, Sprüche, Home-Zusatznotiz, KeepAwake und Suchverlauf sind freiwillig. Native Widgets bleiben im Standardbuild aus; die vorhandenen Daten dazu bleiben erhalten.
+
+## Build 150002 · App-Icon-Wechsel auf Nutzerwunsch entfernt
+
+Entfernt wurden die Profil-/Suchroute „App-Symbol“, die Variantenwahl und Vorschaugalerie, `AlternateIconSettings`, die JS-/Swift-Icon-Setter, der Alternate-Icon-Config-Plugin sowie die Paper-/Blueprint-/Retro-App-Icon-Assets. Ink bleibt festes App-Symbol. Die Darstellungs-Themes bleiben unabhängig davon erhalten. Der vorhandene Datencontainer, die Datenbank und alle Trainingsdaten bleiben unverändert; ältere `settings.appIcon`-Werte werden für verlustfreien Backupimport inert mitgeführt. Der native Präsentationsprüfer wurde auf das tatsächlich ausgelieferte feste Icon umgestellt und bleibt vor IPA-Verpackung aktiv.

@@ -1,4 +1,4 @@
-# FORM · Assetmanifest / Build 150001
+# FORM · Assetmanifest / Build 150002
 
 ## Bestandsumfang und Herkunft
 
@@ -95,13 +95,13 @@ Alle Posen sind über reale Copy-Ereignisse in `Personality.tsx` integriert, mit
 
 Die Kategoriezuordnung umfasst freie Gewichte, Maschine, Kabel, Körpergewicht, Bänder, Cardio, Core, Mobilität, Balance und gemischtes Equipment. Native Tabquellen in `src/art/tabAssets.ts` binden die tatsächlichen lokalen PNGs mit 24/48/72 px ein (36 Dateien). Die Navigation benötigt keine Bild-URLs.
 
-## Vier App-Symbole
+## Festes App-Symbol
 
-Ink, Paper, Blueprint und Retro liegen als eigene SVGs und deckende PNGs unter `assets/icons/`. Jede Variante ist in 1024/180/120 px vorhanden; `assets/icons/manifest.json` enthält die zwölf PNG-Hashes. Ink ist das primäre Icon. `plugins/withAlternateIcons.js` und der native Presentation-Bridgepfad richten unterstützte Alternativen ein; die UI prüft die tatsächliche Fähigkeit und liest das Resultat zurück. Ein erfolgreicher Prebuild ist kein Nachweis der Umschaltung auf einem signierten iPhone.
+Ink ist das einzige App-Symbol. `assets/icons/ink.svg` sowie deckende PNGs in 1024/180/120 px bleiben erhalten; `assets/icons/manifest.json` enthält ihre Hashes. Die Paper-/Blueprint-/Retro-App-Icon-Dateien wurden mit der Wechselfunktion auf Nutzerwunsch entfernt. Die gleichnamigen Darstellungs-Themes sind davon unabhängig und bleiben verfügbar. `plugins/withBuildVersion.js` setzt ausschließlich die native Buildnummer; es erzeugt keine alternativen Icon-Kataloge.
 
 ## Reproduktion und tatsächliche Sichtprüfung
 
-`node scripts/export-art15.cjs` erzeugt SVGs, native Tab-PNGs, Manifest und `docs/design/FORM_15_SECOND_PASS_ASSET_SHEET.svg`. Das PNG desselben Sheets wird aus dieser Datei gerendert; es zeigt implementierte Assets und ist explizit als Assetübersicht bezeichnet. `python3 scripts/export-icons15.py` erzeugt die eigenen Icons. Das Sheet sowie Ink/Retro-PNGs wurden visuell geprüft. Keine App-Screenshots wurden erfunden.
+`node scripts/export-art15.cjs` erzeugt SVGs, native Tab-PNGs, Manifest und `docs/design/FORM_15_SECOND_PASS_ASSET_SHEET.svg`. Das PNG desselben Sheets wird aus dieser Datei gerendert; es zeigt implementierte Assets und ist explizit als Assetübersicht bezeichnet. `python3 scripts/export-icons15.py` erzeugt das feste Ink-Icon. Das Sheet sowie Ink-PNG wurden visuell geprüft. Keine App-Screenshots wurden erfunden.
 
 `tests/test-design-second.cjs` prüft eindeutige Pfadgeometrie, lokale Existenz, Lizenzmanifest, Hashes, echte PNG-Dimensionen/Deckkraft und alle Tabdichten. Eine bloße Dateizahl reicht nicht: die Integrationstabelle oben nennt den jeweils realen Aufrufer. Native Darstellung/Performance bleibt der Geräteabnahme vorbehalten.
 

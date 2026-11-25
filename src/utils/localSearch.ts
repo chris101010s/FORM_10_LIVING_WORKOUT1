@@ -2,7 +2,7 @@ import type {AthleteData} from '../data/schema';
 import type {CatalogExercise} from '../catalog/catalog';
 import {dateKey} from './metrics';
 
-export type SearchSettingsArea='appearance'|'training'|'notifications'|'privacy'|'backup'|'health'|'search'|'icons';
+export type SearchSettingsArea='appearance'|'training'|'notifications'|'privacy'|'backup'|'health'|'search';
 export type SearchTarget=
  | {type:'exercise';exerciseId:string}
  | {type:'program';programId:string}
@@ -20,12 +20,11 @@ const settings:{area:SearchSettingsArea;title:string;keywords:string}[]=[
  {area:'privacy',title:'Datenschutz und Diagnose',keywords:'Speicher Datenbank Version Integrität Geräteschutz FaceID TouchID'},
  {area:'backup',title:'Backup und Wiederherstellung',keywords:'Sicherung Export Import Medien Daten'},
  {area:'health',title:'Gesundheit und Verbindungen',keywords:'YAZIO Apple Health Ernährung Synchronisieren'},
- {area:'search',title:'Lokaler Suchverlauf',keywords:'Suche Verlauf löschen Privatsphäre'},
- {area:'icons',title:'App-Symbol',keywords:'Icon Ink Paper Blueprint Retro'}
+ {area:'search',title:'Lokaler Suchverlauf',keywords:'Suche Verlauf löschen Privatsphäre'}
 ];
 
 /** Indexes existing records only. A result contains navigation identity, never a start-workout action. */
-export function buildLocalSearchIndex(data:AthleteData,catalog:CatalogExercise[],exerciseText?:(item:CatalogExercise)=>string,iconsAvailable=false):SearchIndexEntry[]{
+export function buildLocalSearchIndex(data:AthleteData,catalog:CatalogExercise[],exerciseText?:(item:CatalogExercise)=>string):SearchIndexEntry[]{
  const entries:SearchIndexEntry[]=[],lastUsed=new Map<string,string>(),favorites=new Set(data.favoriteExerciseIds);
  for(const workout of data.workouts)for(const set of workout.sets)if(!lastUsed.has(set.exerciseId)||Date.parse(workout.finishedAt)>Date.parse(lastUsed.get(set.exerciseId)!))lastUsed.set(set.exerciseId,workout.finishedAt);
  const exercises=new Map(catalog.map(item=>[item.id,item]));
@@ -34,7 +33,7 @@ export function buildLocalSearchIndex(data:AthleteData,catalog:CatalogExercise[]
  for(const program of data.programs||[])entries.push({id:`program:${program.id}`,kind:'plan',title:program.name,subtitle:`Plan · ${program.status==='active'?'aktiv':program.status==='archived'?'archiviert':'pausiert'}`,target:{type:'program',programId:program.id},text:normalizeSearch([program.name,program.description,...program.days.map(day=>data.routines.find(r=>r.id===day.routineId)?.name||'')].join(' '))});
  for(const routine of data.routines)entries.push({id:`routine:${routine.id}`,kind:'plan',title:routine.name,subtitle:`Trainingstag · ${routine.exerciseIds.length} Übungen`,target:{type:'routine',routineId:routine.id},text:normalizeSearch([routine.name,...routine.exerciseIds.map(id=>exercises.get(id)?.name||id)].join(' '))});
  for(const workout of data.workouts){const date=new Date(workout.finishedAt).toLocaleDateString('de-AT');entries.push({id:`workout:${workout.id}`,kind:'workout',title:workout.name,subtitle:`Abgeschlossen · ${date}`,target:{type:'workout',workoutId:workout.id},text:normalizeSearch([workout.name,date,dateKey(new Date(workout.finishedAt)),...new Set(workout.sets.map(set=>exercises.get(set.exerciseId)?.name||''))].join(' ')),lastUsedAt:workout.finishedAt});}
- for(const setting of settings)if(setting.area!=='icons'||iconsAvailable)entries.push({id:`setting:${setting.area}`,kind:'setting',title:setting.title,subtitle:'Werkstatt',target:{type:'setting',area:setting.area},text:normalizeSearch(`${setting.title} ${setting.keywords}`)});
+ for(const setting of settings)entries.push({id:`setting:${setting.area}`,kind:'setting',title:setting.title,subtitle:'Werkstatt',target:{type:'setting',area:setting.area},text:normalizeSearch(`${setting.title} ${setting.keywords}`)});
  return entries;
 }
 export function searchLocalIndex(index:SearchIndexEntry[],query:string,filters:SearchFilters={},limit=100):{results:LocalSearchResult[];total:number}{

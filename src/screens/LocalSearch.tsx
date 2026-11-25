@@ -3,7 +3,6 @@ import {Alert,FlatList,Pressable,ScrollView,Switch,Text,View} from 'react-native
 import {useAthlete} from '../data/context';
 import {loadCatalog,starterCatalog,searchText,MUSCLE_DE,EQUIPMENT_DE} from '../catalog/catalog';
 import {buildLocalSearchIndex,rememberLocalSearch,searchLocalIndex,type LocalSearchResult,type SearchFilters} from '../utils/localSearch';
-import {getRuntimeCapabilities} from '../utils/nativeCapabilities';
 import {Button,Chip,Field,Label,Muted,usePalette} from '../components/Design';
 import {NotebookHeader} from '../components/Sketchbook';
 import {MotionCue} from '../components/MotionCue';
@@ -13,10 +12,10 @@ const kinds={exercise:'Übung',plan:'Plan',workout:'Absolvierte Einheit',setting
 
 export function LocalSearchScreen({onOpen,onClose,initialQuery=''}:{onOpen:(result:LocalSearchResult)=>void;onClose?:()=>void;initialQuery?:string}){
  const p=usePalette(),{data,confirmedData,update}=useAthlete(),records=confirmedData||data;
- const [catalog,setCatalog]=useState(starterCatalog),[iconsAvailable,setIconsAvailable]=useState(false),[query,setQuery]=useState(initialQuery.slice(0,150)),[settled,setSettled]=useState(initialQuery.slice(0,150)),[filters,setFilters]=useState<SearchFilters>({kind:'all'}),[limit,setLimit]=useState(100),opening=useRef(false),eventId=useRef(`search-${Date.now()}`).current;
- useEffect(()=>{let mounted=true;void loadCatalog().then(items=>{if(mounted)setCatalog(items);}).catch(()=>{});void getRuntimeCapabilities().then(value=>{if(mounted)setIconsAvailable(value.icons.available);});return()=>{mounted=false;};},[]);
+ const [catalog,setCatalog]=useState(starterCatalog),[query,setQuery]=useState(initialQuery.slice(0,150)),[settled,setSettled]=useState(initialQuery.slice(0,150)),[filters,setFilters]=useState<SearchFilters>({kind:'all'}),[limit,setLimit]=useState(100),opening=useRef(false),eventId=useRef(`search-${Date.now()}`).current;
+ useEffect(()=>{let mounted=true;void loadCatalog().then(items=>{if(mounted)setCatalog(items);}).catch(()=>{});return()=>{mounted=false;};},[]);
  useEffect(()=>{const timer=setTimeout(()=>{setSettled(query);setLimit(100);},180);return()=>clearTimeout(timer);},[query]);
- const index=useMemo(()=>buildLocalSearchIndex(records,catalog,searchText,iconsAvailable),[records.exercises,records.routines,records.programs,records.workouts,records.favoriteExerciseIds,catalog,iconsAvailable]);
+ const index=useMemo(()=>buildLocalSearchIndex(records,catalog,searchText),[records.exercises,records.routines,records.programs,records.workouts,records.favoriteExerciseIds,catalog]);
  const intent=!!settled.trim()||filters.kind!=='all'||filters.favoritesOnly||filters.recentOnly||!!filters.muscle&&filters.muscle!=='Alle'||!!filters.equipment&&filters.equipment!=='Alle';
  const result=useMemo(()=>intent?searchLocalIndex(index,settled,filters,limit):{results:[],total:0},[index,settled,filters,limit,intent]);
  const muscles=useMemo(()=>[...new Set(index.flatMap(item=>item.muscles||[]))].sort(),[index]),equipment=useMemo(()=>[...new Set(index.flatMap(item=>item.equipment?[item.equipment]:[]))].sort(),[index]);

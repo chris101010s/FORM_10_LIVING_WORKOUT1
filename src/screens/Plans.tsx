@@ -4,6 +4,7 @@ import {ProgressionPanel} from '../components/ProgressionPanel';
 import {routinePositions,targetLabel} from '../utils/plannedTargets';
 import {commitPlanChange,defaultOccurrence,moveOccurrence,skipOccurrence,undoAvailable,undoLastAction,stableValue} from '../utils/planOperations';
 import {MotionCue} from '../components/MotionCue';
+import {DeskScene} from '../components/DeskScene';
 import {SketchEvent} from '../components/Personality';
 import {planDateForSlot} from '../utils/planOverview';
 import React,{useEffect,useRef,useState} from 'react';
@@ -67,6 +68,7 @@ export function PlansScreen({go,openEditor,initialProgramId,initialRoutineId}:{g
  if(initialRoutineId&&!requestedProgram){const found=data.routines.find(r=>r.id===initialRoutineId)!;return <View><NotebookHeader eyebrow="GESPEICHERTER TRAININGSTAG" title={found.name} doodle="barbell"/><Muted>Dieser Trainingstag ist noch keinem Plantermin zugeordnet. Zum Starten zuerst in einem Plan zuweisen.</Muted>{routinePositions(found).map(pos=><View key={pos.id}><Section title={name(pos.exerciseId)}/>{pos.targets.map(t=><Muted key={t.id}>{targetLabel(t)}</Muted>)}</View>)}</View>;}
  if(editor)return <PlanRoutineEditor params={editor} onClose={()=>setEditor(null)}/>;
  return <View><NotebookHeader eyebrow="PLAN / WOCHENHEFT" title={program?program.name:'Dein Plan.'} subtitle={program?'Ein Kapitel für jeden Trainingstag.':'Deine Übungen. Deine Vorgaben.'} doodle="calendar"/>
+  <DeskScene variant="plan" compact={!!program} size={program?250:360} character={data.settings.character===true} style={{marginTop:-8,marginBottom:14}}/>
   {data.undoState?.scope==='occurrence'&&<Button secondary small title="Terminänderung rückgängig" disabled={saving||!!fault||!undoAvailable(data)} onPress={()=>void update(d=>undoLastAction(d,data.undoState!.id))}/>} {committedEvent&&<><MotionCue variant="stampPress" eventKey={committedEvent} confirmed mark/><SketchEvent event="planSaved" eventId={committedEvent} confirmed compact/></>}
   {data.programEditorDraft&&!draft&&<View style={{marginBottom:14}}><Button secondary title="Plan-Entwurf fortsetzen" onPress={()=>setDraft(data.programEditorDraft??null)}/></View>}{data.planEditorDraft&&<NotebookSheet style={{marginBottom:18}}><Label>UNFERTIGER TRAININGSTAG</Label><Muted>{data.planEditorDraft.routine.name||'Unbenannter Entwurf'} · wird lokal aufbewahrt</Muted><Button secondary small title="Entwurf fortsetzen" onPress={resume}/></NotebookSheet>}
   {program?<>

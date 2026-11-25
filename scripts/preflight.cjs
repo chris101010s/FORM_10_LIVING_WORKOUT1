@@ -5,6 +5,7 @@ const cp = require('node:child_process');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const required = [
+  'src/components/DeskScene.tsx', 'src/art/deskScenes.ts', 'tests/test-motion-startup-clicky.cjs', 'scripts/simulator-video.py',
   'plugins/withBuildVersion.js', 'scripts/verify-ios-presentation.cjs',
   'assets/icons/ink.png', 'assets/icons/ink-120.png', 'assets/icons/ink-180.png', 'assets/icons/ink.svg', 'assets/icons/manifest.json',
   'modules/form-health/ios/FormPresentationBridge.swift', 'modules/form-health/ios/FormHealthDayBridge.swift',

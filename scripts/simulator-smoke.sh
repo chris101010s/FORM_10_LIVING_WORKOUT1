@@ -14,6 +14,7 @@ FORM_SMOKE_ROOT="$FORM_ARTIFACTS/simulator-smoke"
 FORM_FIXTURES="$FORM_SMOKE_ROOT/fixtures"
 FORM_BUNDLE='app.athleteos.personal'
 FORM_WAIT_SECONDS="${FORM_SMOKE_WAIT_SECONDS:-20}"
+FORM_RECORD_VIDEO="${FORM_SMOKE_RECORD_VIDEO:-1}"
 FORM_STAGE='setup'
 FORM_DEVICE=''
 FORM_DIAGNOSIS=''
@@ -162,13 +163,23 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
   (
     set -euo pipefail
     FORM_CASE_ARTIFACTS="$FORM_SMOKE_ROOT/$FORM_SCENARIO"
-    FORM_LOG_PID=''; FORM_APP_PID=''; FORM_EXECUTABLE=''; FORM_DIAGNOSIS=''
+    FORM_LOG_PID=''; FORM_APP_PID=''; FORM_EXECUTABLE=''; FORM_DIAGNOSIS=''; FORM_VIDEO_PID=''
     FORM_STARTED="$(date +%s)"
     mkdir -p "$FORM_CASE_ARTIFACTS"
+    form_video_finish() {
+      if [[ -n "$FORM_VIDEO_PID" ]]; then
+        if ! python3 "$FORM_ROOT/scripts/simulator-video.py" finish "$FORM_CASE_ARTIFACTS" "$FORM_VIDEO_PID"; then
+          echo 'WARNING: Optionale native Videoevidenz fehlgeschlagen; simulator-video-status.json/log prüfen. App-Prüfungen bleiben unverändert.' >&2
+        fi
+        if ! kill -0 "$FORM_VIDEO_PID" 2>/dev/null; then wait "$FORM_VIDEO_PID" 2>/dev/null || true; fi
+        FORM_VIDEO_PID=''
+      fi
+    }
     form_scenario_finish() {
       FORM_CASE_EXIT=$?
       trap - EXIT
       set +e
+      form_video_finish
       if [[ -n "$FORM_LOG_PID" ]]; then
         kill "$FORM_LOG_PID" 2>/dev/null
         for FORM_LOG_GRACE in 1 2 3; do
@@ -252,6 +263,15 @@ for FORM_SCENARIO in fresh v10-home v10-live; do
     xcrun simctl spawn "$FORM_DEVICE" log stream --style compact --level debug --predicate "$FORM_PREDICATE" \
       > "$FORM_CASE_ARTIFACTS/simulator-unified.log" 2> "$FORM_CASE_ARTIFACTS/simulator-unified-stream.stderr.log" &
     FORM_LOG_PID=$!
+    if [[ "$FORM_SCENARIO" == 'v10-home' && "$FORM_RECORD_VIDEO" == '1' ]]; then
+      python3 "$FORM_ROOT/scripts/simulator-video.py" record "$FORM_DEVICE" "$FORM_CASE_ARTIFACTS" \
+        > "$FORM_CASE_ARTIFACTS/simulator-video-helper.log" 2>&1 &
+      FORM_VIDEO_PID=$!
+      if ! python3 "$FORM_ROOT/scripts/simulator-video.py" ready "$FORM_CASE_ARTIFACTS"; then
+        echo 'WARNING: Native Videoaufnahme nicht startbereit; eigene Videodiagnose, keine Änderung der App-Prüfungen.' >&2
+        form_video_finish
+      fi
+    fi
     FORM_STAGE='launch'
     # No debugger or console attachment: observe an ordinary Release start.
     set +e
@@ -274,6 +294,7 @@ PY
     FORM_STAGE='observe-process'
     python3 scripts/simulator-smoke-diagnostics.py monitor --artifacts "$FORM_CASE_ARTIFACTS" \
       --device "$FORM_DEVICE" --pid "$FORM_APP_PID" --executable "$FORM_EXECUTABLE" --seconds "$FORM_WAIT_SECONDS"
+    form_video_finish
     FORM_STAGE='repository-readback'
     form_timed 30 xcrun simctl terminate "$FORM_DEVICE" "$FORM_BUNDLE" > "$FORM_CASE_ARTIFACTS/simulator-terminate.log" 2>&1
     python3 scripts/simulator-smoke-diagnostics.py database --artifacts "$FORM_CASE_ARTIFACTS" \

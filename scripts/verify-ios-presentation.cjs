@@ -10,7 +10,7 @@ function verifyPresentationInfo(info){
  assert(object(info),'Compiled Info.plist is invalid');
  assert.equal(info.CFBundleIdentifier,'app.athleteos.personal','Compiled bundle identifier changed');
  assert.equal(info.CFBundleShortVersionString,'15.0.0','Compiled marketing version changed');
- assert.equal(String(info.CFBundleVersion),'150003','Compiled build number is wrong');
+ assert.equal(String(info.CFBundleVersion),'150004','Compiled build number is wrong');
  assert(Array.isArray(info.CFBundleURLTypes)&&info.CFBundleURLTypes.some(entry=>Array.isArray(entry.CFBundleURLSchemes)&&entry.CFBundleURLSchemes.includes('athleteos')),'Compiled athleteos URL scheme is missing');
  noAlternates(info.CFBundleAlternateIcons,'Info.plist');
  if(info.CFBundleIconName!==undefined)assert.equal(info.CFBundleIconName,'AppIcon','Unexpected primary asset catalog');

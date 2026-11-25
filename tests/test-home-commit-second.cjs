@@ -31,7 +31,7 @@ function loadMain(React,useAthlete){
  assert.ok(main,'actual App Main exists');
  const original=variables.map(node=>node.getText(ast)).join('\n')+'\n'+main.getText(ast)+'\nmodule.exports=Main;';
  const compiled=ts.transpileModule(original,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React}}).outputText,module={exports:{}};
- const sandbox={module,exports:module.exports,React,useState:React.useState,useEffect:React.useEffect,useRef:React.useRef,useAthlete,usePalette:()=>palette,useNavigation:()=>({navigate(){}}),Platform:{OS:'ios'},process:{env:{EXPO_PUBLIC_FORM_CUSTOM_TABS:'1'}},Linking:{getInitialURL:async()=>null,addEventListener:()=>({remove(){}})},Date,...leafNames('View Text ScrollView Pressable MotionCue ActivityIndicator Doodle Muted Button BackupCenter SetupScreen NativeMain SearchButton FormTabIcon GymScreen HomeScreen PlansScreen ProgressScreen HealthScreen PerformanceHub MoreScreen WorkoutMiniPlayer GlassBar TabIcon')};
+ const sandbox={module,exports:module.exports,React,useState:React.useState,useEffect:React.useEffect,useRef:React.useRef,useAthlete,usePalette:()=>palette,useNavigation:()=>({navigate(){}}),Platform:{OS:'ios'},process:{env:{EXPO_PUBLIC_FORM_CUSTOM_TABS:'1'}},Linking:{getInitialURL:async()=>null,addEventListener:()=>({remove(){}})},Date,...leafNames('View Text ScrollView Pressable MotionCue SceneEntrance ActivityIndicator Doodle Muted Button BackupCenter SetupScreen NativeMain SearchButton FormTabIcon GymScreen HomeScreen PlansScreen ProgressScreen HealthScreen PerformanceHub MoreScreen WorkoutMiniPlayer GlassBar TabIcon')};
  vm.runInNewContext(compiled,sandbox,{filename});return module.exports;
 }
 async function main(){
@@ -45,6 +45,7 @@ async function main(){
    react:hooks.React,'react-native':{...leafNames('View Text Pressable ScrollView'),useWindowDimensions:()=>({width:375,height:667,fontScale:1}),Alert:{alert:(...args)=>alerts.push(args)}},
    '../data/context':{useAthlete:()=>homeState},
    '../components/Design':design,'../components/Sketchbook':leafNames('Doodle InkRule MarkerSwipe NotebookHeader NotebookSheet'),
+   '../components/DeskScene':leafNames('DeskScene PaperSticker'),
    '../components/Personality':{SketchEvent:'SketchEvent'},'../components/MotionCue':{MotionCue:'MotionCue'},'../components/PaperDetails':leafNames('MarginNote PaperGrain'),
    '../components/TrendChart':{TrendChart:'TrendChart'},'./PerformanceHub':{PerformanceTrend:'PerformanceTrend'},'../catalog/catalog':{starterCatalog:[],MUSCLE_DE:{}},'../utils/shareTextExport':{shareTextExport:async()=>{throw Error('unexpected export')}}
   });

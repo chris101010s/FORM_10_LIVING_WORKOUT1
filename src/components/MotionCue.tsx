@@ -1,21 +1,45 @@
 import React,{createContext,useContext,useEffect,useRef,useState} from 'react';
-import {AccessibilityInfo,Animated,AppState,Easing,View,type ViewStyle} from 'react-native';
+import {AccessibilityInfo,Animated,AppState,Easing,View,type StyleProp,type ViewStyle} from 'react-native';
 import Svg,{Path} from 'react-native-svg';
 import {motionAllowed,motionDuration,motionSpecs,type MotionLevel,type MotionName,type MotionSpec} from '../motion/spec';
 export type {MotionName,MotionLevel} from '../motion/spec';
-const MotionContext=createContext<{level:MotionLevel;reduced:boolean;active:boolean}>({level:'off',reduced:true,active:false});
+type MotionEnvironment={level:MotionLevel;reduced:boolean;active:boolean;ready?:boolean};
+const MotionContext=createContext<MotionEnvironment>({level:'off',reduced:true,active:false,ready:false});
 export function SketchMotionProvider({enabled=true,level,children}:{enabled?:boolean;level?:MotionLevel;children:React.ReactNode}){
- const [reduced,setReduced]=useState(true),[active,setActive]=useState(AppState.currentState==='active');
- useEffect(()=>{let mounted=true;void AccessibilityInfo.isReduceMotionEnabled().then(x=>{if(mounted)setReduced(x)}).catch(()=>{});const a=AccessibilityInfo.addEventListener('reduceMotionChanged',setReduced);const b=AppState.addEventListener('change',s=>setActive(s==='active'));return()=>{mounted=false;a.remove();b.remove()}},[]);
- return <MotionContext.Provider value={{level:enabled?(level??'subtle'):'off',reduced,active}}>{children}</MotionContext.Provider>;
+ const [reduced,setReduced]=useState(true),[systemReady,setSystemReady]=useState(false),[active,setActive]=useState(AppState.currentState==='active'),[activated,setActivated]=useState(AppState.currentState==='active');
+ useEffect(()=>{let mounted=true,changed=false;void AccessibilityInfo.isReduceMotionEnabled().then(x=>{if(mounted){if(!changed)setReduced(x);setSystemReady(true)}}).catch(()=>{});const a=AccessibilityInfo.addEventListener('reduceMotionChanged',value=>{if(!mounted)return;changed=true;setReduced(value);setSystemReady(true)});const b=AppState.addEventListener('change',state=>{if(!mounted)return;setActive(state==='active');if(state==='active')setActivated(true)});return()=>{mounted=false;a.remove();b.remove()}},[]);
+ return <MotionContext.Provider value={{level:enabled?(level??'subtle'):'off',reduced,active,ready:systemReady&&activated}}>{children}</MotionContext.Provider>;
 }
-export function useSketchMotion(){const c=useContext(MotionContext);return motionAllowed(c.level,c.reduced,c.active);}
+export function useSketchMotion(){const c=useContext(MotionContext);return c.ready!==false&&motionAllowed(c.level,c.reduced,c.active);}
 export function useMotionLevel(){return useContext(MotionContext).level;}
-export function useMotionValue(name:MotionName,key:string|number|boolean,enabled=true,confirmed=true,durationOverride?:number){
+export function useMotionValue(name:MotionName,key:string|number|boolean,enabled=true,confirmed=true,durationOverride?:number,nativeDriver=false,easingOverride?:(value:number)=>number){
  const c=useContext(MotionContext),v=useRef(new Animated.Value(1)).current,last=useRef<string|undefined>(undefined),spec:MotionSpec=motionSpecs[name];
- const allowed=motionAllowed(c.level,c.reduced,c.active,!!spec.success,confirmed)&&enabled;
- useEffect(()=>{v.stopAnimation();const token=`${name}:${String(key)}:${enabled}:${confirmed}`;if(!allowed||last.current===token){last.current=token;v.setValue(1);return}last.current=token;v.setValue(0);const animation=Animated.timing(v,{toValue:1,duration:durationOverride??motionDuration(name,c.level),easing:Easing.out(Easing.cubic),useNativeDriver:false});animation.start();return()=>{animation.stop();v.stopAnimation()}},[name,key,enabled,confirmed,allowed,c.level,durationOverride,v]);
+ const ready=c.ready!==false,allowed=motionAllowed(c.level,c.reduced,c.active,!!spec.success,confirmed)&&enabled;
+ useEffect(()=>{v.stopAnimation();const token=`${name}:${String(key)}:${enabled}:${confirmed}`;
+  // Unknown startup preferences are not a missed event. Once initialized, off,
+  // Reduce Motion and background events are consumed, never queued for return.
+  if(!ready){v.setValue(1);return}if(!allowed||last.current===token){last.current=token;v.setValue(1);return}last.current=token;v.setValue(0);const animation=Animated.timing(v,{toValue:1,duration:durationOverride??motionDuration(name,c.level),easing:easingOverride??Easing.out(Easing.cubic),useNativeDriver:nativeDriver,isInteraction:false});animation.start();return()=>{animation.stop();v.stopAnimation()}},[name,key,enabled,confirmed,ready,allowed,c.level,durationOverride,nativeDriver,easingOverride,v]);
  return v;
+}
+type EntranceProps={sceneKey:string|number|boolean;enabled?:boolean;children:React.ReactNode;style?:StyleProp<ViewStyle>};
+/** One visible entrance per scene. Controls remain mounted and usable throughout. */
+export function SceneEntrance({sceneKey,enabled=true,children,style}:EntranceProps){
+ const level=useMotionLevel(),v=useMotionValue('paperFlip',sceneKey,enabled,true,level==='lively'?480:380,true);
+ return <Animated.View style={[{opacity:v.interpolate({inputRange:[0,1],outputRange:[.6,1]}),transform:[{translateY:v.interpolate({inputRange:[0,1],outputRange:[level==='lively'?18:10,0]})}]},style]}>{children}</Animated.View>;
+}
+/** A finite decorative drift, never an idle loop or a new success event. */
+export function IdleFloat({eventKey,enabled=true,children,style}:{eventKey:string|number|boolean;enabled?:boolean;children:React.ReactNode;style?:StyleProp<ViewStyle>}){
+ const level=useMotionLevel(),cycles=level==='lively'?2:1,distance=level==='lively'?7:4,rotation=level==='lively'?1.4:.8;
+ const v=useMotionValue('mascotWave',eventKey,enabled,true,level==='lively'?6200:3600,true,Easing.linear);
+ const inputRange=Array.from({length:cycles*16+1},(_,i)=>i/(cycles*16)),wave=inputRange.map((value,i)=>i===0||i===inputRange.length-1?0:Math.sin(value*cycles*2*Math.PI));
+ return <Animated.View style={[{transform:[{translateY:v.interpolate({inputRange,outputRange:wave.map(value=>-distance*value)})},{rotate:v.interpolate({inputRange,outputRange:wave.map(value=>`${rotation*value}deg`)})}]},style]}>{children}</Animated.View>;
+}
+/** Attach to a Pressable's press-in/out and an Animated.View's style; no action callbacks. */
+export function usePressMotion(disabled=false){
+ const allowed=useSketchMotion()&&!disabled,level=useMotionLevel(),v=useRef(new Animated.Value(0)).current,running=useRef<Animated.CompositeAnimation|null>(null),mounted=useRef(false);
+ useEffect(()=>{mounted.current=true;if(!allowed){running.current?.stop();v.stopAnimation();v.setValue(0)}return()=>{mounted.current=false;running.current?.stop();v.stopAnimation();v.setValue(0)}},[allowed,v]);
+ const move=(pressed:boolean)=>{if(!allowed||!mounted.current)return;running.current?.stop();v.stopAnimation();const animation=Animated.timing(v,{toValue:pressed?1:0,duration:pressed?90:170,easing:Easing.out(Easing.cubic),useNativeDriver:true,isInteraction:false});running.current=animation;animation.start()};
+ return {animatedStyle:{transform:[{scale:v.interpolate({inputRange:[0,1],outputRange:[1,level==='lively'?.95:.97]})},{translateY:v.interpolate({inputRange:[0,1],outputRange:[0,level==='lively'?2.5:1.5]})}]},onPressIn:()=>move(true),onPressOut:()=>move(false)};
 }
 const AnimatedPath=Animated.createAnimatedComponent(Path);
 export function MotionCue({variant,eventKey,confirmed=false,enabled=true,children,style,color='#2655D9',mark=false,decorative=false}:{variant:MotionName;eventKey:string|number|boolean;confirmed?:boolean;enabled?:boolean;children?:React.ReactNode;style?:ViewStyle;color?:string;mark?:boolean;decorative?:boolean}){

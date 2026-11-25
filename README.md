@@ -1,10 +1,16 @@
 # FORM 15.0.0 · The Living Sketchbook
 
-Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150003**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
+Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150004**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
 
 Der Quellcode enthält individuelle Sollzeilen, Planversionen, bewusst erlaubte Extras, atomisches Undo, private Medien und geprüfte Sicherungen. Die eigene Produktwelt umfasst 48 kanonische Motive, 16 Pip-Posen, zehn neutrale Kategorien, eigene Tabs, ein festes Ink-App-Symbol und ein ereignisgebundenes Motion-/Textsystem. Neue Analyse- und Suchansichten verwenden vorhandene Daten.
 
 **Lieferstatus und genaue Nachweise:** `RELEASE_REPORT_15_SECOND_PASS.md` und `TEST_MATRIX_15_SECOND_PASS.md`. Es wird keine verifizierte IPA behauptet. CocoaPods/Xcode, echtes iPhone-Upgrade, native Bedienung und YAZIO-Roundtrip sind getrennte offene Gates. Die originalen Berichte des ersten Durchgangs bleiben als historische Belege erhalten.
+
+## Build 150004: Zeichnungen und sichtbare Bewegung
+
+Fünf eigene Schreibtisch-/Papierillustrationen ergänzen Heute, Plan, Training, Gesundheit und Einrichtung. Kleine Sticker bewegen sich beim Erscheinen kurz; Buttons, Auswahlchips und Bereichszeilen reagieren beim Drücken. Szenen gleiten sichtbar ein. Die vorhandene optionale Figur bleibt an ihre Einstellung gebunden. Bewegung wird bei „Aus“, systemweitem „Bewegung reduzieren“ und im Hintergrund unterbunden; keine Endlosschleife und keine Leistungsbestätigung aus einer Animation.
+
+Der bisherige Erststartfehler der Animationen ist behoben: Die erste Szene verbraucht ihren Abspielzustand nicht mehr, solange die iOS-Bewegungseinstellung noch unbekannt ist. Ein eigener Lifecycle-Test weist die Regression, das Abbrechen und den ausbleibenden Erfolgs-Replay nach. Die Startabsturzkorrektur und die drei verpflichtenden Start-/Datenprüfungen bleiben erhalten. Der native Home-Start kann zusätzlich als optionales Video im Startcheck-Artifact geprüft werden.
 
 ## Reparatur Build 150003: Startabsturz
 

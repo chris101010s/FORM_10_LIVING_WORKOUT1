@@ -6,6 +6,7 @@ import {Doodle,InkRule,MarkerSwipe,NotebookHeader,NotebookSheet} from '../compon
 import {dateKey} from '../utils/metrics';
 import {SketchEvent} from '../components/Personality';
 import {MotionCue} from '../components/MotionCue';
+import {DeskScene,PaperSticker} from '../components/DeskScene';
 import {MarginNote,PaperGrain} from '../components/PaperDetails';
 import {plannedDay,newId} from '../utils/plans';
 import {canStartPlannedWorkout,startPlannedWorkout,rowProgress} from '../utils/planWorkout';
@@ -35,6 +36,7 @@ export function HomeScreen({go}:{go:(tab:string)=>void}){
    {plan.routine&&!readyToStart&&!data.live&&!current?.completed&&startCheck?.reason&&<Muted>{startCheck.reason}</Muted>}
    <View style={{marginTop:19}}><Button title={starting?'Training wird gespeichert …':primary} disabled={starting||saving} onPress={()=>void start()}/></View>
   </View>
+  <View style={{marginTop:-8,marginBottom:4}}><DeskScene variant="today" character={data.settings.character===true}/><PaperSticker label="Dein Heft. Dein Rhythmus." tone="blue" tilt={-1} style={{alignSelf:'center',marginTop:-9}}/></View>
   <Section title="Die Woche, Seite für Seite"/>
   <View style={{flexDirection:'row',flexWrap:'wrap',gap:3}}>{days.map(day=><Pressable key={day.date} accessibilityRole="button" accessibilityLabel={`${day.label}, ${day.date}: ${day.kind==='optional'?'optional':day.kind==='training'?'geplant':day.kind==='rest'?'Ruhetag':'kein Plan'}${day.completed?', dokumentiert':''}`} onPress={()=>go('plans')} style={{flex:1,minWidth:fontScale>1.3?64:44,minHeight:88,paddingVertical:8,alignItems:'center',justifyContent:'center',borderBottomWidth:day.date===key?3:1,borderColor:day.date===key?p.blue:p.line,backgroundColor:day.completed?p.mint:'transparent'}}><Text style={{fontSize:11,color:p.muted}}>{day.label}</Text><Text style={{fontSize:22,fontFamily:mono,color:p.ink,marginVertical:5}}>{Number(day.date.slice(8))}</Text><Text style={{fontSize:14,color:p.blue}}>{day.completed?'✓':day.kind==='training'?'○':day.kind==='optional'?'·':'–'}</Text></Pressable>)}</View>
   <Muted>{requiredCount?`${done}/${requiredCount} Pflichttrainings dokumentiert`:'Diese Woche sind keine Pflichttrainings eingetragen.'}{days.some(d=>d.kind==='optional')?' · Optionale Tage zählen separat.':''}</Muted>

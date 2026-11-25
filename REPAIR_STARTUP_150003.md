@@ -44,3 +44,13 @@ Run https://github.com/chris101010s/FORM_10_LIVING_WORKOUT1/actions/runs/4570266
 - `fresh`: `simctl install` überschritt das bisherige Limit von 120 Sekunden. Es gab in diesem Szenario keinen App-Start. Der gesamte Lauf blieb deshalb korrekt rot, und der iPhone-IPA-Schritt wurde nicht ausgeführt.
 
 Dieser Teilnachweis bestätigt die Korrektur in den zwei Legacy-Starts. Er ist noch kein Nachweis für drei erfolgreiche Starts oder eine neue IPA. Die nachfolgende Anpassung betrifft nur den CI-Simulator: Die erste Installation erhält höchstens 360 statt 120 Sekunden, spätere Installationen bleiben bei 120 Sekunden. Der Startprüfschritt hat 20 Minuten Gesamtlimit, damit die zusätzlichen vier Minuten sowie Diagnose und Bereinigung Platz haben. Es gibt keinen automatischen App-Neustart und keine Freigabe nach einem Installationsfehler. Die App-Dateien, Datenbank und Versionsidentität bleiben unverändert.
+
+## Zweiter nativer Lauf: Run 10
+
+Run https://github.com/chris101010s/FORM_10_LIVING_WORKOUT1/actions/runs/45707769501 prüfte Commit `11a7b94aab0006a22daabef09ce77eeba1641e45`, weiterhin App-Build 150003. Codeprüfungen, Apple-Kryptografie und der arm64-Release-Simulatorbuild waren erfolgreich.
+
+Die erste Installation gelang nach 184,052 Sekunden innerhalb des neuen 360-Sekunden-Limits. Die frische App erreichte `Running main`; 19 erfolgreiche Prozessprüfungen bestätigten dieselbe PID und denselben App-Pfad über das vorgesehene 20-Sekunden-Fenster. Der verpflichtende Screenshot-Aufruf überschritt danach sein bisheriges Limit von 15 Sekunden. Deshalb brach dieser Fall vor der Datenbankprüfung ab. Ein späterer Diagnose-Screenshot gelang und wurde visuell geprüft: Er zeigt die erwartete Einrichtung mit „Dein Kapitel eins.“. Die vorhandene Beschriftung „FORM.10.0“ ist ein alter Setup-Text; die kompilierte Buildidentität ist 150003.
+
+Beide Legacy-Fälle bestanden erneut ihre Prozess- und Datenprüfungen. Es gab in den drei Szenarien keinen erfassten App-Crash oder ursprünglichen NativeEventEmitter-Fatalfehler. Der Gesamtworkflow blieb wegen der nicht abgeschlossenen Fresh-Prüfung korrekt rot und erzeugte keine IPA. Die gemeldete Fresh-Monitordauer von 35,896 Sekunden enthält die Screenshotwartezeit; der letzte gespeicherte Prozesscheck lag rund 20,38 Sekunden nach Monitorstart.
+
+Die anschließende Korrektur gibt ausschließlich dem verpflichtenden Screenshot-Aufruf 60 statt 15 Sekunden. Erfolgreiche Aufnahme, vorhandene nicht leere PNG-Datei und derselbe lebende App-Prozess nach der Aufnahme bleiben erforderlich. Die App und ihre Datenformate werden nicht verändert. Ein vollständiger Fresh-PASS und eine neue IPA müssen weiterhin im folgenden Lauf nachgewiesen werden.

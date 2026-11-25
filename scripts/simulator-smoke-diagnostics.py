@@ -63,8 +63,9 @@ def monitor(args):
                 break
             time.sleep(min(1, remaining))
         screenshot = artifacts / 'FORM_15_0_0_release-start-smoke.png'
+        # A cold simulator's first framebuffer capture can exceed 15 seconds.
         result = capture(['xcrun', 'simctl', 'io', args.device, 'screenshot', str(screenshot)],
-                         artifacts / 'simulator-screenshot.log')
+                         artifacts / 'simulator-screenshot.log', timeout=60)
         if result or not screenshot.is_file() or not screenshot.stat().st_size:
             raise RuntimeError('Simulator-Screenshot fehlgeschlagen; simulator-screenshot.log prüfen.')
         # A crash while taking the screenshot must not become a passing smoke test.

@@ -4,7 +4,7 @@ const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'form-previous-display-'));
 try{
  const src=path.resolve('src');
- execFileSync(path.resolve('node_modules/.bin/tsc'),['--target','ES2022','--module','commonjs','--strict','--skipLibCheck','--rootDir',src,'--outDir',tmp,path.join(src,'utils/previousSetDisplay.ts')],{stdio:'inherit'});
+ execFileSync(path.resolve('node_modules/.bin/tsc'),['--target','ES2022','--module','commonjs','--strict','--skipLibCheck','--rootDir',src,'--outDir',tmp,path.join(src,'utils/previousSetDisplay.ts')],{cwd:tmp,stdio:'inherit'});
  const {previousActualsForRows}=require(path.join(tmp,'utils/previousSetDisplay.js'));
  const row=(id,index,kind='work',extra=false)=>({id,exerciseId:'bench',plannedIndex:index,targetId:'t'+index,planPositionId:'new-day',kind,isExtraSet:extra});
  const set=(id,index,kg,extra={})=>({id,exerciseId:'bench',plannedIndex:index,weightKg:kg,reps:10,rir:0,at:'2026-11-20T10:00:00Z',...extra});

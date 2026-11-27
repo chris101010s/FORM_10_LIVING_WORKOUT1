@@ -1,0 +1,42 @@
+name: FORM Expo 58 dependency lock repair
+on:
+  push:
+    paths:
+      - '.github/workflows/expo-lock-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate:
+    name: Rebuild reproducible Expo lockfile
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24.22.3'
+          cache: npm
+      - name: Install locked existing versions
+        run: npm ci --no-audit --no-fund
+      - name: Upgrade to Expo SDK 58 compatible versions
+        run: npx --no-install expo install --fix --npm
+      - name: Check fresh lock file resolves exactly
+        run: |
+          npm ci --no-audit --no-fund
+          npx --no-install expo install --check
+      - name: Export updated source package files
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: FORM_Expo58_Lock_Repair
+          path: |
+            package.json
+            package-lock.json
+          if-no-files-found: error
+          retention-days: 2

@@ -23,7 +23,7 @@
     "test:preflight": "node scripts/preflight.cjs",
     "test:form": "node tests/test-form.cjs",
     "test:deep": "node tests/test-form-deep.cjs",
-    "test:all": "npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh && npm run test:redesign && npm run test:native && npm run test:form84 && npm run test:living && npm run test:switch-contract && npm run test:plan15 && npm run test:nutrition15 && npm run test:migration15 && npm run test:repository15 && npm run test:plan-management15 && npm run test:build15 && npm run test:progress15 && npm run test:design-second && npm run test:analytics-second && npm run test:second-pass-data && npm run test:health-second && npm run test:native-second && npm run test:search-second && npm run test:training-second && npm run test:private-files-startup && npm run test:simulator-selection && npm run test:motion-clicky",
+    "test:all": "npm run test:preflight && npm run test:syntax && npm run test:logic && npm run test:catalog && npm run test:csv && npm run test:validation && npm run test:workout && npm run test:compat && npm run test:storage && npm run test:advanced && npm run test:form && npm run test:deep && npm run test:sqlite && npm run test:fresh && npm run test:redesign && npm run test:native && npm run test:form84 && npm run test:living && npm run test:switch-contract && npm run test:plan15 && npm run test:nutrition15 && npm run test:migration15 && npm run test:repository15 && npm run test:plan-management15 && npm run test:build15 && npm run test:progress15 && npm run test:design-second && npm run test:analytics-second && npm run test:second-pass-data && npm run test:health-second && npm run test:native-second && npm run test:search-second && npm run test:training-second && npm run test:private-files-startup && npm run test:simulator-selection && npm run test:motion-clicky && npm run test:previous-display",
     "test:sqlite": "node tests/test-relational.cjs",
     "test:fresh": "node tests/test-fresh.cjs",
     "catalog:photos": "node scripts/fetch-photos.mjs",
@@ -55,7 +55,8 @@
     "test:training-second": "node tests/test-training-second.cjs",
     "test:private-files-startup": "node tests/test-private-files-metro.cjs",
     "test:simulator-selection": "python3 scripts/test-simulator-selection.py",
-    "test:motion-clicky": "node tests/test-motion-startup-clicky.cjs"
+    "test:motion-clicky": "node tests/test-motion-startup-clicky.cjs",
+    "test:previous-display": "node tests/test-previous-set-display.cjs"
   },
   "dependencies": {
     "@expo/ui": "~58.0.29",

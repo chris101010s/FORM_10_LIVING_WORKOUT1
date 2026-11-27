@@ -6,6 +6,7 @@ import {MenuView} from '@expo/ui/community/menu';
 import React,{useState} from 'react';
 import {View,Text,TextInput,Pressable,ActionSheetIOS,Platform,Alert,useWindowDimensions} from 'react-native';
 import type {GymSet,SetDraft,PlannedSetRow} from '../data/schema';
+import type {PreviousActual} from '../utils/previousSetDisplay';
 import {draftFromSet,describeSet,setKinds} from '../utils/trainingEngine';
 import {Button,Muted,Label,Chip,usePalette,useFormFont} from './Design';
 import {SetEditor} from './SetEditor';
@@ -17,16 +18,53 @@ export function InlineSetTable({completed,previous,draft,onChange,onSave,onEdit,
  <Muted>{setKinds.find(s=>s.id===kind)?.label}{draft.rir?` · RIR ${draft.rir}`:''} · Vorwerte = Vorschläge.</Muted><View style={{flexDirection:'row',gap:6,flexWrap:'wrap'}}>{normal&&!details&&<>{[-step,step].map(n=><Button key={n} small secondary title={`${n>0?'+':''}${n} kg`} onPress={()=>{const parsed=Number(draft.weight.replace(',','.'));onChange({...draft,weight:String(Math.round(Math.min(1000,Math.max(0,(Number.isFinite(parsed)?parsed:0)+n))*1000)/1000)})}}/>)}<Button small secondary title="−1 Wdh." onPress={()=>onChange({...draft,reps:String(Math.max(1,Math.floor(Number(draft.reps)||0)-1))})}/><Button small secondary title="+1 Wdh." onPress={()=>onChange({...draft,reps:String(Math.min(150,Math.max(1,Math.floor(Number(draft.reps)||0)+1)))})}/></>}<Button small secondary title={details?'Details schließen':'Satztyp & Details'} onPress={()=>setDetails(v=>!v)}/></View>{(details||!normal)&&<><SetEditor draft={draft} onChange={onChange} step={step}/><Button title="Satz speichern" disabled={paused} onPress={onSave}/></>}<Muted>Gespeicherten Satz antippen für Bearbeitung, Kopieren oder Löschen.</Muted></View>}
 
 
+function previousActualText(set:GymSet):string {
+ if(set.unilateral){
+  const left=set.unilateral.left,right=set.unilateral.right;
+  const lRir=left.rir===undefined?'':' · RIR '+left.rir;
+  const rRir=right.rir===undefined?'':' · RIR '+right.rir;
+  return 'L '+left.weightKg+' kg × '+left.reps+lRir+' / R '+right.weightKg+' kg × '+right.reps+rRir;
+ }
+ if(set.kind==='timed')return String(set.durationSeconds??0)+' s';
+ if(set.kind==='distance')return String(set.distanceMeters??0)+' m';
+ const base=set.kind==='bodyweight'?String(set.reps)+' Wdh. · Körpergewicht':String(set.weightKg)+' kg × '+set.reps+' Wdh.';
+ return base+(set.rir===undefined?'':' · RIR '+set.rir);
+}
+function plannedGoalText(row:PlannedSetRow):string {
+ if(row.targetMode==='time')return String(row.plannedDurationSeconds??0)+' s';
+ if(row.targetMode==='distance')return String(row.plannedDistanceMeters??0)+' m';
+ const reps=row.targetMode==='amrap'?'AMRAP':row.plannedRepsMin===row.plannedRepsMax
+  ?String(row.plannedRepsMax)+' Wdh.'
+  :String(row.plannedRepsMin)+'–'+String(row.plannedRepsMax)+' Wdh.';
+ const load=row.loadType==='bodyweight'?'Körpergewicht'
+  :row.targetWeightKg===undefined?'Gewicht offen'
+  :String(row.targetWeightKg)+' kg'+(row.loadBasis==='perHand'?' / Hand':row.loadBasis==='perSide'?' / Seite':'');
+ return load+' · '+reps;
+}
+
 /** All intended rows remain visible; editing a draft never invents a completed set. */
-export function PlannedSetTable({rows,completed,previous,onChange,onComplete,onAllowance,onRemove,onEdit,disabled,confirmed,step,autoFocus=false,textScale=1,handedness='right',highlightRowId}:{rows:PlannedSetRow[];completed:GymSet[];previous:Record<string,GymSet>;onChange:(id:string,d:SetDraft)=>void;onComplete:(id:string)=>void;onAllowance:(id:string,expected:number)=>void;onRemove:(id:string)=>void;onEdit:(s:GymSet)=>void;disabled:boolean;confirmed:boolean;step:number;autoFocus?:boolean;textScale?:number;handedness?:'left'|'right';highlightRowId?:string}) {
+export function PlannedSetTable({rows,completed,previous,onChange,onComplete,onAllowance,onRemove,onEdit,disabled,confirmed,step,autoFocus=false,textScale=1,handedness='right',highlightRowId}:{rows:PlannedSetRow[];completed:GymSet[];previous:Record<string,PreviousActual>;onChange:(id:string,d:SetDraft)=>void;onComplete:(id:string)=>void;onAllowance:(id:string,expected:number)=>void;onRemove:(id:string)=>void;onEdit:(s:GymSet)=>void;disabled:boolean;confirmed:boolean;step:number;autoFocus?:boolean;textScale?:number;handedness?:'left'|'right';highlightRowId?:string}) {
  const p=usePalette(),[detail,setDetail]=useState<string|null>(null),firstOpen=rows.find(r=>r.status==='draft')?.id;
- return <View style={{gap:12}}>{rows.map((row,i)=>{const set=completed.find(s=>s.id===row.id),done=!!set,max=allowedReps(row),previousSet=!row.isExtraSet&&row.kind!=='warmup'?previous[row.targetId??row.id]:undefined,time=row.targetMode==='time',distance=row.targetMode==='distance';let issue='';try{plannedSetFromDraft(row,row.draft,new Date().toISOString())}catch(e){issue=String((e as Error).message)}
+ return <View style={{gap:12}}>{rows.map((row,i)=>{const set=completed.find(s=>s.id===row.id),done=!!set,max=allowedReps(row),previousInfo=previous[row.id],previousSet=previousInfo?.set,time=row.targetMode==='time',distance=row.targetMode==='distance';let issue='';try{plannedSetFromDraft(row,row.draft,new Date().toISOString())}catch(e){issue=String((e as Error).message)}
  const target=row.targetMode==='amrap'?'AMRAP · offen':time?`Soll ${row.plannedDurationSeconds} s`:distance?`Soll ${row.plannedDistanceMeters} m`:`Soll ${row.plannedRepsMin!==row.plannedRepsMax?`${row.plannedRepsMin}–`:''}${row.plannedRepsMax} Wdh. · Freigabe +${row.extraRepAllowance}`;
  const effectiveKind=time?'timed':distance?'distance':row.loadType==='bodyweight'?'bodyweight':row.loadType==='assisted'?'assisted':row.kind;
  return <MotionCue key={row.id} variant="extraRow" eventKey={row.id} confirmed={highlightRowId===row.id} enabled={highlightRowId===row.id}><View style={{paddingVertical:10,borderBottomWidth:1,borderColor:p.line,backgroundColor:done&&confirmed?p.mint:row.isExtraSet?p.ice:p.white,gap:8}}>
  <Text style={{color:p.blue,fontSize:13*textScale,fontWeight:'800'}}>{row.isExtraSet?'EXTRA':row.kind==='warmup'?'WARM-UP':`SATZ ${Number(row.plannedIndex??i)+1}`} {row.status==='skipped'?'· ausgelassen':''}</Text><Text style={{color:p.ink,fontSize:14*textScale}}>{target}{row.targetWeightKg!==undefined?` · Ziel ${row.targetWeightKg} kg`:''}{row.targetRestSeconds!==undefined?` · ${row.targetRestSeconds}s Pause`:''}{row.targetRir!==undefined?` · Ziel-RIR ${row.targetRir}`:''}</Text>{row.targetNote&&<Muted>{row.targetNote}</Muted>}
+ <View accessibilityLabel={'Vergleich Satz '+(Number(row.plannedIndex??i)+1)} style={{flexDirection:handedness==='left'?'row-reverse':'row',gap:10,backgroundColor:p.ice,borderColor:p.line,borderWidth:1,borderRadius:12,padding:12}}>
+  <View style={{flex:1,minWidth:0,gap:4}}>
+   <Text style={{color:p.muted,fontWeight:'800',fontSize:11*textScale}}>LETZTES MAL</Text>
+   <Text style={{color:p.ink,fontWeight:'800',fontSize:16*textScale}}>{previousSet?previousActualText(previousSet):'Noch kein Satz'}</Text>
+   <Text style={{color:p.muted,fontSize:11*textScale}}>{previousInfo?new Date(previousInfo.finishedAt).toLocaleDateString('de-AT')+(previousInfo.source==='comparable'?' · gleicher Satz':' · gleiche Übung'):'Keine gespeicherte Leistung'}</Text>
+  </View>
+  <View style={{width:1,backgroundColor:p.line}}/>
+  <View style={{flex:1,minWidth:0,gap:4}}>
+   <Text style={{color:p.muted,fontWeight:'800',fontSize:11*textScale}}>HEUTIGES ZIEL</Text>
+   <Text style={{color:p.ink,fontWeight:'800',fontSize:16*textScale}}>{plannedGoalText(row)}</Text>
+   <Text style={{color:p.muted,fontSize:11*textScale}}>{row.targetRir===undefined?'RIR nicht vorgegeben':'Ziel-RIR '+row.targetRir}</Text>
+  </View>
+ </View>
  {done&&set?<Pressable accessibilityRole="button" accessibilityLabel={`Satz ${i+1}: ${describeSet(set)}. Korrigieren`} onPress={()=>onEdit(set)} style={{minHeight:48,flexDirection:handedness==='left'?'row-reverse':'row',alignItems:'center',gap:8}}><Text style={{flex:1,color:p.ink,fontSize:18*textScale}}>{describeSet(set)}</Text>{confirmed?<PencilCheck confirmed size={27}/>:<Text style={{color:p.muted}}>Speichern …</Text>}</Pressable>:row.status==='skipped'?<Button small secondary title="Wieder aufnehmen" disabled={disabled} onPress={()=>onChange(row.id,row.draft)}/>:<>
- {row.suggestionSource&&<Muted>{row.suggestionSource==='previous'?'Vorherige vergleichbare Einheit als unbestätigter Vorschlag.':'Zielgewicht aus deinem Plan als unbestätigter Vorschlag.'}</Muted>}{previousSet&&<View><Muted>Zuletzt: {describeSet(previousSet)}</Muted><Button small secondary title="Vorwert übernehmen" onPress={()=>onChange(row.id,{...draftFromSet(previousSet),kind:row.kind,loadBasis:row.loadBasis,note:''})}/></View>}
+ {row.suggestionSource&&<Muted>{row.suggestionSource==='previous'?'Vorherige vergleichbare Einheit als unbestätigter Vorschlag.':'Zielgewicht aus deinem Plan als unbestätigter Vorschlag.'}</Muted>}{previousSet&&row.kind!=='warmup'&&!row.isExtraSet&&<Button small secondary title="Vorwert übernehmen" onPress={()=>onChange(row.id,{...draftFromSet(previousSet),kind:row.kind,loadBasis:row.loadBasis,note:''})}/>}
  <SetEditor draft={{...row.draft,kind:effectiveKind}} onChange={draft=>onChange(row.id,{...draft,kind:row.kind})} fixedKind step={step} plannedMax={max} autoFocus={autoFocus&&row.id===firstOpen&&!disabled} textScale={textScale} handedness={handedness}/>
  {issue&&<Text accessibilityLiveRegion="polite" style={{color:p.error,fontSize:12*textScale}}>{issue}</Text>}<Button title="Satz abschließen" disabled={disabled||!!issue} onPress={()=>onComplete(row.id)}/>
  <View style={{flexDirection:handedness==='left'?'row-reverse':'row',flexWrap:'wrap',gap:6}}>{row.targetMode==='reps'&&<Button small secondary title="+ Wdh." disabled={disabled} onPress={()=>onAllowance(row.id,row.extraRepAllowance)}/>}<Button small secondary title={row.isExtraSet?'Extraentwurf entfernen':'Satz auslassen'} disabled={disabled} onPress={()=>onRemove(row.id)}/></View></>}

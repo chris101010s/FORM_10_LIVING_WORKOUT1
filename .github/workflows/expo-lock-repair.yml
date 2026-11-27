@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   regenerate:
@@ -24,12 +24,32 @@ jobs:
           cache: npm
       - name: Install locked existing versions
         run: npm ci --no-audit --no-fund
-      - name: Upgrade to Expo SDK 58 compatible versions
-        run: npx --no-install expo install --fix --npm
+      - name: Upgrade only the 8 Expo SDK 58 compatible packages
+        run: |
+          npm install --no-audit --no-fund \
+            'expo@~58.1.0' \
+            '@expo/ui@~58.0.30' \
+            'expo-crypto@~58.0.9' \
+            'expo-file-system@~58.0.15' \
+            'expo-glass-effect@~58.0.6' \
+            'expo-notifications@~58.1.10' \
+            'expo-sharing@~58.0.24' \
+            'expo-widgets@~58.0.30'
       - name: Check fresh lock file resolves exactly
         run: |
           npm ci --no-audit --no-fund
           npx --no-install expo install --check
+          npm run typecheck
+          npm run lint
+      - name: Commit repaired dependency lockfile
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(ci): sync Expo SDK 58 dependency lockfile'
+            git push origin HEAD:main
+          fi
       - name: Export updated source package files
         if: always()
         uses: actions/upload-artifact@v6

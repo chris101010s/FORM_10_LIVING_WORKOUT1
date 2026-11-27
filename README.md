@@ -1,3 +1,39 @@
+<div align="center">
+
+# FORM · The Living Sketchbook
+
+**A personal training companion, built with intention.**
+
+iOS · React Native · Expo · Training · Progress · Personal data
+
+[![Project](https://img.shields.io/badge/PROJECT-FORM_15-18181b?style=for-the-badge)](https://github.com/chris101010s/FORM_10_LIVING_WORKOUT1)
+![Status](https://img.shields.io/badge/STATUS-Development-f59e0b?style=for-the-badge)
+![Platform](https://img.shields.io/badge/PLATFORM-iOS-2563eb?style=for-the-badge)
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> **Current FORM development line.** The source code is available here, but a verified, installable iPhone release has **not** been confirmed. See the release report and test matrix for the actual build status.
+
+### Explore FORM
+
+| Area | What you'll find |
+| :--- | :--- |
+| **Today** | Daily overview and planning |
+| **Plan** | Structured workouts and plan versions |
+| **Training** | Workout experience and controls |
+| **Progress** | Training history and analysis |
+| **Health** | Personal health-related views |
+
+**Documentation:** [Release report](RELEASE_REPORT_15_SECOND_PASS.md) · [Test matrix](TEST_MATRIX_15_SECOND_PASS.md) · [Build guide](RELEASE_BUILD_15.md)
+
+**Earlier public milestones:** [FORM 8.4](https://github.com/chris101010s/ATHLETE_OS_8_4_FORM_FRESH_START) · [FORM 8.1](https://github.com/chris101010s/ATHLETE_OS_8_1_FORM_FRESH)
+
+<details>
+<summary><strong>Full technical documentation and release notes</strong></summary>
+
 # FORM 15.0.0 · The Living Sketchbook
 
 Zweiter Durchgang auf dem vollständig erhaltenen ersten FORM-15-Stand, **Build 150004**. Weiterentwicklung der vorhandenen FORM-10-App, kein neues Beispielprojekt. Fünf Tabs: **Heute · Plan · Training · Fortschritt · Gesundheit**.
@@ -65,3 +101,6 @@ Die vorhandenen und neuen Tests laufen über `test:all`, danach vollständiger T
 | `docs/FORM_15_SPECIFICATION.md` / `docs/FORM_15_SECOND_PASS_SPECIFICATION.md` | Beide verbindlichen Aufträge |
 
 Neue echte Logs liegen in `docs/qa/15-second/` und `docs/qa/second-pass/`. `docs/qa/15/` belegt den ersten Durchgang. Die gerenderte Assetübersicht in `docs/design/` ist kein iPhone-Screenshot. Persönliche Backups, Signierzertifikate, node_modules und generierte native Buildverzeichnisse gehören nicht in diese Source-ZIP.
+
+
+</details>

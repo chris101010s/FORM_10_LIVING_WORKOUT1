@@ -27,7 +27,7 @@ FORM_APP="$(find "$FORM_ROOT/artifacts/DerivedData/Build/Products/Release-iphone
 [[ -n "$FORM_APP" && -f "$FORM_APP/Info.plist" ]] || { echo 'ERROR: iPhone App fehlt.' >&2; exit 1; }
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$FORM_APP/Info.plist")" == 'app.athleteos.personal' ]] || { echo 'ERROR: Bundle-ID stimmt nicht.' >&2; exit 1; }
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$FORM_APP/Info.plist")" == '15.0.0' ]] || { echo 'ERROR: Release-Version stimmt nicht.' >&2; exit 1; }
-[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$FORM_APP/Info.plist")" == '150004' ]] || { echo 'ERROR: Buildnummer stimmt nicht.' >&2; exit 1; }
+[[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$FORM_APP/Info.plist")" == "$(node -p "require('./app.json').expo.ios.buildNumber")" ]] || { echo 'ERROR: Buildnummer stimmt nicht.' >&2; exit 1; }
 node scripts/verify-ios-presentation.cjs "$FORM_APP"
 [[ -f "$FORM_APP/main.jsbundle" ]] || { echo 'ERROR: Release JavaScript bundle fehlt.' >&2; exit 1; }
 [[ -z "$(find "$FORM_APP" -type d -name '*.appex' -print -quit)" ]] || { echo 'ERROR: Unerwartete Extension im Standard-Build.' >&2; exit 1; }

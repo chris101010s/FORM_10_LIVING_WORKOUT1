@@ -17,11 +17,11 @@
         "NSFaceIDUsageDescription": "Optionaler Schutz deiner privaten Trainings- und Gesundheitsdaten."
       },
       "icon": "./assets/icons/ink.png",
-      "buildNumber": "150004"
+      "buildNumber": "150005"
     },
     "android": {
       "package": "app.athleteos.personal",
-      "versionCode": 150004
+      "versionCode": 150005
     },
     "platforms": [
       "ios",

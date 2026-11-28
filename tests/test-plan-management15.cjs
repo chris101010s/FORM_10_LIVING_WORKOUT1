@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{execFileSync}=require('node:child_process');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'form-plan-management-'));
 try{
- const src=path.resolve('src');execFileSync('tsc',['--strict','--target','ES2022','--module','commonjs','--skipLibCheck','--rootDir',src,'--outDir',tmp,...['utils/planImport.ts','utils/planOverview.ts','utils/planEditorInput.ts','data/validation.ts'].map(f=>path.join(src,f))],{cwd:tmp,stdio:'inherit'});
+ const src=path.resolve('src');execFileSync('tsc',['--strict','--target','ES2022','--module','commonjs','--skipLibCheck','--rootDir',src,'--outDir',tmp,...['utils/legacyPlanRepair.ts','utils/planImport.ts','utils/planOverview.ts','utils/planEditorInput.ts','data/validation.ts'].map(f=>path.join(src,f))],{cwd:tmp,stdio:'inherit'});
  const {emptyData}=require(path.join(tmp,'data/schema.js')),{validateRestoredData,parseAthleteBackup}=require(path.join(tmp,'data/validation.js'));
  const {exportPlanBundle,parsePlanBundle,applyPlanBundle,planImportConflicts}=require(path.join(tmp,'utils/planImport.js')),{weekOverview,matchesPlannedDay,planDateForSlot}=require(path.join(tmp,'utils/planOverview.js'));
  let count=0;const eq=(a,b)=>{assert.deepEqual(a,b);count++},ok=x=>{assert.ok(x);count++},fails=fn=>{assert.throws(fn);count++};
@@ -46,5 +46,22 @@ try{
  eq(planDateForSlot({...data.programs[0],end:'2026-11-26'},0,0,'2026-11-25'),null);
  eq(planDateForSlot({...data.programs[0],end:'2026-12-04'},1,5,'2027-02-01'),'2026-12-04');
  fails(()=>planDateForSlot(data.programs[0],2,1,'2026-11-25'));
+ const {repairLegacyRoutine,previewLegacyProgramRepair}=require(path.join(tmp,'utils/legacyPlanRepair.js'));
+ const {validateRoutineTargets,buildPlannedRows}=require(path.join(tmp,'utils/plannedTargets.js'));
+ const fixtureExercises=[{id:'custom:a',name:'Carry (30 m)',group:'Synthetic'},{id:'custom:b',name:'Bike (10–15 min)',group:'Synthetic'},{id:'custom:c',name:'Press (6-8 Wdh.)',group:'Synthetic'},{id:'custom:d',name:'Liegestütze',group:'Synthetic'}];
+ const oldRoutine={id:'legacy',name:'Legacy',exerciseIds:fixtureExercises.map(e=>e.id),restSeconds:90,prescriptions:{'custom:a':{sets:3},'custom:b':{sets:1},'custom:c':{sets:3,reps:6},'custom:d':{sets:2}}};
+ const oldSnapshot=JSON.stringify(oldRoutine);fails(()=>validateRoutineTargets(oldRoutine));
+ const repaired=repairLegacyRoutine(oldRoutine,fixtureExercises,true);
+ eq(repaired.changes.length,4);eq(repaired.unresolved,[]);eq(JSON.stringify(oldRoutine),oldSnapshot);eq(repaired.routine.exerciseIds,oldRoutine.exerciseIds);
+ validateRoutineTargets(repaired.routine);
+ const rows=buildPlannedRows(repaired.routine,'fixture');
+ eq(rows.length,9);eq(rows[0].plannedDistanceMeters,30);eq(rows[3].plannedDurationSeconds,600);eq(rows[4].plannedRepsMax,8);eq(rows[7].targetMode,'amrap');eq(rows[7].loadType,'bodyweight');eq(rows[7].targetRir,2);
+ eq(repairLegacyRoutine(repaired.routine,fixtureExercises,true).changes,[]);
+ eq(repairLegacyRoutine(oldRoutine,fixtureExercises,false).unresolved.length,1);
+ const unknown={...oldRoutine,exerciseIds:['custom:unknown'],prescriptions:{'custom:unknown':{sets:3}}};
+ eq(repairLegacyRoutine(unknown,fixtureExercises,true).unresolved.length,1);
+ const other={...oldRoutine,id:'other'};
+ const preview=previewLegacyProgramRepair({routines:[oldRoutine,other],exercises:fixtureExercises,programs:[{id:'legacy-plan',days:[{routineId:'legacy'}]}]},'legacy-plan',true);
+ eq(preview.routines[1],other);eq(preview.changes.length,4);
  console.log(`PASS: ${count} plan-management tests — v1/v2/legacy import, ID conflict preview/copy, stable references, immutable originals, raw partial draft retention, collision-safe copy IDs, selected-plan cycle dates, cycle/day matching and repeat-safe week counts.`);
 }finally{fs.rmSync(tmp,{recursive:true,force:true})}
